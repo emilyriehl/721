@@ -1,0 +1,250 @@
+\documentclass{amsart}
+\usepackage[hidelinks]{hyperref}  
+\usepackage{tensor}    
+\usepackage{comment} 
+\usepackage{enumitem}      
+\usepackage{moreenum}
+\usepackage{graphicx}   
+\usepackage{ifthen}  
+\usepackage[svgnames]{xcolor}  
+ \usepackage{fullpage}
+ \hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+} 
+ 
+% Font packages  
+\usepackage[no-math]{fontspec} 
+\usepackage{realscripts}
+
+% Unicode mathematics fonts
+\usepackage{unicode-math}
+\setmathfont{Asana Math}[Alternate = 2]
+
+% Font imports, for some reason this has to be after 
+% the unicode-math stuff.
+
+\setmainfont{CormorantGaramond}[
+Numbers = Lining,  
+Ligatures = NoCommon,
+Kerning = On,
+UprightFont = *-Medium,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setsansfont{texgyreheros}[
+Scale=0.9129,
+Ligatures = NoCommon,
+UprightFont = *-Regular,
+ItalicFont = *-Italic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setmonofont{SourceCodePro}[
+Scale=0.8333,
+UprightFont = *-Regular,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+% AMS Packages
+\usepackage{amsmath}
+\usepackage{amsxtra}
+\usepackage{amsthm}
+
+% We use TikZ for diagrams
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{makebox}%to try and fix the spacing in some diagrams with wildly divergent node sizes
+
+\renewcommand{\theenumi}{\roman{enumi}} %roman numerals in enumerate
+
+% Adjust list environments.
+
+\setlist{}
+\setenumerate{leftmargin=*,labelindent=0\parindent}
+\setitemize{leftmargin=\parindent}%,labelindent=0.5\parindent}
+%\setdescription{leftmargin=1em}
+
+\newcommand{\todo}[1]
+{ {\bfseries \color{blue} #1 }}
+
+
+
+\newcommand{\lecture}[1]{\centerline{\fbox{\textbf{#1}}}}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
+\newtheorem{nex}[thm]{Non-Example}
+\newtheorem{exc}[thm]{Exercise}
+\newtheorem{exexc}[thm]{Example/Exercise}
+\newtheorem{ntn}[thm]{Notation}
+\newtheorem{asm}[thm]{Assumptions}
+\theoremstyle{remark}
+\newtheorem{rmk}[thm]{Remark}
+\newtheorem{dig}[thm]{Digression}
+
+\makeatletter
+\let\c@equation\c@thm
+\makeatother
+\numberwithin{equation}{section}
+
+\title{Math 721: Homotopy Type Theory}
+\author{Emily Riehl}
+
+\begin{document}
+
+\date{Fall 2021}
+
+
+\address{Dept.~of Mathematics\\Johns Hopkins Univ.\\ 3400 N.~Charles Street \\ Baltimore, MD 21218}
+\email{eriehl@jhu.edu}
+
+
+\maketitle
+
+
+\section*{Logistics}
+
+\subsection*{Instructor:} 
+ Emily Riehl---call me ``Professor Riehl,'' ``Dr.~Riehl,'' or ``Emily''--- she/her, \email{eriehl@jhu.edu}, Krieger 312
+
+
+ \subsection*{Lectures:}   MW 3-4:15, Gilman 55
+\subsection*{References:} 
+\begin{itemize}
+\item[-] The primary text is a book-in-progress called \emph{Introduction to Homotopy Type Theory} written by Egbert Rijke, which will be distributed via email. An online copy of an earlier version can be found here: \begin{flushright} \url{https://hott.github.io/HoTT-2019/images/hott-intro-rijke.pdf}\end{flushright}
+\item[-] A supplementary text is the HoTT book (full title: \emph{Homotopy Type Theory: Univalent Foundations of Mathematics}), which is available in a variety of formats here: \hfill \url{https://homotopytypetheory.org/book/}
+\item[-] Another useful reference is Mart\'{i}n H\"{o}tzel Escard\'{o}'s \emph{Introduction to Univalent Foundations of Mathematics with Agda}, online lecture notes available here: \begin{flushright}\url{https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html}\end{flushright}
+\item[-] Egbert Rijke has formalized much of his book here: \begin{flushright} \url{https://github.com/EgbertRijke/HoTT-Intro/tree/master/Agda} \end{flushright}
+\item[-] Ingo Blechschmidt has made an online version of \texttt{agda}: \hfill \url{https://agdapad.quasicoherent.io} 
+\end{itemize}
+ \subsection*{Course website:} \url{http://github.com/emilyriehl/721}
+\subsection*{Chat room:} \url{https://hott.zulipchat.com} in the stream \texttt{JohnsHopkins-Math721}
+
+ \subsection*{Office hours:} Thursday evenings, exact time TBD, in Krieger 413
+
+
+
+\section*{Overview} 
+
+The course will be divided into three parts, following the three parts of Egbert Rijke's book \emph{Introduction to Homotopy Type Theory}. In parallel, students will learn to write formal proofs in the computer proof assistant \texttt{agda}.
+
+\subsection*{Part I: Martin-L\"{o}f's Dependent Type Theory} Dependent type theory is a formal system for making mathematical constructions and for writing mathematical proofs, which we will come to think of as essentially the same thing. The primitive concepts in dependent type theory include \emph{dependent types} and \emph{dependent terms}. Their behavior is governed by the structural rules for dependent type theory together with additional \emph{formation}, \emph{introduction}, \emph{elimination}, and \emph{computation} rules that define each individual type, such as the type of natural numbers. Per Martin L\"{o}f's signature contribution involves his formulation of the rules for the dependent \emph{identity types}, whose terms are identifications of two terms of a common type. 
+
+\subsection*{Part II: The Univalent Foundations of Mathematics}
+
+The univalent foundations of mathematics refers to an extension of Martin-L\"{o}f's dependent type theory by an axiom that characterizes the identity types for the universe. Informally, the \emph{univalence axiom} asserts that an identification between two types in a universe is equivalent to an \emph{equivalence} between those types, where the equivalences resemble the notion of ``homotopy equivalence'' from topology. This is a departure from the classical set-based foundations of mathematics in various ways that we will discuss. Following Voevodsky, we develop a hierarchy that classifies types by their level of homotopical complexity. At the bottom are the \emph{contractible} types, which are equivalent to the singleton type. At the next level are the \emph{propositions}, types with the property that any two terms they contain may be identified. At the next level are the \emph{sets}, types whose identity types are propositions. At the next level are the \emph{groupoids}, types whose identity types are sets, and so on.
+
+\subsection*{Part III: Synthetic Homotopy Theory}
+
+Homotopy type theory can also be thought of as a formal system for proving ``synthetic'' versions of theorems from classical homotopy theory. In the final part of the course, we survey some of the synthetic homotopy theory that has been developed in homotopy type theory. Other aspects of synthetic homotopy theory remain open problems. We will introduce the circle as a \emph{higher inductive type} and use this universal property to study its universal cover and identity type.  We'll then define the homotopy group of a type and the classifying type of a group and explore other topics as time permits.
+
+\section*{Prerequisites} 
+
+It would be helpful, but not necessary, to have some prior acquaintance with point set topology, formal logic, or type theory, but we expect that most students will lack experience in at least one of these areas. Cross disciplinary collaboration is encouraged, especially because a lot of the insights that have lead to new developments in homotopy type theory have stemmed from discussions between mathematicians and computer scientists, as each group struggles to understand the other's intuitions.
+
+
+\section*{Help}
+
+Opportunities to ask questions on material that may or may not be related to the most recent lectures will be abundant. Firstly, everyone is encouraged to attend the weekly office hours and work on their homework there, either individually or in groups. 
+
+Additionally, everyone is strongly encouraged to create an account at \url{https://hott.zulipchat.com} and join the stream for this course. Members are generally encouraged to join with their real names (as a way to encourage everyone to be nice). On the broader zulipchat you'll find both top experts and other students from around the world who are learning homotopy type theory for the first time, so it's a great place to ask questions at any level. 
+
+It would be totally reasonable, for instance, to write to say that you're stuck at a particular point in a formal proof and ask for hints. When it's natural to do so, I'd prefer you to ask a question like this in public---in the zulipchat or in office hours, as opposed to in a private email just to me---because then everyone else can see the answer. Of course, if you bump into me on campus and want to ask a question just ask it.
+
+\section*{Assessment}
+
+\subsection*{Problem sets:}
+Weekly problem sets will be assigned to be completed in the formal proof assistant \texttt{agda}. Assignments are due to me by email before class on Monday. The first assignment will be due on Monday, September 13, and the final assignment will be due on Monday, November 29th. Full credit will be given if \texttt{agda} accepts at least 2/3rds of the proofs. Special arrangements may be made if someone is really struggling with \texttt{agda}; eg., a new goal would be to turn in complete solutions to the first 2/3rds of the problem sets by the end of the semester. Collaboration is encouraged, though please acknowledge your collaborators in a comment in the file.
+
+\subsection*{Final project:}
+In addition to the \texttt{agda} problem sets, each student will be expected to do an independent final project, due Monday, December 19th. The final project should be some sort of expository presentation of a topic in homotopy type theory that we did not have time to explore in class. This could be in a variety of formats including:
+\begin{itemize}
+\item an expository paper, with a target length of 5-10 pages;
+\item an expository talk, with a target length of 20 minutes, which could either be a chalk talk or a video lecture, and could be pitched to a variety of target audiences (not necessarily me);
+\item a formalized proof with extensive comments for the reader;
+\item or something else (please discuss with me).
+\end{itemize}
+
+\subsection*{Grades:}
+A numerical grade will be assigned based on the following formula:
+\begin{itemize}
+\item 1/4 problem sets
+\item 1/2 final project
+\item 1/4 engagement
+\end{itemize}
+where any student who regularly asks questions, either in class, in office hours, or in the zulipchat, will receive full credit for ``engagement.'' Auditors and pass/fail students are welcome and may elect to choose to submit either the problem sets or the final project, but not necessarily both. If a pass/fail student elects not to do the final project, I hope they'll aim to complete the majority of each problem set as compensation.
+
+
+\section*{Classroom Climate}
+
+I am committed to creating a classroom environment that values the diversity of experiences and perspectives that all students bring.  Everyone here has the right to be treated with dignity and respect.  I believe fostering an inclusive climate is important because research and my experience show that students who interact with peers who are different from themselves learn new things and experience tangible educational outcomes.  Please join me in creating a welcoming and vibrant classroom climate.  Note that you should expect to be challenged intellectually by me and your peers, and at times this may feel uncomfortable.  Indeed, it can be helpful to be pushed sometimes in order to learn and grow.  But at no time in this learning process should someone be singled out or treated unequally on the basis of any seen or unseen part of their identity.
+
+If you ever have concerns in this course about harassment, discrimination, or any unequal treatment, or if you seek accommodations or resources, I invite you to share directly with me.  I promise that we will take your communication seriously and to seek mutually acceptable resolutions and accommodations.  Reporting will never impact your course grade.  You may also share concerns with the department chair (David Savitt, savitt@jhu.edu), the Director of Undergraduate Studies (Richard Brown, richardbrown@jhu.edu), the Director of Graduate Studies (Jacob Bernstein, bernstein@jhu.edu), the Assistant Dean for Diversity and Inclusion (Darlene Saporu, dsaporu@jhu.edu), or the Office of Institutional Equity (oie@jhu.edu).  In handling reports, people will protect your privacy as much as possible, but faculty and staff are required to officially report information for some cases (e.g.~sexual harassment).
+
+
+\section*{Personal Wellbeing}
+
+\begin{itemize}
+\item  If you are sick, in particular with an illness that may be contagious, notify me by email and you will be excused from coming to class. Rather, visit the Health and Wellness Center: 1 East 31 Street, 410-516-8270. See also \href{http://studentaffairs.jhu.edu/student-life/support-and-assistance/absences-from-class/illness-note-policy/}{studentaffairs.jhu.edu/student-life/support-and-assistance/absences-from-class/illness-note-policy}
+
+\item All students with disabilities who require accommodations for this course should contact me at their earliest convenience to discuss their specific needs. If you have a documented disability, you must be registered with the JHU Office for Student Disability Services (385 Garland Hall; 410-516-4720; \href{http://web.jhu.edu/disabilities/}{web.jhu.edu/disabilities}) to receive accommodations.
+
+\item If you are struggling with anxiety, stress, depression or other mental health related concerns, please consider visiting the JHU Counseling Center. If you are concerned about a friend, please encourage that person to seek out our services. The Counseling Center is located at 3003 North Charles Street in Suite S-200 and can be reached at 410-516-8278 and online at  \href{http://studentaffairs.jhu.edu/counselingcenter/}{studentaffairs.jhu.edu/counselingcenter/}.
+\end{itemize}
+
+\section*{Plan}
+
+The following schedule is aspirational and subject to change.\\
+
+\begin{itemize}
+\item {Martin-L\"of's Dependent Type Theory:}
+\begin{itemize}
+\item {August 30: Dependent Type Theory \& Dependent Function Types}
+\item {September 1: Function types \& the natural numbers}
+\item {September 8: The formal proof assistant \texttt{agda}}
+\item {September 13: Inductive types}
+\item {September 15: Identity types}
+\item {September 20: Universes}
+\item {September 22: Modular arithmetic}
+\item {September 27: Elementary number theory}
+\end{itemize}
+\item {The Univalent Foundations of Mathematics:}
+\begin{itemize}
+\item {September 29: Equivalences}
+\item {October 4: Contractibility}
+\item {October 6: The fundamental theorem of identity types}
+\item {October 11: Propositions, sets, and general truncation levels}
+\item {October 13: Function extensionality}
+\item {October 18: Propositional truncation}
+\item {October 20: The image of a map}
+\item {October 25: Finite types}
+\item {October 27: The univalence axiom}
+\item {November 1: Set quotients}
+\item {November 3: Groups}
+\item {November 8: Algebra}
+\item {November 10: The real numbers}
+\end{itemize}
+\item {Synthetic Homotopy Theory:}
+\begin{itemize}
+\item {November 15: The circle}
+\item {November 17: The universal cover of the circle}
+\item {November 29: Homotopy groups of types}
+\item {December 1: Classifying types of groups}
+\item {December 6: TBD}
+\end{itemize}
+\end{itemize}
+
+ \end{document}
