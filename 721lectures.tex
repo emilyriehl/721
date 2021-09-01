@@ -1,0 +1,610 @@
+
+% The following code introduces a new \if macro which we use to switch
+% compilation between the published and internet versions of the book
+%
+\newif\ifmine
+%
+% The default is false, which means we compile the internet version.
+% Un-comment the next line to compile the published version:
+%
+%\minetrue
+%
+\documentclass{amsart}
+\usepackage[hidelinks]{hyperref}  
+\usepackage{tensor}    
+\usepackage{comment} 
+\usepackage{enumitem}      
+\usepackage{moreenum}
+\usepackage{graphicx}   
+\usepackage{ifthen}  
+\usepackage{stmaryrd}
+\usepackage[svgnames]{xcolor}  
+ \usepackage{fullpage}
+ \hypersetup{  
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+} 
+\usepackage{mathpartir}%I think for \inferrule
+ 
+% Font packages  
+\usepackage[no-math]{fontspec} 
+\usepackage{realscripts}
+
+% Unicode mathematics fonts
+\usepackage{unicode-math}
+\setmathfont{Asana Math}[Alternate = 2]
+
+% Font imports, for some reason this has to be after 
+% the unicode-math stuff. 
+
+\setmainfont{CormorantGaramond}[
+Numbers = Lining,  
+Ligatures = NoCommon,
+Kerning = On,
+UprightFont = *-Medium,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setsansfont{texgyreheros}[
+Scale=0.9129,
+Ligatures = NoCommon,
+UprightFont = *-Regular, 
+ItalicFont = *-Italic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setmonofont{SourceCodePro}[
+Scale=0.8333,
+UprightFont = *-Regular,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+% AMS Packages
+\usepackage{amsmath}
+\usepackage{amsxtra}
+\usepackage{amsthm}
+
+% We use TikZ for diagrams
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{makebox}%to try and fix the spacing in some diagrams with wildly divergent node sizes
+
+\renewcommand{\theenumi}{\roman{enumi}} %roman numerals in enumerate
+
+% Adjust list environments.
+
+\setlist{}
+\setenumerate{leftmargin=*,labelindent=0\parindent}
+\setitemize{leftmargin=\parindent}%,labelindent=0.5\parindent}
+%\setdescription{leftmargin=1em}
+
+\newcommand{\todo}[1]
+{ {\bfseries \color{blue} #1 }}
+
+
+\newcommand{\lecture}[1]{\vspace{.1cm}\centerline{\fbox{\textbf{#1}}}\vspace{.1cm}}
+
+\theoremstyle{theorem}
+\newtheorem*{thm}{Theorem}
+\newtheorem*{lem}{Lemma}
+\newtheorem*{fact}{Fact}
+\newtheorem*{cor}{Corollary}
+\newtheorem*{prop}{Proposition}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{defn}
+\newtheorem*{ex}{ex}
+\newtheorem*{nex}{non-ex}
+\newtheorem*{exc}{Exercise}
+\newtheorem*{exnex}{Example/Non-Example}
+\newtheorem*{tf}{T/F}
+\newtheorem*{q}{Q}
+\newtheorem*{rQ}{rhetorialQ}
+\newtheorem*{rev}{Review}
+
+
+\theoremstyle{remark}
+\newtheorem*{rmk}{Remark}
+\newtheorem*{war}{Warning}
+\newtheorem*{dig}{Digression}
+
+%\makeatletter
+%\let\c@equation\c@thm
+%\makeatother
+%\numberwithin{equation}{section}
+
+\newcommand{\cat}[1]{\textup{\textsf{#1}}}% for categories
+\newcommand{\fun}[1]{\textup{#1}}%for functors
+
+%commonly used categories
+\newcommand{\Ch}{\cat{Ch}}
+\newcommand{\Set}{\cat{Set}}
+\newcommand{\sSet}{\cat{sSet}}
+\newcommand{\Top}{\cat{Top}}
+
+%math operators
+\DeclareMathOperator{\dom}{\mathrm{dom}}
+\DeclareMathOperator{\cod}{\mathrm{cod}}
+\DeclareMathOperator{\ob}{\mathrm{ob}}
+\DeclareMathOperator{\mor}{\mathrm{mor}}
+\DeclareMathOperator*{\colim}{\mathrm{colim}}
+\newcommand{\hocolim}{\mathrm{hocolim}}
+\newcommand{\wcolim}{\mathrm{wcolim}}
+\newcommand{\holim}{\mathrm{holim}}
+
+
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\co}{\mathrm{co}}
+\newcommand{\Nat}{\mathrm{Nat}}
+\newcommand{\End}{\mathrm{End}}
+\newcommand{\Aut}{\mathrm{Aut}}
+\newcommand{\Sym}{\mathrm{Sym}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\ev}{\mathrm{ev}}
+\newcommand{\im}{\mathrm{im}}
+\newcommand{\coim}{\mathrm{coim}}
+\newcommand{\To}{\Rightarrow}
+\newcommand{\coker}{\mathrm{coker}}
+
+\newcommand{\Map}{\mathord{\text{\normalfont{\textsf{Map}}}}}
+\newcommand{\Fun}{\mathord{\text{\normalfont{\textsf{Fun}}}}}
+\newcommand{\Hom}{\mathord{\text{\normalfont{\textsf{Hom}}}}}
+\newcommand{\Ho}{\mathord{\text{\normalfont{\textsf{Ho}}}}}
+\newcommand{\h}{\cat{h}}
+\DeclareMathOperator{\Lan}{\fun{Lan}}
+\DeclareMathOperator{\Ran}{\fun{Ran}}
+\newcommand{\comma}{\!\downarrow\!}
+
+%special blackboard bold characters
+\newcommand{\bbefamily}{\fontencoding{U}\fontfamily{bbold}\selectfont}
+\newcommand{\textbbe}[1]{{\bbefamily #1}}
+\DeclareMathAlphabet{\mathbbe}{U}{bbold}{m}{n}
+
+
+\def\DDelta{{\mbfDelta}}
+
+%categories?
+\newcommand{\cA}{\mathsf{A}}
+\newcommand{\cB}{\mathsf{B}}
+\newcommand{\cC}{\mathsf{C}}
+\newcommand{\cD}{\mathsf{D}}
+\newcommand{\cE}{\mathsf{E}}
+\newcommand{\cF}{\mathsf{F}}
+\newcommand{\cG}{\mathsf{G}}
+\newcommand{\cI}{\mathsf{I}}
+\newcommand{\cJ}{\mathsf{J}}
+\newcommand{\cK}{\mathsf{K}}
+\newcommand{\cL}{\mathsf{L}}
+\newcommand{\cM}{\mathsf{M}}
+\newcommand{\cN}{\mathsf{N}}
+\newcommand{\cP}{\mathsf{P}}
+\newcommand{\cS}{\mathsf{S}}
+\newcommand{\cT}{\mathsf{T}}
+\newcommand{\cV}{\mathsf{V}}
+
+\newcommand{\0}{\mathbbe{0}}
+\newcommand{\1}{\mathbbe{1}}
+\newcommand{\2}{\mathbbe{2}}
+\newcommand{\3}{\mathbbe{3}}
+\newcommand{\4}{\mathbbe{4}}
+\newcommand{\iso}{\mathbbe{I}}
+
+%blackboard bold
+\renewcommand{\AA}{\mathbb{A}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\kk}{\mathbbe{k}}
+
+%
+\newcommand{\we}{\mathcal{W}}
+\newcommand{\cof}{\mathcal{C}}
+\newcommand{\fib}{\mathcal{F}}
+\newcommand{\mono}{\mathcal{M}}
+\newcommand{\epi}{\mathcal{E}}
+\newcommand{\sk}{\mathrm{sk}}
+
+\newcommand{\sA}{\mathcal{A}}
+\newcommand{\sB}{\mathcal{B}}
+\newcommand{\sC}{\mathcal{C}}
+\newcommand{\sJ}{\mathcal{J}}
+\newcommand{\sL}{\mathcal{L}}
+\newcommand{\sR}{\mathcal{R}}
+
+
+
+%type theory stuff
+\newcommand{\type}{{~\texttt{type}~}}
+\newcommand{\judgment}{\mathcal{J}}
+\newcommand{\term}[1]{{\texttt{#1}}}
+
+\newcommand{\bN}{{\mathbb{N}}}
+\newcommand{\suc}{\term{succ}_{\bN}}
+
+\begin{document}
+
+\title{Math 721: Homotopy Type Theory}
+\author{Emily Riehl}
+\date{Fall 2021}
+
+%\begin{abstract}
+%\end{abstract}
+
+\address{Dept.~of Mathematics\\Johns Hopkins University\\3400 N Charles St\\Baltimore, MD 21218}
+\email{eriehl@math.jhu.edu}
+
+\maketitle
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+
+\subsection*{Index cards:} name, what I should call you, pronouns, year, relevant previous coursework, why you are here, something fun
+
+\subsection*{Personal history:}
+Prehistory of homotopy type theory dates to a 1998 paper of Martin Hofmann and Thomas Streicher called ``The groupoid interpretation of type theory,'' that I'll tell you about later. Key early developments were in the mid aughts with the major players coming together for the first time in 2010 at Carnegie Mellon. This expanded to a larger group at Oberwolfach in 2011 followed by a special year at IAS in 2012-2013, during which the HoTT book (not our book) was written.
+
+I got my PhD in 2011. I started hearing a little about this in my final years of grad school but learned most of what I'll tell you about this semester during my postdoc and while here at Johns Hopkins. Point of this to say is that learning doesn't stop when you earn your PhD. Learning also doesn't necessarily precede teaching. My goal for this semester is to know a lot more \texttt{agda} by the end than I do right now. My promise to you is that I'll do all the homework before I assign it. I don't promise that I'll be able to answer very many of your questions about what is going on under the hood, but that's okay too: it's probably useful for all of us to be reminded that figures of authority don't always know what they're talking about.
+
+\subsection*{Syllabus:}
+The goal for this course is to change the way you think about doing mathematics. I certainly have. Along the way, I hope you all learn a lot, though as is typical in a graduate course, that's somewhat in proportion to the amount of work you put in. This also has a lot to do with your background. If you're coming from CS, you'll probably leave the course knowing way more \texttt{agda} than I do, but perhaps a bit less about synthetic homotopy theory. For others, it will be vice versa. Still others might engage most with the philosophical implications of these developments. I'm equally happy with all of these directions. 
+
+There are two ``active learning'' activities. The first is writing your own formal proofs in the computer proof assistant \texttt{agda}. This is hard in the sense that if you make one typo the whole thing breaks but a lot of help is available. I'll say more about it when the time comes. In particular, I'm hoping many folks will attend group office hours on Thursday evenings from 5-6pm. In the first meeting there won't be a problem set due: instead the goal will be to get \texttt{agda} installed. Come see me if you're worried about technical issues.
+
+The second active learning activity is a final project. I'm very flexible about the parameters. Essentially you should pick something that sounds fun to you.
+
+Questions?
+
+\part{Martin-L\"of's Dependent Type Theory}
+
+
+\section*{August 30: Dependent Type Theory}
+
+Martin-L\"{o}f's dependent type theory is a formal language for writing mathematics: both constructions of mathematical objects and proofs of mathematical propositions. As we shall discover, these two things are treated in parallel (in contrast to classical Set theory plus first-order logic, where the latter supplies the proof calculus and the former gives the language which you use to state things to prove).
+
+\subsection*{Judgments and contexts}
+
+I find it helpful to imagine I'm teaching a computer to do mathematics. It's also helpful to forget that you know other ways of doing mathematics.\footnote{Indeed, there are very deep theorems that describe how to interpret dependent type theory into classical set-based mathematics. You're welcome to investigate these for your final project but they are beyond the scope of this course.}
+
+\begin{defn} There are four kinds of \textbf{judgments} in dependent type theory, which you can think of as the ``grammatically correct'' expressions:
+\begin{enumerate}
+\item $\Gamma \vdash A \type$, meaning that $A$ is a well-formed type in \textbf{context} $\Gamma$ (more about this soon).
+\item $\Gamma \vdash a : A$, meaning that $a$ is a well-formed term of type $A$ in context $\Gamma$.
+\item $\Gamma \vdash A \doteq B \type$, meaning that $A$ and $B$ are \textbf{judgmentally} or \textbf{definitionally} equal types in context $\Gamma$.
+\item $\Gamma \vdash a \doteq b : A$, meaning that $a$ and $b$ are judgmentally equal terms of type $A$ in context $\Gamma$.
+\end{enumerate}
+These might be collectively abbreviated by $\Gamma \vdash \judgment$.
+\end{defn}
+
+The statement of a mathematical theorem, often begins with an expression like ``Let $n$ and $m$ be positive integers, with $n < m$, and let $\vec{v}_1,\ldots, \vec{v}_m$ be vectors in $\RR^n$. Then \ldots'' This statement of the hypotheses defines a \textbf{context}, a finite list of types and hypothetical terms (called \textbf{variables}\footnote{We're not going to say anything about proper syntax for variables and instead rely on instinct to recognize proper and improper usage.}) satisfying an inductive condition that that each type can be derived in the context of the previous types and terms using the inference rules of type theory.
+
+\begin{defn} A \textbf{context} is a finite list of variable declarations:
+\[ x : A_1, x_2 : A_2(x_1), \ldots, x_n : A_n(x_1,\ldots, x_{n-1})\]
+satisfying the condition that for each $1\leq k \leq n$ we can derive the judgment
+\[ x_1 : A_1, \ldots, x_{k-1} : A_{k-1}(x_1,\ldots, x_{k-2}) \vdash A_k(x_1,\ldots, x_{k-1}) \type\]
+using the inference rules of type theory.
+\end{defn}
+
+We'll introduce the inference rules shortly but the idea is that it needs to be possible to form the type $A_k(x_1,\ldots, x_{k-1})$ given terms $x_1, \ldots, x_{k-1}$ of the previously-formed types. 
+
+\begin{ex} For example, there is a unique context of length zero: the empty context.
+\end{ex}
+
+\begin{ex} $n : \NN, m : \NN, p : n < m, \vec{v} : (\RR^n)^m$ is a context. Here $n : \NN, m : \NN \vdash n < m$ is a dependent type that corresponds to the relation $\{ n < m \mid n, m \in \NN\} \subset \NN \times \NN$ and the variable $p$ is a witness that $n < m$ is true (more about this later). 
+\end{ex}
+
+\subsection*{Type families}
+
+Absolutely everything in dependent type theory is context dependent so we always assume we're working in a background context $\Gamma$. Let's focus on the primary two judgment forms.
+
+\begin{defn} Given a type $A$ in context $\Gamma$ a \textbf{family} of types over $A$ in context $\Gamma$ is a type $B(x)$ is context $\Gamma, x : A$, as represented by the judgment:
+\[ \Gamma, x : A \vdash B(x) \type\]
+We also say that $B(x)$ is a type \textbf{indexed} by $x : A$, in context $\Gamma$.
+\end{defn}
+
+\begin{ex}  $\RR^n$ is a type indexed by $n \in \NN$.
+\end{ex}
+
+\begin{defn} Consider a type family $B$ over $A$ in context $\Gamma$. A \textbf{section} of the family $B$ over $A$ in context $\Gamma$ is a term of type $B(x)$ in context $\Gamma, x : A$, as represented by the judgment:
+\[ \Gamma, x : A \vdash b(x) : B(x) \]
+We say that $b$ is a \textbf{section} of the family $B$ over $A$ in context $\Gamma$ or that $b(x)$ is a term of type $B(x)$ indexed by $x : A$ in context $\Gamma$.
+\end{defn}
+
+\begin{ex} $\vec{0}_n : \RR^n$ is a term dependent on $n \in \NN$.
+\end{ex}
+
+\begin{exc} If you've heard the word ``section'' before you should think about what it is being used here.
+\end{exc}
+
+\subsection*{Inference rules}
+
+There are five types of inference rules that collectively describe the structural rules of dependent type theory. They are
+\begin{enumerate}
+\item Rules postulating that judgmental equality is an equivalence relation:
+\[
+\inferrule{\Gamma \vdash A \type}{\Gamma \vdash A \doteq A \type}\quad
+\inferrule{\Gamma \vdash A \doteq B \type}{\Gamma \vdash B \doteq A \type}\quad
+\inferrule{\Gamma \vdash A \doteq B \type \\ \Gamma \vdash B \doteq C \type}{\Gamma \vdash A \doteq C \type}
+\]
+and similarly for judgmental equality between terms.
+\item Variable conversion rules for judgmental equality between types:
+\[
+\inferrule{\Gamma \vdash A \doteq A' \type \\ \Gamma, x : A, \Delta \vdash  \judgment}{\Gamma, x : A', \Delta \vdash \judgment}
+\]
+
+\item Substitution rules:
+\[
+\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, \Delta \vdash \judgment}{\Gamma, \Delta[a/x] \vdash \judgment[a/x]}
+\]
+If $\Delta$ is the context $y_1 : B_1(x),\ldots, y_n : B_n(x,y_1,\ldots, y_{n-1})$ then $\Delta[a/x]$ is the context $y_1 : B(a), \ldots, y_n : B_n(a,y_1,\ldots, y_{n-1})$. A similar substitution is performed in the judgment $\judgment[a/x]$. Further rules indicate that substitution by judgmentally equal terms gives judgmentally equal results.
+\item Weakening rules:
+\[
+\inferrule{ \Gamma \vdash A \type \\ \Gamma,\Delta \vdash \judgment}{\Gamma, x : A, \Delta \vdash \judgment}
+\]
+Eg if $A$ and $B$ are types in context $\Gamma$, then $B$ is also a type in context $\Gamma, x : A$.
+\item The generic term:
+\[ 
+\inferrule{\Gamma \vdash A \type }{\Gamma, x : A \vdash x :A}
+\]
+This will be used to define the identity function of any type.
+\end{enumerate}
+
+\subsection*{Derivations}
+
+A derivation in type theory is a finite rooted tree where each node is a valid rule of inference. The root is the conclusion.
+
+\begin{ex} The interchange rule is derived as follows
+\[
+\inferrule{ 
+\inferrule{ 
+\inferrule{ \Gamma \vdash B \type}{\Gamma, y :B \vdash y : B}}
+{\Gamma, y : B, x : A\vdash y : B} \qquad
+\inferrule{
+\inferrule{}{\Gamma \vdash B \type} \\ \inferrule{\Gamma, x : A, y : B, \Delta \vdash \judgment}{\Gamma, x : A, z : B, \Delta[z/y] \vdash \judgment[z/y]}}
+{\Gamma, y : B, x : A, z : B, \Delta[z/y] \vdash \judgment[z/y]}
+}{\Gamma, y : B, x : A, \Delta \vdash \judgment}
+\]
+\end{ex}
+
+\section*{September 1: Dependent function types \& the natural numbers}
+
+\subsection*{The rules for dependent function types}
+
+Consider a section $b$ of a family $B$ over $A$ in context $\Gamma$, as encoded by a judgment:
+\[ \Gamma, x : A \vdash b(x) : B(x).\]
+We think of the section $b$ as a function that takes as input $x : A$ and produces a term $b(x) : B(x)$. Since the type of the output is allowed to depend on the term being input, this isn't quite an ordinary function but a \textbf{dependent function}. The type of all dependent functions is the \textbf{dependent function type}
+\[ \prod_{x : A} B(x)\]
+
+What is a thing in mathematics? Structuralism says the ontology of a thing is determined by its behavior. In dependent type theory, we define dependent function types by stating their rules, which have the following forms:
+\begin{enumerate}
+\item \textbf{formation rules} tell us how a type may be formed
+\item \textbf{introduction rules}  tells us how to introduce new terms of the type
+\item \textbf{elimination rules}  tell us how the terms of a type may be used
+\item  \textbf{computation rules} tell us how the introduction and elimination rules interact
+\end{enumerate}
+There are also \textbf{congruence rules} that tell us that all constructions respect judgmental equality. See your book for more details.
+
+\begin{defn}[dependent function types]
+The $\Pi$-\textbf{formation rule} has the form:
+\[
+\inferrule{ \Gamma, x : A \vdash B(x) \type}{\Gamma \vdash \prod_{x :A} B(x) \type}
+\]
+
+The $\Pi$-\textbf{introduction rule} has the form:
+\[
+\inferrule{ \Gamma, x : A \vdash b(x) : B(x)}{ \Gamma \vdash \lambda x. b(x) : \prod_{x :A} B(x)}
+\]
+The $\lambda$-\textbf{abstraction} $\lambda x. b(x)$ can be thought of as notation for $x \mapsto b(x)$. 
+
+The $\Pi$-\textbf{elimination rule} has the form of an evaluation rule:
+\[
+\inferrule{ \Gamma \vdash f : \prod_{x :A} B(x)}{\Gamma, x :A \vdash f(x) : B(x)}
+\]
+
+Finally, there are two computation rules: the $\beta$-\textbf{rule}
+\[
+\inferrule{\Gamma , x :A \vdash b(x) : B(x) }{ \Gamma, x : A \vdash (\lambda y. b(y))(x) \doteq b(x) : B(x)}
+\]
+and the $\eta$-\textbf{rule}, which says that all elements of a $\Pi$-type are dependent functions:
+\[
+\inferrule{ \Gamma \vdash f : \prod_{x : A}B(x)}{\Gamma \vdash \lambda x. f(x) \doteq f : \prod_{x :A} B(x)}\]
+\end{defn}
+
+
+
+
+
+\subsection*{Ordinary function types}
+
+\begin{defn}[function types]
+The formation rule is derived from the formation rule for $\Pi$-types together with weakening:
+\[
+\inferrule{
+\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type}{\Gamma, x : A \vdash B \type}}
+{\Gamma \vdash \prod_{x : A}B \type}
+\]
+We adopt the notation
+\[ A \to B \coloneq \prod_{x : A} B\]
+for the dependent function type in the case where the type family $B$ is constant over $x : A$.
+
+The introduction, evaluation, and computation rules are instances of term conversion: eg
+\[
+\inferrule{ \Gamma \vdash B \type \\ \Gamma, x : A \vdash b(x) : B}
+{ \Gamma \vdash \lambda x. b(x) : A \to B}
+\qquad
+\inferrule{ \Gamma \vdash f : A \to B}{\Gamma, x : A \vdash f(x) : B}
+\]
+plus the two computation rules:
+\[
+\inferrule{ \Gamma \vdash B \type \\ \Gamma, x : A \vdash b(x) : B}{ \Gamma, x : A \vdash (\lambda y. b(y))(x) \doteq b(x) : B}
+\qquad
+\inferrule{ \Gamma \vdash f : A  \to B}{\Gamma \vdash \lambda x. f(x) \doteq f : A \to B}
+\]
+\end{defn}
+
+\begin{defn} Identity functions are defined as follows:
+\[
+\inferrule{
+\inferrule{ \Gamma \vdash A \type}{\Gamma, x : A \vdash x : A}}
+{ \Gamma \vdash \lambda x. x : A \to A}\]
+which is traditionally denoted by $\id_A \coloneq \lambda x. x$.
+\end{defn}
+
+The idea of composition is that given a function $f \colon A \to B$ and $g \colon B \to C$ you should get a function $g \circ f \colon A \to C$. Using infix notation you might denote this function by $\_\circ\_$.
+
+\begin{q} $\_\circ\_$ is itself a function, so it's a term of some type. What type?\footnote{Really the type should involve three universe variables but let's save this for next week.}
+\end{q}
+
+\begin{defn} Composition has the form:
+\[
+\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash C \type}{\Gamma \vdash \_\circ\_ : (B \to C) \to ((A \to B) \to (A \to C))}
+\]
+It is defined by
+\[ \_\circ\_ \coloneq \lambda g. \lambda f . \lambda x. g(f(x))\]
+which can be understood as the term constructed by three applications of the $\Pi$-introduction rule followed by two applications of the $\Pi$-elimination rule.
+\end{defn}
+
+Composition is associative essentially because both $(h\circ g)\circ f$ and $h \circ (g \circ f)$ are defined by $\lambda x. h(g(f(x)))$. We'll think about this more formally when we come back to identity types.
+
+Similarly, you can compute that for all $f : A \to B$, $\id_B \circ f \doteq f : A \to B$ and $f \circ \id_A \doteq f : A \to B$.
+
+\subsection*{The type of natural numbers}
+
+The type $\bN$ of natural numbers is the archetypical example of an \textbf{inductive type} about more which soon. It is given by rules which say that it has a term $0_\bN : \bN$, it has a successor function $\suc : \bN \to\bN$ and it satisfies the induction principle.
+
+The $\bN$-formation rule is
+\[
+\inferrule{~}{\vdash \bN \type}
+\]
+In other words, $\bN$ is a type in the empty context.
+
+There are two $\bN$-introduction rules:
+\[
+\inferrule{~}{\vdash 0_\bN : \bN} \qquad
+\inferrule{~}{\vdash \suc : \bN \to \bN}
+\]
+
+\begin{dig}[traditional induction]
+In traditional first-order logic, the principle of $\bN$-induction is stated in terms of a \textbf{predicate} $P$ over $\bN$. One way to think about $P$ is as a function $P \colon \bN \to \{ \top, \bot\}$. That is, for each $n \in \bN$, $P(n)$ is either true or false. We could also think of $P$ as an indexed family of sets $(P(n))_{n \in \bN}$ where for each $n$ either $P(n) = \emptyset$ (corresponding to $P(n)$ being false) or $P(n) = *$ (corresponding to $P(n)$ being true).
+
+The induction principle then says \[ \forall P : \{0,1\}^\bN, (P(0) \wedge (\forall n, P(n) \to P(n+1)) \to \forall n, P(n)).\]
+\end{dig}
+
+In dependent type theory it is most natural to let $P$ be an arbitrary type family over $\bN$. This is a stronger assumption, as we'll see. 
+
+\begin{q}
+What then corresponds to a proof that $\forall n, P(n)$?
+\end{q}
+
+The induction principle is encoded by the following rule:
+\[
+\inferrule{ \Gamma, n : \bN \vdash P(n) \type \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
+{ \Gamma \vdash \term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)}
+\]
+
+\begin{rmk} There are other forms this rule might take that are interderivable with this one.
+\end{rmk}
+
+The computation rules say that the function $\term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)$ behaves like it should on $0_\bN$ and successors:
+\[
+\inferrule{ \Gamma , n : \bN \vdash P(n) \type \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
+{ \Gamma \vdash \term{ind}_\bN(p_0,p_S)(0_\bN) \doteq p_0 : P(0_\bN)}
+\]
+and under the same premises
+\[ \Gamma, n : \bN \vdash \texttt{ind}_\bN(p_0, p_S)(\suc(n)) \doteq p_S(n, \texttt{ind}_\bN(p_0,p_S,n)) : P(\suc(n)).\]
+These computation rules don't matter so much if the type family $n : \bN \vdash P(n)$ is really a predicate --- $P(n)$ is either true or false and that's the end of the story --- but they do matter if $P(n)$ is more like an indexed family of sets. In the latter case, $\term{ind}_\bN(p_0,p_S)$ is the recursive function defined from $p_0$ and $p_S$ and these are the computation rules for that recursion.
+
+\begin{rmk} Recall Peano's axioms for the natural numbers: 
+\begin{enumerate}
+\item $0_\bN \in \bN$
+\item $\suc : \bN \to \bN$
+\item $\forall n, \suc(n) \neq 0_\bN$
+\item $\forall n,m, \suc(n)= \suc(m) \to n=m$
+\item induction
+\end{enumerate}
+We'll be able to \emph{prove} this missing two axioms from the induction principle we've assumed once we have identity types and universes. We'll come back to this in a few weeks.
+\end{rmk}
+
+
+
+\section*{September 8: The formal proof assistant \texttt{agda}}
+
+\ifmine
+
+\subsection*{Addition on the natural numbers}
+
+\begin{rmk} When addition is defined by recursion on the second variable, by definition you get equalities \[
+m + 0 \doteq m \quad \text{and} \quad m + \texttt{succ}\ n = \texttt{succ}\ m + n.
+\]
+But you can't derive the symmetric judgmental equalities.
+\end{rmk}
+
+We \emph{will} be able to prove such equalities using the identity types, to be introduced shortly.
+
+\fi
+
+\section*{September 13: Inductive types}
+
+\ifmine
+
+\subsection*{The idea of inductive types}
+
+\subsection*{The unit type}
+
+\subsection*{The empty type}
+
+\subsection*{Coproducts}
+
+\subsection*{The type of integers}
+
+\subsection*{Dependent pair types}
+
+\fi
+
+\section*{September 15: Identity types}
+
+
+\section*{September 20: Universes}
+\section*{September 22: Modular arithmetic}
+\section*{September 27: Elementary number theory}
+
+\part{The Univalent Foundations of Mathematics}
+
+\section*{September 29: Equivalences}
+\section*{October 4: Contractibility}
+\section*{October 6: The fundamental theorem of identity types}
+\section*{October 11: Propositions, sets, and general truncation levels}
+\section*{October 13: Function extensionality}
+\section*{October 18: Propositional truncation}
+\section*{October 20: The image of a map}
+\section*{October 25: Finite types}
+\section*{October 27: The univalence axiom}
+\section*{November 1: Set quotients}
+\section*{November 3: Groups}
+\section*{November 8: Algebra}
+\section*{November 10: The real numbers}
+
+
+\part{Synthetic Homotopy Theory}
+
+\section*{November 15: The circle}
+\section*{November 17: The universal cover of the circle}
+\section*{November 29: Homotopy groups of types}
+\section*{December 1: Classifying types of groups}
+\section*{December 6: TBD}
+
+
+
+
+\end{document}
