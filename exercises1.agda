@@ -60,7 +60,7 @@ add-ℕ m (succ-ℕ n) = succ-ℕ (add-ℕ m n)
 
 -- Exercise 3.2.a: define a binary function max-ℕ
 
--- Exercise 3.3.a: define the sequence triangular-ℕ of triangular numbers
+-- Exercise 3.3.a: define the sequence triangular-number-ℕ of triangular numbers
 
 -- Exercise 3.3.b: define the function factorial-ℕ = λn.n!
 
@@ -70,4 +70,9 @@ add-ℕ m (succ-ℕ n) = succ-ℕ (add-ℕ m n)
 -- Exercise 3.5: define the Fibonacci sequence Fibonacci-ℕ
 -- A lot of new ideas are needed to do this using the induction principle (see Egbert's agda formalization) so I would recommend just using pattern matching.
 
--- Exercise 36: define the function div-two-ℕ that takes a natural number n to the floor of n/2, using pattern matching
+-- Exercise 3.6: define the function div-two-ℕ that takes a natural number n to the floor of n/2, using pattern matching
+
+-- Challenge Exercise: For any type A, for any function A → A, and for any natural number n, there is a function A → A defined as the n-fold composition of f.
+-- Define a function _fold-comp_ that encodes this construction.
+
+-- Challenge Exercise: Define composition of dependent functions.
