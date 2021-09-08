@@ -20,7 +20,7 @@ public means any file that imports this one gets Agda.Primitive too.
 
 UU : (i : Level) → Set (lsuc i)
 UU i = Set i
--- type "slash to" to get "→"
+-- type "\to" to get "→"
 {-
 This code sets up the notation for the universes "UU i" which are types of types.
 Formally, "UU" is a function which takes as input a level "i : Level" and produces "UU i", the type of types of level at most i. 
@@ -64,7 +64,9 @@ id is a term of a dependent function type "{i : Level} {A : UU i} → A → A"
 -- Similarly composition is a function that involves three types which can belong to arbitrary universes:
 
 -- DEFINE _∘_ HERE
--- type "slash circ" to get "∘"
+-- type "\circ" to get "∘"
+-- The underscores indicate that the function ∘ is defined using infix notation: writing "g ∘ f" instead of "∘ g f". 
+-- The leftmost underscore is where the first variable goes, while the next underscore is where the next variable goes.
 
 -- We can't solve 2.3.b in agda yet because agda can't prove definitional equalities; you can however ask adga to normalize terms (more about this soon).
 
@@ -75,7 +77,7 @@ id is a term of a dependent function type "{i : Level} {A : UU i} → A → A"
 -- use C-c C-, to check the type needed in each hole
 -- use C-c C-space when you think you've written a term with the correct type
 
--- type "slash b N" to get "ℕ"
+-- type "\bN" to get "ℕ"
 data ℕ : UU lzero where
     zero-ℕ : ℕ
     succ-ℕ : ℕ → ℕ

@@ -64,7 +64,8 @@ const x a = x
 -- Similarly composition is a function that involves three types which can belong to arbitrary universes:
 _∘_ : {i j k : Level} {A : UU i} {B : UU j} {C : UU k} → (B → C) → (A → B) → (A → C)
 (g ∘ f) a = g (f a)
-
+-- The underscores indicate that the function ∘ is defined using infix notation: writing "g ∘ f" instead of "∘ g f". 
+-- The leftmost underscore is where the first variable, in this case a term of type B → C, goes, while the next underscore is where the next variable goes.
 
 -- We can't solve 2.3.b in agda yet because agda can't prove definitional equalities; you can however ask adga to normalize terms (more about this soon).
 
@@ -75,7 +76,7 @@ swap f = λ y x → f x y
 -- use C-c C-, to check the type needed in each hole
 -- use C-c C-space when you think you've written a term with the correct type
 
--- type "slash b N" to get "ℕ"
+-- type "\bN" to get "ℕ"
 data ℕ : UU lzero where
     zero-ℕ : ℕ
     succ-ℕ : ℕ → ℕ
