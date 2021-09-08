@@ -1,0 +1,34 @@
+basic AGDA commands (in vscode; check your own editor)
+
+["C-x C-y" means "press and hold the ctrl key and while holding it down press the x key and then the y key (and then let go)".]
+
+C-c C-l	  	LOAD the file for agda to check everything
+
+    eg use to check everything complies, or
+    	to open up holes at the locations where you've written a "?"
+
+C-c C-,	   	display the goal and context in a hole
+
+    eg, navigate the cursor into a hole then see what is needed to fill it
+    
+C-c C-space	check that a term in a hole has the correct type
+
+    eg after typing a term into a hole, see if agda accepts it
+    	this doesn't guarantee that you've written the correct answer but it
+	does guarantee that it has the required type
+
+C-c C-c	     	split a hole into CASES
+
+    eg navigate into a hole and type one or more variable names either preceded or followed by C-c or C-c
+
+C-c C-r	      	REFINE a goal into one or more subgoals
+
+    eg in a hole, type a name of a function which outputs a term of the desired type;
+       after C-c C-r, agda will prompt you to supply the input term(s).
+
+C-c C-n	     	 compute the NORMAL form of a term
+
+    eg after loading a file, this gives a window for you to type the name of a term; do so, then press return, to see the normal form of that term.
+    pro tip: turn off the safe flag and postulate some variables for more complicated terms
+
+
