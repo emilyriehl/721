@@ -87,25 +87,22 @@ The elimination rule (the induction principle) is automatically generated; we'll
 But first let's explore general definitions of (dependent) functions on ℕ by pattern matching.
 -}
 
--- Define the function λ n → n + 2 : ℕ → ℕ by giving the formula
+-- You can use previously-defined functions to define new functions.
+-- Example: define the function λ n → n + 2 : ℕ → ℕ by giving the formula
+
 -- DEFINE add-two-ℕ
 
+-- type "add-to-ℕ = ?" and load with C-c C-l
 -- type "add-two-ℕ n = ?" then load with C-c C-l. This opens up a "hole"
--- move into the hole and type C-c C-, to see what sort of thing is needed to fill it.
--- type whatever term. Then C-c C-space to see if agda accepts it.
-
--- You can use the function add-two-ℕ to define other functions:
-
--- DEFINE add-four-ℕ here
--- type "add-four-ℕ n = ?" and load to open a hole, which asks for a term of type ℕ.
--- In the hole, type "add-two-ℕ" followed by C-c C-r to refine the goal. 
--- You're telling agda that you can get a term of type ℕ by applying the function add-two-ℕ to something else.
--- Agda then opens up a new goal asking for the input to the function add-two-ℕ.
--- In this case, the input is add-to-ℕ of something else so you can repeat, type "add-to-ℕ" then C-c C-r to refine again.
--- Finally supply the term n and C-c C-space to feed it to agda.
+-- move into the hole and type C-c C-, to see what sort of thing is needed to fill it: in this case, a term of type ℕ → ℕ
+-- One way to define add-two-ℕ is as a composite of two successor functions, where the relevant composition function has the type
+-- _∘_ : (ℕ → ℕ) → (ℕ → ℕ) → (ℕ → ℕ). You can start by typing "_∘_" then C-c C-r to refine the goal.
+-- You're telling agda that you can get a term of type ℕ → ℕ by applying the function _∘_ to something else, in this case two terms of type ℕ → ℕ.
+-- Agda then opens up new goals asking for the inputs to the function _∘_.
+-- Supply these terms and type C-c C-space to feed them to agda.
 
 -- If you want to check that this is correct, load the file with C-c C-l.
--- Then type C-c C-n to get agda to prompt you to supply a term, such as "add-four-ℕ zero-ℕ" to normalize.
+-- Then type C-c C-n to get agda to prompt you to supply a term, such as "add-two-ℕ (succ-ℕ zero-ℕ)" to normalize.
 
 -- Because ℕ was defined as a data type, we can define functions out of ℕ by "pattern matching":
 -- Example: definition of predecessor

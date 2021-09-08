@@ -20,7 +20,7 @@ public means any file that imports this one gets Agda.Primitive too.
 
 UU : (i : Level) → Set (lsuc i)
 UU i = Set i
--- type "slash to" to get "→"
+-- type "\to" to get "→"
 {-
 This code sets up the notation for the universes "UU i" which are types of types.
 Formally, "UU" is a function which takes as input a level "i : Level" and produces "UU i", the type of types of level at most i. 
@@ -60,11 +60,11 @@ const x a = x
 -- Navigate into the hole and type C-c C-, to check the type needed and the context.
 -- Use C-c C-space when you think you've written a term with the correct type.
 
--- Definition 2.2.5: define _∘_ 
+-- Definition 2.2.5: define _∘_ where you can type "\circ" to get "∘"
 -- Similarly composition is a function that involves three types which can belong to arbitrary universes:
 _∘_ : {i j k : Level} {A : UU i} {B : UU j} {C : UU k} → (B → C) → (A → B) → (A → C)
 (g ∘ f) a = g (f a)
--- type "slash circ" to get "∘"
+
 
 -- We can't solve 2.3.b in agda yet because agda can't prove definitional equalities; you can however ask adga to normalize terms (more about this soon).
 
@@ -79,7 +79,6 @@ swap f = λ y x → f x y
 data ℕ : UU lzero where
     zero-ℕ : ℕ
     succ-ℕ : ℕ → ℕ
-
 {-
 The data type is a magic thing that is used to define inductive types in agda. 
 Roughly how it works is you give the formation instruction and the introduction rules. 
@@ -87,25 +86,21 @@ The elimination rule (the induction principle) is automatically generated; we'll
 But first let's explore general definitions of (dependent) functions on ℕ by pattern matching.
 -}
 
+-- You can use previously-defined functions to define new functions.
 -- Example: define the function λ n → n + 2 : ℕ → ℕ by giving the formula
 add-two-ℕ : ℕ → ℕ
-add-two-ℕ n = succ-ℕ (succ-ℕ n)
+add-two-ℕ = succ-ℕ ∘ succ-ℕ
+-- type "add-to-ℕ = ?" and load with C-c C-l
 -- type "add-two-ℕ n = ?" then load with C-c C-l. This opens up a "hole"
--- move into the hole and type C-c C-, to see what sort of thing is needed to fill it.
--- type whatever term. Then C-c C-space to see if agda accepts it.
-
--- You can use the function add-two-ℕ to define other functions:
-add-four-ℕ : ℕ → ℕ
-add-four-ℕ n = add-two-ℕ (add-two-ℕ n)
--- type "add-four-ℕ n = ?" and load to open a hole, which asks for a term of type ℕ.
--- In the hole, type "add-two-ℕ" followed by C-c C-r to refine the goal. 
--- You're telling agda that you can get a term of type ℕ by applying the function add-two-ℕ to something else.
--- Agda then opens up a new goal asking for the input to the function add-two-ℕ.
--- In this case, the input is add-to-ℕ of something else so you can repeat, type "add-to-ℕ" then C-c C-r to refine again.
--- Finally supply the term n and C-c C-space to feed it to agda.
+-- move into the hole and type C-c C-, to see what sort of thing is needed to fill it: in this case, a term of type ℕ → ℕ
+-- One way to define add-two-ℕ is as a composite of two successor functions, where the relevant composition function has the type
+-- _∘_ : (ℕ → ℕ) → (ℕ → ℕ) → (ℕ → ℕ). You can start by typing "_∘_" then C-c C-r to refine the goal.
+-- You're telling agda that you can get a term of type ℕ → ℕ by applying the function _∘_ to something else, in this case two terms of type ℕ → ℕ.
+-- Agda then opens up new goals asking for the inputs to the function _∘_.
+-- Supply these terms and type C-c C-space to feed them to agda.
 
 -- If you want to check that this is correct, load the file with C-c C-l.
--- Then type C-c C-n to get agda to prompt you to supply a term, such as "add-four-ℕ zero-ℕ" to normalize.
+-- Then type C-c C-n to get agda to prompt you to supply a term, such as "add-two-ℕ (succ-ℕ zero-ℕ)" to normalize.
 
 -- Because ℕ was defined as a data type, we can define functions out of ℕ by "pattern matching":
 -- Example: definition of predecessor
