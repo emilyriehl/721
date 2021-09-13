@@ -12,8 +12,8 @@ module introduction-live where
 
 open import Agda.Primitive public
 {-
-open means we can access all definitions in Agda.Primitive, in this case of a type "Level" of universe levels and terms like lsuc : Level → Level
-public means any file that imports this one gets Agda.Primitive too.
+"open" means we can access all definitions in Agda.Primitive, in this case of a type "Level" of universe levels and terms like lsuc : Level → Level
+"public" means any file that imports this one gets Agda.Primitive too.
 -}
 
 --type C-c C-l to load the file. This gives syntax highlighting and tells you if anything is wrong.
@@ -30,7 +30,7 @@ The takeway: to declare that "A is a type of arbitrary universe level" write "A 
 -}
 
 {- 
-I've stollen this from Egbert Rijke's repostory where he's been formalizing the entire HoTT book (https://github.com/HoTT-Intro/Agda).
+I've stolen this from Egbert Rijke's repostory where he's been formalizing the entire HoTT book (https://github.com/HoTT-Intro/Agda).
 Solutions to basically all the agda exercises can be found there and to make things simple, I'm trying to make sure our definitions use the same syntax.
 -}
 
@@ -63,7 +63,7 @@ id is a term of a dependent function type "{i : Level} {A : UU i} → A → A"
 -- Definition 2.2.5: define _∘_ 
 -- Similarly composition is a function that involves three types which can belong to arbitrary universes:
 
--- DEFINE _∘_ HERE
+-- DEFINE _∘_ 
 -- type "\circ" to get "∘"
 -- The underscores indicate that the function ∘ is defined using infix notation: writing "g ∘ f" instead of "∘ g f". 
 -- The leftmost underscore is where the first variable goes, while the next underscore is where the next variable goes.
@@ -73,9 +73,9 @@ id is a term of a dependent function type "{i : Level} {A : UU i} → A → A"
 -- Exercise 2.4.a: given x : A, y : B ⊢ C type define a function swap that exchanges the order of the arguments in a dependent functions
 
 -- DEFINE swap
--- use C-c C-r to refine the goal
--- use C-c C-, to check the type needed in each hole
--- use C-c C-space when you think you've written a term with the correct type
+-- Use C-c C-r to refine the goal.
+-- Use C-c C-, to check the type needed in each hole.
+-- Use C-c C-space when you think you've written a term with the correct type.
 
 -- type "\bN" to get "ℕ"
 data ℕ : UU lzero where
@@ -84,7 +84,7 @@ data ℕ : UU lzero where
 
 {-
 The data type is a magic thing that is used to define inductive types in agda. 
-Roughly how it works is you give the formation instruction and the introduction rules. 
+Roughly how it works is you give the formation rule and the introduction rules. 
 The elimination rule (the induction principle) is automatically generated; we'll be able to define the function ind-ℕ below.
 But first let's explore general definitions of (dependent) functions on ℕ by pattern matching.
 -}
@@ -122,7 +122,7 @@ agda automatically generates the two cases you need to define a function by recu
 adga knows if you gave a valid inductive definition
 -}
 
--- Definition 3.2.1: define add-ℕ, the binary sum of two natural numbers
+-- Definition 3.2.1: define add-ℕ, the sum of two natural numbers
 
 -- DEFINE add-ℕ
 
@@ -140,9 +140,9 @@ adga knows if you gave a valid inductive definition
 
 -- DEFINE ind-ℕ
 
--- start with ind­-ℕ p0 pS n = ? then C-c C-l then C-c C-c to case split on n
+-- Start with ind­-ℕ p0 pS n = ? then C-c C-l then C-c C-c to case split on n.
 
--- for instance, we can use this to define a function ℕ → X by recursion given x0 : X and f : X → X
+-- For instance, we can use this to define a function ℕ → X by recursion given x0 : X and f : X → X
 
 -- DEFINE rec-ℕ 
 

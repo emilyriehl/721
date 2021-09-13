@@ -12,8 +12,8 @@ module introduction where
 
 open import Agda.Primitive public
 {-
-open means we can access all definitions in Agda.Primitive, in this case of a type "Level" of universe levels and terms like lsuc : Level → Level
-public means any file that imports this one gets Agda.Primitive too.
+"open" means we can access all definitions in Agda.Primitive, in this case of a type "Level" of universe levels and terms like lsuc : Level → Level
+"public" means any file that imports this one gets Agda.Primitive too.
 -}
 
 --type C-c C-l to load the file. This gives syntax highlighting and tells you if anything is wrong.
@@ -30,7 +30,7 @@ The takeway: to declare that "A is a type of arbitrary universe level" write "A 
 -}
 
 {- 
-I've stollen this from Egbert Rijke's repostory where he's been formalizing the entire HoTT book (https://github.com/HoTT-Intro/Agda).
+I've stolen this from Egbert Rijke's repostory where he's been formalizing the entire HoTT book (https://github.com/HoTT-Intro/Agda).
 Solutions to basically all the agda exercises can be found there and to make things simple, I'm trying to make sure our definitions use the same syntax.
 -}
 
@@ -72,9 +72,9 @@ _∘_ : {i j k : Level} {A : UU i} {B : UU j} {C : UU k} → (B → C) → (A �
 -- Exercise 2.4.a
 swap : {i j k : Level} {A : UU i} {B : UU j}{ C : A → B → UU k } → ((x : A) → (y : B) → (C x y)) → ((y : B) → (x : A) → (C x y))
 swap f = λ y x → f x y
--- use C-c C-r to refine the goal
--- use C-c C-, to check the type needed in each hole
--- use C-c C-space when you think you've written a term with the correct type
+-- Use C-c C-r to refine the goal.
+-- Use C-c C-, to check the type needed in each hole.
+-- Use C-c C-space when you think you've written a term with the correct type.
 
 -- type "\bN" to get "ℕ"
 data ℕ : UU lzero where
@@ -82,7 +82,7 @@ data ℕ : UU lzero where
     succ-ℕ : ℕ → ℕ
 {-
 The data type is a magic thing that is used to define inductive types in agda. 
-Roughly how it works is you give the formation instruction and the introduction rules. 
+Roughly how it works is you give the formation rule and the introduction rules. 
 The elimination rule (the induction principle) is automatically generated; we'll be able to define the function ind-ℕ below.
 But first let's explore general definitions of (dependent) functions on ℕ by pattern matching.
 -}
@@ -142,9 +142,9 @@ add-ℕ-alt (succ-ℕ m) (succ-ℕ n) = succ-ℕ (succ-ℕ (add-ℕ-alt m n))
 ind-ℕ : {i : Level} {P : ℕ → UU i} → P zero-ℕ → ((n : ℕ) → P n → P(succ-ℕ n)) → ((n : ℕ) → P n)
 ind-ℕ p0 pS zero-ℕ = p0
 ind-ℕ p0 pS (succ-ℕ n) = pS n (ind-ℕ p0 pS n)
--- start with ind­-ℕ p0 pS n = ? then C-c C-l then C-c C-c to case split on n
+-- Start with ind­-ℕ p0 pS n = ? then C-c C-l then C-c C-c to case split on n.
 
--- for instance, we can use this to define a function by recursion.
+-- For instance, we can use this to define a function by recursion.
 rec-ℕ : {i : Level} {X : UU i} → X → (X → X) → (ℕ → X)
 rec-ℕ x0 f = ind-ℕ x0 (λ n x → f x) 
 
