@@ -232,6 +232,14 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\bN}{{\mathbb{N}}}
 \newcommand{\suc}{\term{succ}_{\bN}}
 
+\newcommand{\ind}{\term{ind}}
+\newcommand{\inl}{\term{inl}}
+\newcommand{\inr}{\term{inr}}
+\newcommand{\pair}{\term{pair}}
+\newcommand{\pr}{\term{pr}}
+
+\newcommand{\bZ}{{\mathbb{Z}}}
+
 \begin{document}
 
 \title{Math 721: Homotopy Type Theory}
@@ -250,7 +258,9 @@ BoldItalicFont = *-BoldItalic
 \tableofcontents
 
 
+\ifmine
 \subsection*{Index cards:} name, what I should call you, pronouns, year, relevant previous coursework, why you are here, something fun
+
 
 \subsection*{Personal history:}
 Prehistory of homotopy type theory dates to a 1998 paper of Martin Hofmann and Thomas Streicher called ``The groupoid interpretation of type theory,'' that I'll tell you about later. Key early developments were in the mid aughts with the major players coming together for the first time in 2010 at Carnegie Mellon. This expanded to a larger group at Oberwolfach in 2011 followed by a special year at IAS in 2012-2013, during which the HoTT book (not our book) was written.
@@ -265,6 +275,7 @@ There are two ``active learning'' activities. The first is writing your own form
 The second active learning activity is a final project. I'm very flexible about the parameters. Essentially you should pick something that sounds fun to you.
 
 Questions?
+\fi
 
 \part{Martin-L\"of's Dependent Type Theory}
 
@@ -536,41 +547,189 @@ These computation rules don't matter so much if the type family $n : \bN \vdash 
 We'll be able to \emph{prove} this missing two axioms from the induction principle we've assumed once we have identity types and universes. We'll come back to this in a few weeks.
 \end{rmk}
 
-
-
-\section*{September 8: The formal proof assistant \texttt{agda}}
-
-\ifmine
-
 \subsection*{Addition on the natural numbers}
 
-\begin{rmk} When addition is defined by recursion on the second variable, by definition you get equalities \[
-m + 0 \doteq m \quad \text{and} \quad m + \texttt{succ}\ n = \texttt{succ}\ m + n.
+\begin{rmk} When addition is defined by recursion on the second variable, from the computation rules associated to function types and the natural numbers type you can derive judgmental equalities \[
+m + 0 \doteq m \quad \text{and} \quad m + \suc(n) = \suc(m + n).
 \]
 But you can't derive the symmetric judgmental equalities.
 \end{rmk}
 
 We \emph{will} be able to prove such equalities using the identity types, to be introduced shortly.
 
-\fi
+\subsection*{Pattern matching}
+
+To define a dependent function $f : \prod_{n : \bN} P(n)$ by induction on $n$ it suffices, by the elimination rule for the natural numbers type, to provide two terms:
+\[ p_0 : P(0_\bN) \qquad p_S : \prod_{n : \bN} P(n) \to P(\suc(n)).\]
+Thus the definition of $f$ may be presented by writing
+\[ f(0_\bN) \coloneq p_0 \qquad f(\suc(n)) \coloneq p_S(n,f(n)).\]
+This defines the function $f$ by \textbf{pattern matching} on the variable $n$. When a function is defined in this form, the judgmental equalities accompanying the definition are immediately displayed.
+
+\section*{September 8: The formal proof assistant \texttt{agda}}
+
+See \url{https://github.com/emilyriehl/721/blob/master/introduction.agda}
+
 
 \section*{September 13: Inductive types}
 
-\ifmine
+The rules for the natural numbers type $\bN$ tell us:
+\begin{enumerate}
+\item how to form terms in $\bN$, and
+\item how to define dependent functions in $\prod_{n : \bN} P(n)$ for any type family $n : \bN \vdash P(n) \type$,
+\end{enumerate}
+while providing two computation rules for those dependent functions.
+
+Many types can be specified by stating how to form their terms and how to define dependent functions out of them. Such types are called \textbf{inductive types}. 
 
 \subsection*{The idea of inductive types}
 
+Recall a type is specified by its formation rules, its introduction rules, its elimination rules, and its computation rules. For inductive types, the introduction rules specify the \textbf{constructors} of the inductive type, while the elimination rule provides the \textbf{induction principle}. The computation rules provide definitional equalities for the induction principle.
+
+In more detail:
+\begin{enumerate}
+\item The constructors tell us what structure the identity type is given with.
+\item The induction principle defines sections of any type family over the inductive type by specifying the behavior at the constructors.
+\item The computation rules assert that the inductively defined section agrees on the constructors with the data used to define it. So there is one computation rule for each constructor.
+\end{enumerate}
+
 \subsection*{The unit type}
+
+The formal definition of the \textbf{unit type} is as follows:
+\[
+\inferrule{}{\vdash \1 \type} \qquad
+\inferrule{}{\vdash \star : \1} \qquad 
+\inferrule{ x : \1 \vdash P(x) \type \\ p : P(\star)}{ x: \1 \vdash \ind_\1(p,x) : P(x)} \qquad
+\inferrule{ x : \1 \vdash P(x) \type \\ p : P(\star)}{x : \1 \vdash \ind_1(p,\star) \doteq p : P(\star)}
+\]
+As an inductive type, the definition is packaged as follows:
+
+\begin{defn} The \textbf{unit type} is a type $\1$ equipped with a term $\star : \1$ satisfying the inductive principle that for any family $x : \1 \vdash P(x)$ there is a function
+\[ \ind_\1 : P(\star) \to \prod_{x : 1} P(x)\]
+with the computation rule $\ind_1(p,\star) \doteq p$.
+\end{defn}
+
+In agda, this definition has the form:
+\begin{quote}
+\texttt{data unit : UU lzero where\\ \indent
+  star : unit}
+  \end{quote}
+
+
+\begin{q} What does the induction rule look like for a constant type family $A$ that does not depend on $\1$?
+\end{q}
 
 \subsection*{The empty type}
 
+\begin{defn}
+The empty type is a type $\emptyset$ satisfying the induction principle that for any family of types $x : \emptyset \vdash P(x)$ there is a term
+\[ \ind_\emptyset : \prod_{x : \emptyset} P(x).\]
+\end{defn}
+
+That is the empty type is the inductive type with no constructors. Thus there are no computation rules. In agda, this definition has the form:
+\begin{quote}
+\texttt{data empty : UU lzero where}
+  \end{quote}
+
+\begin{rmk} As a special case of the elimination rule for the empty type we have
+\[
+\inferrule{ \vdash A \type}{ \term{ex-falso} \coloneq \ind_\emptyset : \emptyset \to A}
+\]
+By the elimination rule for function types it follows that if we had a term $x : \emptyset$ then we could get a term in any type. The name comes from latin \emph{ex falso quodlibet}: ``from falsehood, anything.''
+\end{rmk}
+
+We've already seen a few glimpses of logic in type theory, something we'll discuss more formally soon. The basic idea is that we can interpret the formation of a type as akin to the process of formulating a mathematical statement that could be a sentence (if its a type in the empty context) or a predicate (if it's a dependent type). The act of constructing a term in that type is then analogous to proving the proposition so-encoded. 
+These ideas motivate the logically-inflected terms in what follows. 
+
+For instance, we can use the empty type to define a negation operation on types:
+\begin{defn}
+For any type $A$, we define its \textbf{negation} by $\neg A \coloneq A \to \emptyset$ and say the type $A$ \textbf{is empty} if there is a term in this type.
+\end{defn}
+
+\begin{rmk} To construct a term of type $\neg A$, use the introduction rule for function types and assume given a term $a : A$. The task then is to derive a term of $\emptyset$. In other words, we prove $\neg A$ by assuming $A$ and deriving a contradiction. This proof technique is called \textbf{proof of negation}.
+
+This should be contrasted with \textbf{proof by contradiction}, which aims to prove a proposition $P$ by assuming $\neg P$ and deriving a contradiction. This uses the logical step ``$\neg \neg P$ implies $P$.'' In type theory, however, $\neg \neg A$ is the type of functions
+\[ \neg \neg A \coloneq (A \to \emptyset) \to \emptyset)\] and it is not possible in general to use a term in this type to construct a term of type $A$. 
+\end{rmk}
+
+The law of contraposition does work, at least in one direction.
+
+\begin{prop} For any types $P$ and $Q$ there is a function
+\[ (P \to Q) \to (\neg Q \to \neg P).\]
+\end{prop}
+\begin{proof}
+By $\lambda$-abstraction assume given $f : P \to Q$ and $\tilde{q} : Q \to \emptyset$. We seek a term in $P \to \emptyset$, which we obtain simply by composing: $\tilde{q} \circ f : P \to \emptyset$. Thus
+\[\lambda f. \lambda \tilde{q} .\lambda p. \tilde{q}(f(p)) : (P \to Q) \to (\neg Q \to \neg P). \qedhere\]
+\end{proof}
+
 \subsection*{Coproducts}
+
+Inductive types can be defined outside the empty context. For instance, the formation and introduction rules for the coproduct type have the form:
+\[
+\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type}{\Gamma \vdash A + B \type} 
+\]
+\[
+\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash a : A}{ \Gamma \vdash \inl a : A + B} \qquad
+\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash b : B}{ \Gamma \vdash \inr b : A + B}
+\]
+
+\begin{defn} Given types $A$ and $B$ the \textbf{coproduct type} is the type equipped with 
+\[ \inl : A \to A + B \qquad \inr : B \to A+ B\]
+satisfying the induction principle that says that for any family of types $x : A + B \vdash P(x) \type$ there is a term
+\[ \ind_+ : \left( \prod_{x : A} P(\inl (x))\right) \to \left( \prod_{y : B} P(\inr(y))\right) \to \prod_{z : A + B}P(z)\]
+satisfying the computation rules
+\[ \ind_+(f,g, \inl(x)) \doteq f(x) \qquad \ind_+(f,g, \inr(y)) \doteq g(y).\]
+\end{defn}
+Not as a special case we have
+\[ \ind_+ : (A \to X) \to (B \to X) \to (A + B \to X)\]
+which is similar to the elimination rule for disjunction in first order logic: if you've proven that $A$ implies $X$ and that $B$ implies $X$ then you can conclude that $A$ or $B$ implies $X$.
 
 \subsection*{The type of integers}
 
+There are many ways to define the integers in Martin-L\"{o}f type theory, one of which is as follows:
+
+\begin{defn} Define the \textbf{integers} to be the type $\bZ \coloneq \bN + (\1 + \bN)$ which comes equipped with inclusions:
+\[ \term{in-pos} \coloneq \inr\circ\inr : \bN \to \bZ \qquad \term{in-neg} \coloneq \inl : \bN \to \bZ\]
+and constants
+\[ -1_\bZ \coloneq \term{in-neg}(0_\bN) \qquad 0_\bZ \coloneq \inr (\inl(\star)) \qquad 1_{\bZ} \coloneq \term{in-pos}(0_\bN).\]
+\end{defn}
+
+Since $\bZ$ is built from inductive types it is then an inductive type given with its own induction principle.
+
 \subsection*{Dependent pair types}
 
-\fi
+Of all the inductive types we've introduced, the final one is perhaps the most important.
+
+Recall a \textbf{dependent function} $\lambda x . f(x) : \prod_{x : A}B(x)$ is like an ordinary function except the output type is allowed to vary with the input term. Similarly, a \textbf{dependent pair} $(a,b) : \sum_{x : A}B(x)$ is like an ordinary (ordered) pair except the type of the second term $b : B(a)$ is allowed to vary with the first term $a :A$.
+
+\begin{defn} Consider a type family $x : A \vdash B(x) \type$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\sum_{x :A}B(x)$ is the inductive type equipped with the function
+\[ \pair : \prod_{x : A} \left(B(x) \to \prod_{y : A}B(y)\right).\]
+The induction principle asserts that for any family of types $p : \sum_{x :A} B(x) \vdash P(p) \type$ there is a function
+\[ \ind_\Sigma : \left( \prod_{x :A} \prod_{y : B}P(\pair(x,y) \right) \to \left( \prod_{z : \sum_{x :A}B(x)}P(z) \right)
+\]
+satisfying the computation rule $\ind_\Sigma (g,\pair(x,y)) \doteq g(x,y)$.
+\end{defn}
+
+It is common to write ``$(x,y)$'' as shorthand for ``$\pair(x,y)$.''
+
+\begin{defn} Given a type family $x :A \vdash B(x) \type$ by the induction principle for $\Sigma$-types, we have a function
+\[ \pr_1 : \sum_{x :A}B(x) \to A\]
+defined by $\pr_1(x,y) \coloneq x$ and a dependent function
+\[ \pr_2 :  \prod_{ p : \sum_{x :A}B(x)} B(\pr_1(p))\]
+defined by $\pr_2(x,y) \coloneq y$.
+\end{defn}
+
+When $B$ is a constant type family over $A$, the type $\sum_{x : A}B$ is the type of ordinary pairs $(x,y)$ where $x :A $ and $y: B$. Thus \textbf{product types} arise as special cases of $\Sigma$-types.
+
+\begin{defn} Given types $A$ and $B$ their product type is the type $A \times B \coloneq \sum_{x :A}B$. It comes with a pairing function
+\[ (-,-) : A \to B \to A \times B\] and satisfies an induction principle:
+\[ \ind_\times : \prod_{x : A} \prod_{y : B} P(x,y) \to \prod_{z : A \times B} P(z)\]
+satisfying the computation rule $\ind_\times (g,(x,y)) \doteq g(x,y)$.
+\end{defn}
+
+As a special case, we have
+\[ \ind_\times : (A \to B \to C) \to ((A \times B) \to C).\]
+This is the inverse of the \textbf{currying function}. Thus $\ind_\times$ and $\ind_\Sigma$ sometimes go by the name \textbf{uncurrying}.
+
 
 \section*{September 15: Identity types}
 
