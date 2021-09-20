@@ -147,7 +147,7 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\End}{\mathrm{End}}
 \newcommand{\Aut}{\mathrm{Aut}}
 \newcommand{\Sym}{\mathrm{Sym}}
-\newcommand{\id}{\mathrm{id}}
+
 \newcommand{\ev}{\mathrm{ev}}
 \newcommand{\im}{\mathrm{im}}
 \newcommand{\coim}{\mathrm{coim}}
@@ -230,6 +230,9 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\judgment}{\mathcal{J}}
 \newcommand{\term}[1]{{\texttt{#1}}}
 
+\newcommand{\comp}{\term{comp}}
+\newcommand{\id}{\term{id}}
+
 \newcommand{\bN}{{\mathbb{N}}}
 \newcommand{\suc}{\term{succ}_{\bN}}
 
@@ -246,6 +249,10 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\concat}{\term{concat}}
 \newcommand{\inv}{\term{inv}}
 \newcommand{\assoc}{\term{assoc}}
+\newcommand{\ap}{\term{ap}}
+\newcommand{\apcoh}[1]{\term{ap}\text{-}\term{#1}}
+\newcommand{\tr}{\term{tr}}
+\newcommand{\apd}{\term{apd}}
 
 \begin{document}
 
@@ -737,7 +744,6 @@ As a special case, we have
 \[ \ind_\times : (A \to B \to C) \to ((A \times B) \to C).\]
 This is the inverse of the \textbf{currying function}. Thus $\ind_\times$ and $\ind_\Sigma$ sometimes go by the name \textbf{uncurrying}.
 
-
 \section*{September 15: Identity types}
 
 We have started to develop an analogy in which types play the role of mathematical propositions and terms in a type play the role of proofs of that proposition. More exactly, we might think of a type as a ``proof-relevant'' proposition, the distinction being that the individual proofs of a given proposition---the terms of the type---are first class mathematical objects, which may be used as ingredients in future proofs, rather than mere witnesses to the truth of the particular proposition.
@@ -826,14 +832,14 @@ While the elimination rule for identity types is quite strong the corresponding 
 \begin{proof} We define $\assoc(p,q,r)$ by path induction. 
 
 Consider the type family $x :A, y : A, p: x = y \vdash \prod_{z :A} \prod_{q : y =z} \prod_{w:A} \prod_{r : z =w} (p \cdot q) \cdot r = p \cdot (q \cdot r)$. To define a term $\assoc (p,q,r)$ in here it suffices to assume $y$ is $x$ and $p$ is $\refl_x$ and define
-\[ \assoc(\refl_x, q,r) : \prod_{z :A} \prod_{q : x =z} \prod_{w:A} \prod_{r : z =w} (\refl_x \cdot q) \cdot r = \refl_x \cdot (q \cdot r).\]
+\[ \lambda z. \lambda q. \lambda w. \lambda r. \assoc(\refl_x, q,r) : \prod_{z :A} \prod_{q : x =z} \prod_{w:A} \prod_{r : z =w} (\refl_x \cdot q) \cdot r = \refl_x \cdot (q \cdot r).\]
 By the definition of concatenation, $\refl_x \cdot q \doteq q$ and $\refl_x \cdot (q \cdot r) \doteq q \cdot r$. So we must define 
-\[ \assoc(\refl_x, q,r) : \prod_{z :A} \prod_{q : x =z} \prod_{w:A} \prod_{r : z =w} q \cdot r = q \cdot r\]
+\[ \assoc(\refl_x, q,r) :  q \cdot r = q \cdot r\]
 and we can take this term to be $\refl_{q \cdot r}$.
 \end{proof}
 
-\begin{prop}[units] For any type $A$, there are left and right \textbf{unit laws} for each $p : x = y$
-\[ \term{left-unit}(p) : \refl_x \cdot p = p \qquad \term{right-unit}(p) : p \cdot \refl_y = p.\]
+\begin{prop}[units] For any type $A$, there are left and right \textbf{unit laws}
+\[ \lambda x. \lambda y. \lambda p. \term{left-unit}(p) :  \lambda {x,y : A} \prod_{p: x = y} \refl_x \cdot p = p \qquad  \lambda x. \lambda y. \lambda p.\term{right-unit}(p) : \prod_{x , y : A} \prod_{p : x = y} p \cdot \refl_y = p.\]
 \end{prop}
 \begin{proof}
 We are asked to define  dependent functions that takes $x, y :A$ and $p : x = y$ and produce terms
@@ -842,8 +848,8 @@ By path induction, it suffices to assume $y$ is $x$ and $p$ is $\refl_x$, in whi
 \[ \term{left-unit}(\refl_x) : \refl_x \cdot \refl_x = \refl_x \qquad \term{right-unit}(\refl_x) : \refl_x \cdot \refl_x = \refl_x.\] By the definition of concatenation $\refl_x \cdot \refl_x \doteq \refl_x$ so we can take $\refl_{\refl_x}$ as both $\term{left-unit}(\refl_x)$ and $\term{right-unit}(\refl_x)$.
 \end{proof}
 
-\begin{prop}[inverses] For any type $A$, there are left and right inverse laws for any $p : x = y$
-\[ \term{left-inv}(p) : p^{-1} \cdot p = \refl_y \qquad \term{right-inv}(p) : p \cdot p^{-1} = \refl_x.\]
+\begin{prop}[inverses] For any type $A$, there are left and right \textbf{inverse laws}
+\[  \lambda x. \lambda y. \lambda p.\term{left-inv}(p) : \prod_{x,y :A} \prod_{p : x= y} p^{-1} \cdot p = \refl_y \qquad  \lambda x. \lambda y. \lambda p.\term{right-inv}(p) : \prod_{x,y :A} \prod_{p : x=y} p \cdot p^{-1} = \refl_x.\]
 \end{prop}
 \begin{proof}
 We are asked to define  dependent functions that takes $x, y :A$ and $p : x = y$ and produce terms
@@ -853,9 +859,11 @@ By path induction, it suffices to assume $y$ is $x$ and $p$ is $\refl_x$, in whi
 By the definitions of concatenation and inverses, again both left-hand and right-hand sides are judgementally equal so we take $\term{left-inv}(\refl_x)$ and $\term{right-inv}(\refl_x)$ to be $\refl_{\refl_x}$.
 \end{proof}
 
+\section*{September 20: More identity types}
+
 \subsection*{Types as $\infty$-groupoids}
 
-Martin-L\"{o}f's rules for the identity types date from the 1970s. In the following two decades, there was a conjecture that went by the name ``uniqueness of identity proofs" that for any $x,y : A$, $p, q  : x =_A y$, the type $p =_{x=_A y} q$ is inhabited, meaning that it's possible to construct an identification between $p$ and $q$. In 1994, Martin Hofmann and Thomas Streicher constructed a model of Martin-L\"{o}f's dependent type theory in the category of groupoids that refutes uniqueness of identity proofs.\footnote{The technical details of what exactly it means to ``construct a model of type theory'' are quite elaborate and would be interesting to explore as a final project.}
+Martin-L\"{o}f's rules for the identity types date from a 1975 paper ``An Intuitionistic Theory of Types.'' In the following two decades, there was a conjecture that went by the name ``uniqueness of identity proofs" that for any $x,y : A$, $p, q  : x =_A y$, the type $p =_{x=_A y} q$ is inhabited, meaning that it's possible to construct an identification between $p$ and $q$. In 1994, Martin Hofmann and Thomas Streicher constructed a model of Martin-L\"{o}f's dependent type theory in the category of groupoids that refutes uniqueness of identity proofs.\footnote{The technical details of what exactly it means to ``construct a model of type theory'' are quite elaborate and would be interesting to explore as a final project.}
 
 In the Hofmann-Streicher model, types $A$ correspond to \emph{groupoids} and terms $x, y : A$ correspond to \emph{objects} in the groupoid. An identification $p : x = y$ corresponds to a(n iso)morphism $p : x \to y$ in the groupoid, while an identification between identifications exists if and only if $p$ and $q$ define the same morphism. Since there are groupoids with multiple distinct morphisms between a fixed pair of objects, we see that it is not always the case that $p=_{x=_A y} q$. Following Hofmann-Streicher, it made sense to start viewing types as more akin to groupoids than to sets. The proofs of symmetry and transitivity for identity types are more accurately described as inverses and concatenation operations in a groupoid. As we've seen, these satisfy various associativity, unit, and inverse laws---up to identification at least---as required by a groupoid.
 
@@ -876,13 +884,114 @@ There is a sense however in which the reflexivity term is unique:
 
 In terminology to be introduced later, this result says that the type $\sum_{x : A} a =x$ is \textbf{contractible} with the term  $(a, \refl_a)$ serving as its \textbf{center of contraction}.
 
-\section*{September 20: More identity types}
 
 \subsection*{The action of paths on functions}
 
+The structural rules of type theory guarantee that any function (and indeed any construction in type theory) preserve definitional equality. We now show that in addition every function preserves identifications.
+
+\begin{prop} Let $f \colon A \to B$. There is an operation that defines the \textbf{action on paths} of $f$
+\[ \ap_f : \prod_{x,y :A} (x=y) \to (f(x) = f(y))\]
+that satisfies the coherence conditions
+\[ \apcoh{id}_A : \prod_{x,y:A} \prod_{p : x= y} p = \ap_{\id_A}(p)\]
+\[ \apcoh{comp}(f,g) : \prod_{x,y:A} \prod_{p: x=y} \ap_g(\ap_f(p))= \ap_{g\circ f}(p).\]
+\end{prop}
+\begin{proof}
+By path induction to define $\ap_f(p) : f(x)=f(y)$ it suffices to assume $y$ is $x$ and $p$ is $\refl_x$. We may then define $\ap_f(\refl_x) \coloneq \refl_{f(x)} : f(x) = f(x)$.
+
+Next to define $\apcoh{id}_A$ it similarly suffices to suppose $y$ is $x$ and $p$ is $\refl_x$. Since $\ap_{\id_A}(\refl_x)\doteq \refl_x$, we may define $\apcoh{id}_A(\refl_x) \coloneq \refl_{\refl_x} : \refl_x = \refl_x$.
+
+Finally, to define $\apcoh{comp}(f,g)$, by path induction we may again assume $y$ is $x$ and $p$ is $\refl_x$. Since both $\ap_g(\ap_f(\refl_x))$ and $\ap_{g \circ f}(\refl_x)$ are defined to be $\refl_{g(f(x))}$ we may define $\apcoh{comp}(f,g)(\refl_x)$ to be $\refl_{\refl_{g(f(x))}}$.
+\end{proof}
+
+If the types $A$ and $B$ are thought of as $\infty$-groupoids, then $f \colon A \to B$ can be thought of as a functor of $\infty$-groupoids in a sense hinted at by the following lemma.
+
+\begin{lem} For $f \colon A \to B$ there are identifications
+\begin{align*}
+\apcoh{refl}(f,x) &: \ap_f (\refl_x) = \refl_{f(x)} \\
+\apcoh{inv}(f,p) &: \ap_f (p^{-1}) = \ap_f(p)^{-1} \\
+\apcoh{concat}(f,p,q) &: \ap_f(p \cdot q) = \ap_f(p) \cdot \ap_f(q)
+\end{align*}
+for every $p : x= y$ and $q: y = z$.
+\end{lem}
+\begin{proof}
+For the first coherence, there is a definitional equality $\ap_f (\refl_x) \doteq \refl_{f(x)}$ so we take $\apcoh{refl}(f,x) \coloneq \refl_{\refl_{f(x)}}$. 
+
+We define $\apcoh{inv}(f,p)$ by path induction on $p$ by defining $\apcoh{inv}(f,\refl_x) \coloneq \refl_{\refl_{f(x)}}$.
+
+Similarly, we define $\apcoh{concat}(f,p,q)$ by path induction on $p$ (since concat was defined by path induction on $p$) by defining $\apcoh{concat}(f,\refl_x,q)$ to be $\refl_{\ap_f(q)}$.
+\end{proof}
+
 \subsection*{Transport}
 
+The term $\ap_f$ defines the action of a non-dependent function $f \colon A \to B$ on paths in $A$. It's natural to ask whether a dependent function $f : \prod_{z:A}B(z)$ also induces an action on paths. There's a challenge here, though. If $x,y : A$ are terms belonging to the base type, then we can form the type $x=_A y$ to ask whether they are identifiable. But the terms $f(x) : B(x)$ and $f(y) : B(y)$  belong to different types and are not identifiable. But nevertheless if there is  path $p : x = y$ identifying $y$ with $x$ intuition suggests there should be some way to compare $f(y)$ to $f(x)$.
+
+To achieve this, we must construct a different sort of action of paths function first. This is called the  \textbf{transport} function for dependent types $x :A \vdash B(x) \type$ that, given an identification $p : x = y$ in the base type, can be used to transport any term in $B(x)$ to a term in $B(y)$.
+
+\begin{prop} For any type family $x : A \vdash B(x) \type$, there is a \textbf{transport operation}
+\[ \tr_B : \prod_{x,y :A} (x=y) \to (B(x) \to B(y)).\]
+\end{prop}
+\begin{proof}
+By path induction it suffices to define $\tr_B(\refl_x)) \coloneq \id_{B(x)}$.
+\end{proof}
+
+As an application of transport we can now defined the action on paths of a dependent function.
+
+\begin{prop} For any dependent function $f : \prod_{z: A} B(z)$ and identification $p : x=_A y$ there is a path
+\[ \apd_f(p) : \tr_B(p, f(x)) =_{B(y)} f(y).\]
+\end{prop}
+\begin{proof}
+The function
+ \[ \lambda x . \lambda y. \lambda p. \apd_f(p) : \prod_{x,y:A} \prod_{p : x=y} \tr_B(p, f(x)) =_{B(y)} f(y)\]
+ may be defined by path induction on $p$. It suffices to construct a path
+ \[ \lambda x . \apd_f(\refl_x) : \prod_{x :A} \tr_B(\refl_x,f(x)) =_{B(x)} f(x).\]
+Since  $\tr_B(\refl_x),f(x)) \doteq f(x)$ we may defined $\apd_f(\refl_x) \coloneq \refl_{f(x)}$.
+\end{proof}
+
 \subsection*{The laws of addition on $\bN$}
+
+Recall that we defined the addition of natural numbers in such a way that
+\[ m+ 0 \doteq m \qquad m+ \suc(n) \doteq \suc(m+n)\]
+by induction on the second variable. With this definition, these are the only definitional equalities. However, it is possible to produce identifications proving the other commutative monoid axioms.
+
+\begin{lem} For any $n : \bN$ there are identifications
+\[\term{left-unit-law-add}_\bN(n) : 0 + n = n \qquad \term{right-unit-law-add}_\bN(n) : n+0=n.\]
+\end{lem}
+\begin{proof}
+The second of these can be taken to be $\refl_n$ but the first is more complicated. We define $\term{left-unit-law-add}_\bN(n)$ by induction on $n : \bN$. When $n = 0$, $0+0=0$ holds by reflexivity. 
+
+Our final goal is to show $0+\suc(n) = \suc(n)$, for which it suffices to construct an identification \[ \suc(0+n) = \suc(n)\]
+by the definition of addition. We may assume we have an identification $p : 0 + n = n$. Thus, we can use the action on paths of $\suc : \bN \to \bN$  to obtain a term $\ap_{\suc}(p) : \suc(0+n) = \suc(n)$.
+\end{proof}
+
+\begin{prop} For any $m,n : \bN$ there are identifications
+\begin{align*} \term{left-successor-law-add}_\bN(m,n) &: \suc(m) + n = \suc(m+n) \\
+\term{right-sucessor-law-add}_\bN(m,n) &= m+ \suc(n) = \suc(m+n)
+\end{align*}
+\end{prop}
+\begin{proof}
+Again the second identification holds judgmentally so we  define \[\term{right-sucessor-law-add}_\bN(m,n) \coloneq \refl_{\suc(m+n)}.\] We construct the former using induction on $n \in \bN$. The base case $\suc(m)+0 = \suc(m+0)$ holds by $\refl_{\suc(m)}$. For the inductive step we assume we have an identification $p : \suc(m)+n = \suc(m+n)$. Our goal is to show that $\suc(m)+\suc(n) = \suc(m+\suc(n))$. By action of paths of $\suc : \bN \to \bN$ we obtain a term
+\[ \ap_{\suc}(p) : \suc(\suc(m)+n) = \suc(\suc(m+n))\] but here the left hand side is judgmentally equal to $\suc(m)+\suc(n)$ while the right hand side is judgmentally equal to $\suc(m+ \suc(n))$.
+\end{proof}  
+
+\begin{prop}[associativity] For all $k,m,n : \bN$,
+\[ \term{associative-add}_\bN(k,m,n) : (m+n)+k = m+(n+k).\]
+\end{prop}
+\begin{proof}
+We construct $\term{associative-add}_\bN(k,m,n)$ by induction on $n$. In the base case we have
+\[ (k+m)+0 \doteq k+m \doteq k + (m+0),\] so we define $\term{associative-add}_\bN(k,m,0) \coloneq \refl_{m+n}$.
+
+For the inductive step let $p : (k+m)+n = k+(m+n)$. We then have
+\[ \ap_{\suc}(p) : \suc((k+m)+n) = \suc(k+(m+n)).\]
+We have $\suc((k+m)+n) \doteq (k+m)+\suc(n)$ and $\suc(k+(m+n)) \doteq k + \suc(m+n) \doteq k + (m + \suc(n))$ so this term is the term we wanted.
+\end{proof}
+
+
+\begin{prop}[commutativity] For all $m,n : \bN$,
+\[ \term{commutative-add}_\bN(m,n) : m+n = n+m.\]
+\end{prop}
+\begin{proof} By induction on $m$ we have to show $0+n = n+0$, which holds by the unit laws for $n$. Then we may assume $p : m+n = n+m$ and must show $\suc(m)+n= n + \suc(m)$. We have
+\[ \ap_{\suc}(p) : \suc(m+n) = \suc(n+m).\] We then concatenate this path with the paths $ \term{left-successor-law-add}_\bN(m,n)$ and $\term{right-successor-law-add}_\bN(n,m)$ to obtain the identification we want. 
+\end{proof}
 
 \section*{September 22: Universes}
 \section*{September ??: Modular arithmetic}
