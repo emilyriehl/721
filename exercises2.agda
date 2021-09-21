@@ -18,6 +18,17 @@ data ℕ : UU lzero where
     zero-ℕ : ℕ
     succ-ℕ : ℕ → ℕ
 
+-- Recall ℕ is an example of an inductive type. The unit type is another example:
+data unit : UU lzero where
+    star : unit
+
+-- Here you've told agda that the unit type is a type in "UU lzero" with one constructor "star : unit".
+-- When you apply "pattern matching" (C-c C-c) to define a function (f : (x : unit) → P x) you're appealing to the elimination rule
+-- for the inductive type "unit", which agda automatically knows about. But you can also express the elimination rule by defining a function ind-unit as follows:
+
+ind-unit : {i : Level}{P : unit → UU i} → P star → ((x : unit) → P x)
+ind-unit q star = q
+
 -- Exercise 4.2: define an inductive type bool (in UU lzero) that comes with two terms true and false
 
 -- Exercise 4.2.a: construct boolean negation neg-bool : bool → bool
@@ -34,9 +45,6 @@ data ℕ : UU lzero where
 data coprod {i j : Level}(A : UU i)(B : UU j) : UU (i ⊔ j) where
     inl : A → coprod A B
     inr : B → coprod A B
-
-data unit : UU lzero where
-    star : unit
 
 ℤ : UU lzero
 ℤ = coprod ℕ (coprod unit ℕ)
@@ -71,8 +79,6 @@ data Σ {i j : Level}(A : UU i)(B : A → UU j) : UU(i ⊔ j) where
 
 -- Exercise: define pr1 and pr2 in the context of {i j : Level}{A : UU i}{B : A → UU j}
 
-
-
 -- It is convenient to have special notation for product types.
 -- Alternatively, _×_ could be defined as a data type with constructor pair' : A → B → A × B
 _×_ : {i j : Level}(A : UU i)(B : UU j) → UU (i ⊔ j)
@@ -87,6 +93,8 @@ data empty : UU lzero where
 ex-falso : {i : Level}{A : UU i} → empty → A
 ex-falso () 
 
+-- Exercise: define the contrapositive proving that P implies Q implies that not P implies not Q
+
 -- Solve the following exercises in the context of {i : Level}{P : UU i}
 
 -- Exercise 4.3.b: define intro-dn, proving that P implies ¬ ¬ P
@@ -95,7 +103,14 @@ ex-falso ()
 
 -- Challenge Exercise 4.3.e: define dn-elim-neg, proving that ¬ ¬ ¬ P → ¬ P 
 
+-- Exercise: define lem-dn-elim, proving that that law of excluded middle implies double negation elimination
+-- lem-dn-elim : {i : Level}{P : UU i} → coprod P (¬ P) → (¬ ¬ P → P)
+
+-- Challenge Exercise: define nn-lem, proving that the law of excluded middle is not false
+
 -- Challenge Exercise 4.3.c: prove that double negation elimination is not false by defining dn-dn-elim : ¬ ¬ (¬ ¬ P → P)
+
+-- Challenge Exercise: define dn-elim-lem, proving that if double negation elimination holds for all types P then lem holds for all types Q
 
 
 
