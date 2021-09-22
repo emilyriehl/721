@@ -75,6 +75,16 @@ assoc refl q r = refl
 
 -- Exercise (Definition 5.3.1): define "ap" the application of functions on paths
 
+-- Definition 5.4.1: here is the transport function
+tr : {i j : Level}{A : UU i}(B : A → UU j){x y : A} → (Id x y) → (B x) → (B y)
+tr B refl b = b
+
+data Σ {i j : Level}(A : UU i)(B : A → UU j) : UU (i ⊔ j) where
+    pair : (a : A) → B a → Σ A B
+
+-- Exercise 5.3: Given a type family z : A ⊢ B z type a path p : a = x in A and a term b : B a define a path "lift B p b" 
+-- in the dependent pair type from "pair a b" to "pair x (tr B p b)"
+
 data ℕ : UU lzero where
     zero-ℕ : ℕ
     succ-ℕ : ℕ → ℕ
