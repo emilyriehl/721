@@ -227,9 +227,10 @@ BoldItalicFont = *-BoldItalic
 
 
 %type theory stuff
-\newcommand{\type}{{~\texttt{type}~}}
+\newcommand{\univ}{{~\texttt{type}~}}
 \newcommand{\judgment}{\mathcal{J}}
 \newcommand{\term}[1]{{\textup{\texttt{#1}}}}
+\newcommand{\type}[1]{{\textup{#1}}}
 
 \newcommand{\comp}{\term{comp}}
 \newcommand{\id}{\term{id}}
@@ -255,10 +256,12 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\tr}{\term{tr}}
 \newcommand{\apd}{\term{apd}}
 
-\newcommand{\univ}{\mathcal{U}}
+\newcommand{\UU}{\mathcal{U}}
 \newcommand{\sT}{\mathcal{T}}
 \newcommand{\Id}{\textup{\text{Id}}}
 \newcommand{\Eq}{\textup{\text{Eq}}}
+
+
 
 \begin{document}
 
@@ -310,9 +313,9 @@ I find it helpful to imagine I'm teaching a computer to do mathematics. It's als
 
 \begin{defn} There are four kinds of \textbf{judgments} in dependent type theory, which you can think of as the ``grammatically correct'' expressions:
 \begin{enumerate}
-\item $\Gamma \vdash A \type$, meaning that $A$ is a well-formed type in \textbf{context} $\Gamma$ (more about this soon).
+\item $\Gamma \vdash A \univ$, meaning that $A$ is a well-formed type in \textbf{context} $\Gamma$ (more about this soon).
 \item $\Gamma \vdash a : A$, meaning that $a$ is a well-formed term of type $A$ in context $\Gamma$.
-\item $\Gamma \vdash A \doteq B \type$, meaning that $A$ and $B$ are \textbf{judgmentally} or \textbf{definitionally} equal types in context $\Gamma$.
+\item $\Gamma \vdash A \doteq B \univ$, meaning that $A$ and $B$ are \textbf{judgmentally} or \textbf{definitionally} equal types in context $\Gamma$.
 \item $\Gamma \vdash a \doteq b : A$, meaning that $a$ and $b$ are judgmentally equal terms of type $A$ in context $\Gamma$.
 \end{enumerate}
 These might be collectively abbreviated by $\Gamma \vdash \judgment$.
@@ -323,7 +326,7 @@ The statement of a mathematical theorem, often begins with an expression like ``
 \begin{defn} A \textbf{context} is a finite list of variable declarations:
 \[ x : A_1, x_2 : A_2(x_1), \ldots, x_n : A_n(x_1,\ldots, x_{n-1})\]
 satisfying the condition that for each $1\leq k \leq n$ we can derive the judgment
-\[ x_1 : A_1, \ldots, x_{k-1} : A_{k-1}(x_1,\ldots, x_{k-2}) \vdash A_k(x_1,\ldots, x_{k-1}) \type\]
+\[ x_1 : A_1, \ldots, x_{k-1} : A_{k-1}(x_1,\ldots, x_{k-2}) \vdash A_k(x_1,\ldots, x_{k-1}) \univ\]
 using the inference rules of type theory.
 \end{defn}
 
@@ -339,8 +342,8 @@ We'll introduce the inference rules shortly but the idea is that it needs to be 
 
 Absolutely everything in dependent type theory is context dependent so we always assume we're working in a background context $\Gamma$. Let's focus on the primary two judgment forms.
 
-\begin{defn} Given a type $A$ in context $\Gamma$ a \textbf{family} of types over $A$ in context $\Gamma$ is a type $B(x)$ is context $\Gamma, x : A$, as represented by the judgment:
-\[ \Gamma, x : A \vdash B(x) \type\]
+\begin{defn} Given a type $A$ in context $\Gamma$ a \textbf{family} of types over $A$ in context $\Gamma$ is a type $B(x)$ in context $\Gamma, x : A$, as represented by the judgment:
+\[ \Gamma, x : A \vdash B(x) \univ\]
 We also say that $B(x)$ is a type \textbf{indexed} by $x : A$, in context $\Gamma$.
 \end{defn}
 
@@ -364,14 +367,14 @@ There are five types of inference rules that collectively describe the structura
 \begin{enumerate}
 \item Rules postulating that judgmental equality is an equivalence relation:
 \[
-\inferrule{\Gamma \vdash A \type}{\Gamma \vdash A \doteq A \type}\quad
-\inferrule{\Gamma \vdash A \doteq B \type}{\Gamma \vdash B \doteq A \type}\quad
-\inferrule{\Gamma \vdash A \doteq B \type \\ \Gamma \vdash B \doteq C \type}{\Gamma \vdash A \doteq C \type}
+\inferrule{\Gamma \vdash A \univ}{\Gamma \vdash A \doteq A \univ}\quad
+\inferrule{\Gamma \vdash A \doteq B \univ}{\Gamma \vdash B \doteq A \univ}\quad
+\inferrule{\Gamma \vdash A \doteq B \univ \\ \Gamma \vdash B \doteq C \univ}{\Gamma \vdash A \doteq C \univ}
 \]
 and similarly for judgmental equality between terms.
 \item Variable conversion rules for judgmental equality between types:
 \[
-\inferrule{\Gamma \vdash A \doteq A' \type \\ \Gamma, x : A, \Delta \vdash  \judgment}{\Gamma, x : A', \Delta \vdash \judgment}
+\inferrule{\Gamma \vdash A \doteq A' \univ \\ \Gamma, x : A, \Delta \vdash  \judgment}{\Gamma, x : A', \Delta \vdash \judgment}
 \]
 
 \item Substitution rules:
@@ -381,12 +384,12 @@ and similarly for judgmental equality between terms.
 If $\Delta$ is the context $y_1 : B_1(x),\ldots, y_n : B_n(x,y_1,\ldots, y_{n-1})$ then $\Delta[a/x]$ is the context $y_1 : B(a), \ldots, y_n : B_n(a,y_1,\ldots, y_{n-1})$. A similar substitution is performed in the judgment $\judgment[a/x]$. Further rules indicate that substitution by judgmentally equal terms gives judgmentally equal results.
 \item Weakening rules:
 \[
-\inferrule{ \Gamma \vdash A \type \\ \Gamma,\Delta \vdash \judgment}{\Gamma, x : A, \Delta \vdash \judgment}
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma,\Delta \vdash \judgment}{\Gamma, x : A, \Delta \vdash \judgment}
 \]
 Eg if $A$ and $B$ are types in context $\Gamma$, then $B$ is also a type in context $\Gamma, x : A$.
 \item The generic term:
 \[ 
-\inferrule{\Gamma \vdash A \type }{\Gamma, x : A \vdash x :A}
+\inferrule{\Gamma \vdash A \univ }{\Gamma, x : A \vdash x :A}
 \]
 This will be used to define the identity function of any type.
 \end{enumerate}
@@ -399,10 +402,10 @@ A derivation in type theory is a finite rooted tree where each node is a valid r
 \[
 \inferrule{ 
 \inferrule{ 
-\inferrule{ \Gamma \vdash B \type}{\Gamma, y :B \vdash y : B}}
+\inferrule{ \Gamma \vdash B \univ}{\Gamma, y :B \vdash y : B}}
 {\Gamma, y : B, x : A\vdash y : B} \qquad
 \inferrule{
-\inferrule{}{\Gamma \vdash B \type} \\ \inferrule{\Gamma, x : A, y : B, \Delta \vdash \judgment}{\Gamma, x : A, z : B, \Delta[z/y] \vdash \judgment[z/y]}}
+\inferrule{}{\Gamma \vdash B \univ} \\ \inferrule{\Gamma, x : A, y : B, \Delta \vdash \judgment}{\Gamma, x : A, z : B, \Delta[z/y] \vdash \judgment[z/y]}}
 {\Gamma, y : B, x : A, z : B, \Delta[z/y] \vdash \judgment[z/y]}
 }{\Gamma, y : B, x : A, \Delta \vdash \judgment}
 \]
@@ -420,7 +423,7 @@ We think of the section $b$ as a function that takes as input $x : A$ and produc
 What is a thing in mathematics? Structuralism says the ontology of a thing is determined by its behavior. In dependent type theory, we define dependent function types by stating their rules, which have the following forms:
 \begin{enumerate}
 \item \textbf{formation rules} tell us how a type may be formed
-\item \textbf{introduction rules}  tells us how to introduce new terms of the type
+\item \textbf{introduction rules}  tell us how to introduce new terms of the type
 \item \textbf{elimination rules}  tell us how the terms of a type may be used
 \item  \textbf{computation rules} tell us how the introduction and elimination rules interact
 \end{enumerate}
@@ -429,7 +432,7 @@ There are also \textbf{congruence rules} that tell us that all constructions res
 \begin{defn}[dependent function types]
 The $\Pi$-\textbf{formation rule} has the form:
 \[
-\inferrule{ \Gamma, x : A \vdash B(x) \type}{\Gamma \vdash \prod_{x :A} B(x) \type}
+\inferrule{ \Gamma, x : A \vdash B(x) \univ}{\Gamma \vdash \prod_{x :A} B(x) \univ}
 \]
 
 The $\Pi$-\textbf{introduction rule} has the form:
@@ -438,7 +441,7 @@ The $\Pi$-\textbf{introduction rule} has the form:
 \]
 The $\lambda$-\textbf{abstraction} $\lambda x. b(x)$ can be thought of as notation for $x \mapsto b(x)$. 
 
-The $\Pi$-\textbf{elimination rule} has the form of an evaluation rule:
+The $\Pi$-\textbf{elimination rule} has the form of the evaluation function:
 \[
 \inferrule{ \Gamma \vdash f : \prod_{x :A} B(x)}{\Gamma, x :A \vdash f(x) : B(x)}
 \]
@@ -462,8 +465,8 @@ and the $\eta$-\textbf{rule}, which says that all elements of a $\Pi$-type are d
 The formation rule is derived from the formation rule for $\Pi$-types together with weakening:
 \[
 \inferrule{
-\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type}{\Gamma, x : A \vdash B \type}}
-{\Gamma \vdash \prod_{x : A}B \type}
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ}{\Gamma, x : A \vdash B \univ}}
+{\Gamma \vdash \prod_{x : A}B \univ}
 \]
 We adopt the notation
 \[ A \to B \coloneq \prod_{x : A} B\]
@@ -471,14 +474,14 @@ for the dependent function type in the case where the type family $B$ is constan
 
 The introduction, evaluation, and computation rules are instances of term conversion: eg
 \[
-\inferrule{ \Gamma \vdash B \type \\ \Gamma, x : A \vdash b(x) : B}
+\inferrule{ \Gamma \vdash B \univ \\ \Gamma, x : A \vdash b(x) : B}
 { \Gamma \vdash \lambda x. b(x) : A \to B}
 \qquad
 \inferrule{ \Gamma \vdash f : A \to B}{\Gamma, x : A \vdash f(x) : B}
 \]
 plus the two computation rules:
 \[
-\inferrule{ \Gamma \vdash B \type \\ \Gamma, x : A \vdash b(x) : B}{ \Gamma, x : A \vdash (\lambda y. b(y))(x) \doteq b(x) : B}
+\inferrule{ \Gamma \vdash B \univ \\ \Gamma, x : A \vdash b(x) : B}{ \Gamma, x : A \vdash (\lambda y. b(y))(x) \doteq b(x) : B}
 \qquad
 \inferrule{ \Gamma \vdash f : A  \to B}{\Gamma \vdash \lambda x. f(x) \doteq f : A \to B}
 \]
@@ -487,7 +490,7 @@ plus the two computation rules:
 \begin{defn} Identity functions are defined as follows:
 \[
 \inferrule{
-\inferrule{ \Gamma \vdash A \type}{\Gamma, x : A \vdash x : A}}
+\inferrule{ \Gamma \vdash A \univ}{\Gamma, x : A \vdash x : A}}
 { \Gamma \vdash \lambda x. x : A \to A}\]
 which is traditionally denoted by $\id_A \coloneq \lambda x. x$.
 \end{defn}
@@ -499,7 +502,7 @@ The idea of composition is that given a function $f \colon A \to B$ and $g \colo
 
 \begin{defn} Composition has the form:
 \[
-\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash C \type}{\Gamma \vdash \_\circ\_ : (B \to C) \to ((A \to B) \to (A \to C))}
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ \\ \Gamma \vdash C \univ}{\Gamma \vdash \_\circ\_ : (B \to C) \to ((A \to B) \to (A \to C))}
 \]
 It is defined by
 \[ \_\circ\_ \coloneq \lambda g. \lambda f . \lambda x. g(f(x))\]
@@ -516,7 +519,7 @@ The type $\bN$ of natural numbers is the archetypical example of an \textbf{indu
 
 The $\bN$-formation rule is
 \[
-\inferrule{~}{\vdash \bN \type}
+\inferrule{~}{\vdash \bN \univ}
 \]
 In other words, $\bN$ is a type in the empty context.
 
@@ -540,7 +543,7 @@ What then corresponds to a proof that $\forall n, P(n)$?
 
 The induction principle is encoded by the following rule:
 \[
-\inferrule{ \Gamma, n : \bN \vdash P(n) \type \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
+\inferrule{ \Gamma, n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
 { \Gamma \vdash \term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)}
 \]
 
@@ -549,7 +552,7 @@ The induction principle is encoded by the following rule:
 
 The computation rules say that the function $\term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)$ behaves like it should on $0_\bN$ and successors:
 \[
-\inferrule{ \Gamma , n : \bN \vdash P(n) \type \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
+\inferrule{ \Gamma , n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
 { \Gamma \vdash \term{ind}_\bN(p_0,p_S)(0_\bN) \doteq p_0 : P(0_\bN)}
 \]
 and under the same premises
@@ -564,13 +567,13 @@ These computation rules don't matter so much if the type family $n : \bN \vdash 
 \item $\forall n,m, \suc(n)= \suc(m) \to n=m$
 \item induction
 \end{enumerate}
-We'll be able to \emph{prove} this missing two axioms from the induction principle we've assumed once we have identity types and universes. We'll come back to this in a few weeks.
+We'll be able to \emph{prove} the missing two axioms from the induction principle we've assumed once we have identity types and universes. We'll come back to this in a few weeks.
 \end{rmk}
 
 \subsection*{Addition on the natural numbers}
 
 \begin{rmk} When addition is defined by recursion on the second variable, from the computation rules associated to function types and the natural numbers type you can derive judgmental equalities \[
-m + 0 \doteq m \quad \text{and} \quad m + \suc(n) = \suc(m + n).
+m + 0 \doteq m \quad \text{and} \quad m + \suc(n) \doteq \suc(m + n).
 \]
 But you can't derive the symmetric judgmental equalities.
 \end{rmk}
@@ -595,7 +598,7 @@ See \url{https://github.com/emilyriehl/721/blob/master/introduction.agda}
 The rules for the natural numbers type $\bN$ tell us:
 \begin{enumerate}
 \item how to form terms in $\bN$, and
-\item how to define dependent functions in $\prod_{n : \bN} P(n)$ for any type family $n : \bN \vdash P(n) \type$,
+\item how to define dependent functions in $\prod_{n : \bN} P(n)$ for any type family $n : \bN \vdash P(n) \univ$,
 \end{enumerate}
 while providing two computation rules for those dependent functions.
 
@@ -616,10 +619,10 @@ In more detail:
 
 The formal definition of the \textbf{unit type} is as follows:
 \[
-\inferrule{}{\vdash \1 \type} \qquad
+\inferrule{}{\vdash \1 \univ} \qquad
 \inferrule{}{\vdash \star : \1} \qquad 
-\inferrule{ x : \1 \vdash P(x) \type \\ p : P(\star)}{ x: \1 \vdash \ind_\1(p,x) : P(x)} \qquad
-\inferrule{ x : \1 \vdash P(x) \type \\ p : P(\star)}{x : \1 \vdash \ind_1(p,\star) \doteq p : P(\star)}
+\inferrule{ x : \1 \vdash P(x) \univ \\ p : P(\star)}{ x: \1 \vdash \ind_\1(p,x) : P(x)} \qquad
+\inferrule{ x : \1 \vdash P(x) \univ \\ p : P(\star)}{x : \1 \vdash \ind_1(p,\star) \doteq p : P(\star)}
 \]
 As an inductive type, the definition is packaged as follows:
 
@@ -652,7 +655,7 @@ That is the empty type is the inductive type with no constructors. Thus there ar
 
 \begin{rmk} As a special case of the elimination rule for the empty type we have
 \[
-\inferrule{ \vdash A \type}{ \term{ex-falso} \coloneq \ind_\emptyset : \emptyset \to A}
+\inferrule{ \vdash A \univ}{ \term{ex-falso} \coloneq \ind_\emptyset : \emptyset \to A}
 \]
 By the elimination rule for function types it follows that if we had a term $x : \emptyset$ then we could get a term in any type. The name comes from latin \emph{ex falso quodlibet}: ``from falsehood, anything.''
 \end{rmk}
@@ -685,16 +688,16 @@ By $\lambda$-abstraction assume given $f : P \to Q$ and $\tilde{q} : Q \to \empt
 
 Inductive types can be defined outside the empty context. For instance, the formation and introduction rules for the coproduct type have the form:
 \[
-\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type}{\Gamma \vdash A + B \type} 
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ}{\Gamma \vdash A + B \univ} 
 \]
 \[
-\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash a : A}{ \Gamma \vdash \inl a : A + B} \qquad
-\inferrule{ \Gamma \vdash A \type \\ \Gamma \vdash B \type \\ \Gamma \vdash b : B}{ \Gamma \vdash \inr b : A + B}
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ \\ \Gamma \vdash a : A}{ \Gamma \vdash \inl a : A + B} \qquad
+\inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ \\ \Gamma \vdash b : B}{ \Gamma \vdash \inr b : A + B}
 \]
 
 \begin{defn} Given types $A$ and $B$ the \textbf{coproduct type} is the type equipped with 
 \[ \inl : A \to A + B \qquad \inr : B \to A+ B\]
-satisfying the induction principle that says that for any family of types $x : A + B \vdash P(x) \type$ there is a term
+satisfying the induction principle that says that for any family of types $x : A + B \vdash P(x) \univ$ there is a term
 \[ \ind_+ : \left( \prod_{x : A} P(\inl (x))\right) \to \left( \prod_{y : B} P(\inr(y))\right) \to \prod_{z : A + B}P(z)\]
 satisfying the computation rules
 \[ \ind_+(f,g, \inl(x)) \doteq f(x) \qquad \ind_+(f,g, \inr(y)) \doteq g(y).\]
@@ -721,9 +724,9 @@ Of all the inductive types we've introduced, the final one is perhaps the most i
 
 Recall a \textbf{dependent function} $\lambda x . f(x) : \prod_{x : A}B(x)$ is like an ordinary function except the output type is allowed to vary with the input term. Similarly, a \textbf{dependent pair} $(a,b) : \sum_{x : A}B(x)$ is like an ordinary (ordered) pair except the type of the second term $b : B(a)$ is allowed to vary with the first term $a :A$.
 
-\begin{defn} Consider a type family $x : A \vdash B(x) \type$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\sum_{x :A}B(x)$ is the inductive type equipped with the function
+\begin{defn} Consider a type family $x : A \vdash B(x) \univ$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\sum_{x :A}B(x)$ is the inductive type equipped with the function
 \[ \pair : \prod_{x : A} \left(B(x) \to \prod_{y : A}B(y)\right).\]
-The induction principle asserts that for any family of types $p : \sum_{x :A} B(x) \vdash P(p) \type$ there is a function
+The induction principle asserts that for any family of types $p : \sum_{x :A} B(x) \vdash P(p) \univ$ there is a function
 \[ \ind_\Sigma : \left( \prod_{x :A} \prod_{y : B}P(\pair(x,y) \right) \to \left( \prod_{z : \sum_{x :A}B(x)}P(z) \right)
 \]
 satisfying the computation rule $\ind_\Sigma (g,\pair(x,y)) \doteq g(x,y)$.
@@ -731,7 +734,7 @@ satisfying the computation rule $\ind_\Sigma (g,\pair(x,y)) \doteq g(x,y)$.
 
 It is common to write ``$(x,y)$'' as shorthand for ``$\pair(x,y)$.''
 
-\begin{defn} Given a type family $x :A \vdash B(x) \type$ by the induction principle for $\Sigma$-types, we have a function
+\begin{defn} Given a type family $x :A \vdash B(x) \univ$ by the induction principle for $\Sigma$-types, we have a function
 \[ \pr_1 : \sum_{x :A}B(x) \to A\]
 defined by $\pr_1(x,y) \coloneq x$ and a dependent function
 \[ \pr_2 :  \prod_{ p : \sum_{x :A}B(x)} B(\pr_1(p))\]
@@ -758,8 +761,8 @@ The various constructions on types that we have discussed are analogous to the l
 
 Given a type $A$ and two terms $x,y : A$ it is sensible to ask whether $x = y$. From the point of view of types as proof-relevant propositions, ``$x=y$'' should be the name of a type, in fact a dependent type. The formation rule for \textbf{identity types} says
 \[
-\inferrule{ \Gamma \vdash A \type}
-{\Gamma, x : A, y : A \vdash x =_A y \type}
+\inferrule{ \Gamma \vdash A \univ}
+{\Gamma, x : A, y : A \vdash x =_A y \univ}
 \]
 where ``$x=y$'' is commonly used as an abbreviation for ``$x=_Ay$'' when the type of $x$ and $y$ is clear from context. A term $p : x = y$ of an identity type is called an \textbf{identification} of $x$ and $y$ or a \textbf{path} from $x$ to $y$ (more about this second term later). Identifications have a rich structure that follows from a very simple characterization of the identity type due to Per Martin-L\"{o}f: it is the inductive type family freely generated by the reflexivity terms.
 
@@ -767,7 +770,7 @@ where ``$x=y$'' is commonly used as an abbreviation for ``$x=_Ay$'' when the typ
 
 We can define identity types as inductive types in either a one-sided or two-sided fashion. The induction rule may be easier to understand from the one-sided point of view, so we present it first.
 
-\begin{defn}[one-sided identity types] Given a type $A$ and a term $a : A$, the \textbf{identity type} of $A$ at $a$ is the inductive family of types $x : A \vdash a =_A x \type$ with a single constructor $\refl_a : a =_A a$. The induction principle is postulates that for any type family $x : A, p : a =_A x \vdash P(x,p) \type$ there is a function
+\begin{defn}[one-sided identity types] Given a type $A$ and a term $a : A$, the \textbf{identity type} of $A$ at $a$ is the inductive family of types $x : A \vdash a =_A x \univ$ with a single constructor $\refl_a : a =_A a$. The induction principle is postulates that for any type family $x : A, p : a =_A x \vdash P(x,p) \univ$ there is a function
 \[ \pathind_a : P(a, \refl_a) \to \prod_{x : A} \prod_{p : a =_A x} P(x,p)\]
 satisfying $\pathind_a(q,a, \refl_a) \doteq q$.
 \end{defn}
@@ -776,27 +779,27 @@ This is a very strong induction principle: it says that to prove a predicate $P(
 
 More formally, identity types are defined by the following rules:
 \[
-\inferrule{ \Gamma \vdash a : A}{ \Gamma, x : A \vdash a =_A x \type} \qquad
+\inferrule{ \Gamma \vdash a : A}{ \Gamma, x : A \vdash a =_A x \univ} \qquad
 \inferrule{\Gamma \vdash a : A}{\Gamma \vdash \refl_a : a =_A a}\]
 \[ 
-\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \type}{\Gamma \vdash \pathind_a : P(a,\refl_a) \to \prod_{x :A}\prod_{p : a =_A x}P(x,p)} \qquad
-\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \type}{\Gamma \vdash \pathind_a(q,a, \refl_a) \doteq q : P(a,\refl_a)}
+\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \univ}{\Gamma \vdash \pathind_a : P(a,\refl_a) \to \prod_{x :A}\prod_{p : a =_A x}P(x,p)} \qquad
+\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \univ}{\Gamma \vdash \pathind_a(q,a, \refl_a) \doteq q : P(a,\refl_a)}
 \]
 
 Equally, the identity type can be considered in a two-sided fashion:
 \begin{defn}[two-sided identity types]
- Given a type $A$, the \textbf{identity type} of $A$ is the inductive family of types $x : A, y :A \vdash x =_A y \type$ with a single constructor $x : A \vdash \refl_x : x =_A x$. The induction principle is postulates that for any type family $x : A, y : A, p : x =_A y \vdash P(x,y,p) \type$ there is a function
+ Given a type $A$, the \textbf{identity type} of $A$ is the inductive family of types $x : A, y :A \vdash x =_A y \univ$ with a single constructor $x : A \vdash \refl_x : x =_A x$. The induction principle is postulates that for any type family $x : A, y : A, p : x =_A y \vdash P(x,y,p) \univ$ there is a function
 \[ \pathind : \prod_{a : A} P(a, a, \refl_a) \to \prod_{x : A} \prod_{y: A}\prod_{p : x =_A y} P(x,y,p)\]
 satisfying $\pathind(q,a, a,\refl_a) \doteq q$.
 \end{defn}
 
 In this form, the identity types are defined by the following rules:
 \[
-\inferrule{ \Gamma \vdash A}{ \Gamma, x : A, y : A \vdash x =_A y \type} \qquad
+\inferrule{ \Gamma \vdash A}{ \Gamma, x : A, y : A \vdash x =_A y \univ} \qquad
 \inferrule{\Gamma \vdash A}{\Gamma, x :A \vdash \refl_x : x =_A x}\]
 \[ 
-\inferrule{\Gamma \vdash A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \type}{\Gamma \vdash \pathind : \prod_{a : A} P(a,a,\refl_a) \to \prod_{x :A}\prod_{y :A}\prod_{p : x =_A y}P(x,y, p)} \quad
-\inferrule{\Gamma \vdash  A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \type}{\Gamma, a : A \vdash  \pathind (q,a,a,\refl_a) \doteq q : P(a,a,\refl_a)}
+\inferrule{\Gamma \vdash A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \univ}{\Gamma \vdash \pathind : \prod_{a : A} P(a,a,\refl_a) \to \prod_{x :A}\prod_{y :A}\prod_{p : x =_A y}P(x,y, p)} \quad
+\inferrule{\Gamma \vdash  A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \univ}{\Gamma, a : A \vdash  \pathind (q,a,a,\refl_a) \doteq q : P(a,a,\refl_a)}
 \]
 
 These presentations are interderivable.
@@ -867,17 +870,17 @@ By the definitions of concatenation and inverses, again both left-hand and right
 
 \section*{September 20: More identity types}
 
-\subsection*{Types as $\infty$-groupoids}
+\subsection*{Types as \texorpdfstring{$\infty$}{infinity}-groupoids}
 
 Martin-L\"{o}f's rules for the identity types date from a 1975 paper ``An Intuitionistic Theory of Types.'' In the following two decades, there was a conjecture that went by the name ``uniqueness of identity proofs" that for any $x,y : A$, $p, q  : x =_A y$, the type $p =_{x=_A y} q$ is inhabited, meaning that it's possible to construct an identification between $p$ and $q$. In 1994, Martin Hofmann and Thomas Streicher constructed a model of Martin-L\"{o}f's dependent type theory in the category of groupoids that refutes uniqueness of identity proofs.\footnote{The technical details of what exactly it means to ``construct a model of type theory'' are quite elaborate and would be interesting to explore as a final project.}
 
 In the Hofmann-Streicher model, types $A$ correspond to \emph{groupoids} and terms $x, y : A$ correspond to \emph{objects} in the groupoid. An identification $p : x = y$ corresponds to a(n iso)morphism $p : x \to y$ in the groupoid, while an identification between identifications exists if and only if $p$ and $q$ define the same morphism. Since there are groupoids with multiple distinct morphisms between a fixed pair of objects, we see that it is not always the case that $p=_{x=_A y} q$. Following Hofmann-Streicher, it made sense to start viewing types as more akin to groupoids than to sets. The proofs of symmetry and transitivity for identity types are more accurately described as inverses and concatenation operations in a groupoid. As we've seen, these satisfy various associativity, unit, and inverse laws---up to identification at least---as required by a groupoid.
 
-But that last caveat is important. We've shown that for any type $A$, its identity types $x,y :A \vdash x=_A y \type$ give it something like the structure of a groupoid. But for each $x,y :A$, $x=_A y$ is also a type, so \emph{its} identity types $p,q: x=_A y \vdash p =_{x=_A y}q \type$ give $x=_A y$ its own groupoid structure. And the higher identity types, $\alpha, \beta : p =_{x=_A y}q  \vdash \alpha= \beta \type$ give $p =_{x=_A y}q$ its own groupoid structure and so on. So a modern point of view is that the types in Martin-L\"{o}f's dependent type theory should be thought of as $\infty$-\emph{groupoids}.
+But that last caveat is important. We've shown that for any type $A$, its identity types $x,y :A \vdash x=_A y \univ$ give it something like the structure of a groupoid. But for each $x,y :A$, $x=_A y$ is also a type, so \emph{its} identity types $p,q: x=_A y \vdash p =_{x=_A y}q \univ$ give $x=_A y$ its own groupoid structure. And the higher identity types, $\alpha, \beta : p =_{x=_A y}q  \vdash \alpha= \beta \univ$ give $p =_{x=_A y}q$ its own groupoid structure and so on. So a modern point of view is that the types in Martin-L\"{o}f's dependent type theory should be thought of as $\infty$-\emph{groupoids}.
 
 If $A$ is an $\infty$-groupoid, its terms $x :A$ might be called \textbf{points} and its identifications $p : x =_A y$ might be called \textbf{paths}. This explains the modern name ``path induction'' for the induction principle for identity types. These ideas are at the heart of the homotopical interpretation of type theory, about more which later.
 
-\subsection*{The uniqueness of $\refl$}
+\subsection*{The uniqueness of \texorpdfstring{$\refl$}{refl}}
 
 The definition of the identity types says that the family of types $a =x$ indexed by $x : A$ is inductively generated by the term $\refl_a : a = a$. It does \emph{not} say that the type $a =a$ is inductively generated by $a : A$. In particular, we cannot apply path induction to prove that $p = \refl_a$ for any $p : a = a$ because in this case neither endpoint of the identity type is free. 
 
@@ -931,9 +934,9 @@ Similarly, we define $\apcoh{concat}(f,p,q)$ by path induction on $p$ (since con
 
 The term $\ap_f$ defines the action of a non-dependent function $f \colon A \to B$ on paths in $A$. It's natural to ask whether a dependent function $f : \prod_{z:A}B(z)$ also induces an action on paths. There's a challenge here, though. If $x,y : A$ are terms belonging to the base type, then we can form the type $x=_A y$ to ask whether they are identifiable. But the terms $f(x) : B(x)$ and $f(y) : B(y)$  belong to different types and are not identifiable. But nevertheless if there is  path $p : x = y$ identifying $y$ with $x$ intuition suggests there should be some way to compare $f(y)$ to $f(x)$.
 
-To achieve this, we must construct a different sort of action of paths function first. This is called the  \textbf{transport} function for dependent types $x :A \vdash B(x) \type$ that, given an identification $p : x = y$ in the base type, can be used to transport any term in $B(x)$ to a term in $B(y)$.
+To achieve this, we must construct a different sort of action of paths function first. This is called the  \textbf{transport} function for dependent types $x :A \vdash B(x) \univ$ that, given an identification $p : x = y$ in the base type, can be used to transport any term in $B(x)$ to a term in $B(y)$.
 
-\begin{prop} For any type family $x : A \vdash B(x) \type$, there is a \textbf{transport operation}
+\begin{prop} For any type family $x : A \vdash B(x) \univ$, there is a \textbf{transport operation}
 \[ \tr_B : \prod_{x,y :A} (x=y) \to (B(x) \to B(y)).\]
 \end{prop}
 \begin{proof}
@@ -1005,74 +1008,74 @@ Recall that in Martin-L\"{o}f's dependent type theory, $\bN$ was defined as the 
 \[ \prod_{n : \bN} (n = 0_\bN) \to \emptyset \qquad \prod_{n,m : \bN} (\suc(n) = \suc(m)) \to (n = m)\]
 but we don't yet have the tools needed to construct terms in those types. Type theoretic \emph{universes} will enable us to construct terms in these types and prove many other things besides.
 
-Informally, a universe $\univ$ can be thought of as a ``type whose terms are types.'' More precisely, a universe is a type $\univ$ together with a type family $X : \univ \vdash \sT(X)$ called the \emph{universal type family}. We think of the term $X$ as an \emph{encoding} of the type $\sT(X)$ though its common to conflate these notions notationally, writing ``$X$'' for both the encoding and the type.
+Informally, a universe $\UU$ can be thought of as a ``type whose terms are types.'' More precisely, a universe is a type $\UU$ together with a type family $X : \UU \vdash \sT(X)$ called the \emph{universal type family}. We think of the term $X$ as an \emph{encoding} of the type $\sT(X)$ though its common to conflate these notions notationally, writing ``$X$'' for both the encoding and the type.
 
-Universes are assumed to be closed under all the type constructors in a sense to be made precise below. To avoid a famous inconsistency, however, we do not assume that the universe is contained in itself. One way to think about this is that $\univ$ is the type of ``small'' types, but $\univ$ itself is not ``small.''
+Universes are assumed to be closed under all the type constructors in a sense to be made precise below. To avoid a famous inconsistency, however, we do not assume that the universe is contained in itself. One way to think about this is that $\UU$ is the type of ``small'' types, but $\UU$ itself is not ``small.''
 
-In the presence of a universe $\univ$, a family of small types $x : A \vdash B(x) \type$ over a type $A$ can be encoded by a function $B \colon A \to \univ$ defined by sending the term $x$ to the encoding of the type $B(x)$.\footnote{This is already how we have been defining type families in \texttt{agda}.} In particular, if $A$ is an inductive type, freely generated by some finite list of constructors, then \emph{type families} over $A$---not just dependent functions over $A$---can be defined inductively by specifying types for each of the constructors. We will see examples of this soon.
+In the presence of a universe $\UU$, a family of small types $x : A \vdash B(x) \univ$ over a type $A$ can be encoded by a function $B \colon A \to \UU$ defined by sending the term $x$ to the encoding of the type $B(x)$.\footnote{This is already how we have been defining type families in \texttt{agda}.} In particular, if $A$ is an inductive type, freely generated by some finite list of constructors, then \emph{type families} over $A$---not just dependent functions over $A$---can be defined inductively by specifying types for each of the constructors. We will see examples of this soon.
 
 \subsection*{Type theoretic universes}
 
-\begin{defn} A \textbf{universe} is a type $\univ$ in the empty context equipped with a type family $X : \univ \vdash \sT(X) \type$ over $\univ$ called the \textbf{universal family of types} that is closed under the type forming operations in the sense that it is equipped with the following structure:
+\begin{defn} A \textbf{universe} is a type $\UU$ in the empty context equipped with a type family $X : \UU \vdash \sT(X) \univ$ over $\UU$ called the \textbf{universal family of types} that is closed under the type forming operations in the sense that it is equipped with the following structure:
 \begin{enumerate}
-\item $\univ$ contains terms $\check{\emptyset}$, $\check{\1}$, $\check{\bN}$ that satisfy the judgmental equalities
+\item $\UU$ contains terms $\check{\emptyset}$, $\check{\1}$, $\check{\bN}$ that satisfy the judgmental equalities
 \[ \sT(\check{\emptyset}) \doteq \emptyset, \quad \sT(\check{\1}) \doteq \1, \quad \sT(\check{\bN}) \doteq \bN.\]
-\item $\univ$ is closed under coproducts in the sense that it comes equipped with a function
-\[ \check{+} \colon \univ \to \univ \to \univ\] that satisfies $\sT(X\check{+}Y) \doteq \sT(X) + \sT(Y)$.
-\item $\univ$ is closed under $\Pi$-types in the sense that it comes equipped with a function
-\[ \check{\Pi} \colon \prod_{X: \univ} (\sT(X) \to \univ) \to \univ\] satisfying
+\item $\UU$ is closed under coproducts in the sense that it comes equipped with a function
+\[ \check{+} \colon \UU \to \UU \to \UU\] that satisfies $\sT(X\check{+}Y) \doteq \sT(X) + \sT(Y)$.
+\item $\UU$ is closed under $\Pi$-types in the sense that it comes equipped with a function
+\[ \check{\Pi} \colon \prod_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
 \[ \sT(\check{\Pi}(X,P)) \doteq \prod_{x : \sT(X)} \sT(P(x))\]
-for all $X : \univ$ and $P \colon \sT(X) \to \univ$.
-\item $\univ$ is closed under $\Sigma$-types in the sense that it comes equipped with a function
-\[ \check{\Sigma} \colon \prod_{X: \univ} (\sT(X) \to \univ) \to \univ\] satisfying
+for all $X : \UU$ and $P \colon \sT(X) \to \UU$.
+\item $\UU$ is closed under $\Sigma$-types in the sense that it comes equipped with a function
+\[ \check{\Sigma} \colon \prod_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
 \[ \sT(\check{\Sigma}(X,P)) \doteq \sum_{x : \sT(X)} \sT(P(x))\]
-for all $X : \univ$ and $P \colon \sT(X) \to \univ$.
-\item $\univ$ is closed under identity types in the sense that it comes equipped with a function
-\[ \check{\Id} : \prod_{X : \univ} \sT(X) \to \sT(X) \to \univ\]
+for all $X : \UU$ and $P \colon \sT(X) \to \UU$.
+\item $\UU$ is closed under identity types in the sense that it comes equipped with a function
+\[ \check{\Id} : \prod_{X : \UU} \sT(X) \to \sT(X) \to \UU\]
 satisfying
 \[ \sT(\Id(X,x,y)) \doteq (x = y)\]
-for all $X: \univ$ and $x,y : \sT(X)$.
+for all $X: \UU$ and $x,y : \sT(X)$.
 \end{enumerate}
 \end{defn} 
 
-\begin{defn} Given a universe $\univ$, we say a type $A$ in context $\Gamma$ is \textbf{small} if it occurs in the universe: i.e., if it comes equipped with a term $\check{A} : \univ$ in context $\Gamma$ for which the judgment
-\[ \Gamma \vdash \sT(\check{A}) \doteq A \type\]
+\begin{defn} Given a universe $\UU$, we say a type $A$ in context $\Gamma$ is \textbf{small} if it occurs in the universe: i.e., if it comes equipped with a term $\check{A} : \UU$ in context $\Gamma$ for which the judgment
+\[ \Gamma \vdash \sT(\check{A}) \doteq A \univ\]
 holds. 
 \end{defn}
 
-When $A$ is a small type, it's common to write $A$ for both $\check{A}$ and $\sT(A)$. So by $A : \univ$ we mean that $A$ is a small type.
+When $A$ is a small type, it's common to write $A$ for both $\check{A}$ and $\sT(A)$. So by $A : \UU$ we mean that $A$ is a small type.
 
 \subsection*{Assuming enough universes}
 
-Most of the time it's sufficient to assume just one universe $\univ$. But on occasion, it is useful to assume that $\univ$ itself is a type in some universe. 
+Most of the time it's sufficient to assume just one universe $\UU$. But on occasion, it is useful to assume that $\UU$ itself is a type in some universe. 
 
 \begin{post} We assume that there are \textbf{enough universes}, i.e., that for every finite list of types in context
-\[ \Gamma_1 \vdash A_1 \type \quad \cdots \quad \Gamma_n \vdash A_n \type\]
-there is a universe $\univ$ that contains each $A_i$ in the sense that $\univ$ has terms
-\[ \Gamma_i \vdash \check{A}_i : \univ\] for which $\Gamma_i \vdash \sT(\check{A}_i) \doteq A_i \type$ holds. 
+\[ \Gamma_1 \vdash A_1 \univ \quad \cdots \quad \Gamma_n \vdash A_n \univ\]
+there is a universe $\UU$ that contains each $A_i$ in the sense that $\UU$ has terms
+\[ \Gamma_i \vdash \check{A}_i : \UU\] for which $\Gamma_i \vdash \sT(\check{A}_i) \doteq A_i \univ$ holds. 
 \end{post}
 
 With this assumption it's rarely necessary to work with more than one universe at the same time. 
 
 As a consequence of our postulate that there exist enough universes, we obtain specific universes:\footnote{In \texttt{agda}, this structure is formalized in the file Agda.Primitive.}
 
-\begin{defn} The \textbf{base universe} $\univ_0$ is obtained by applying the postulate to the empty list of types in context.
+\begin{defn} The \textbf{base universe} $\UU_0$ is obtained by applying the postulate to the empty list of types in context.
 \end{defn}
 
-\begin{defn} The \textbf{successor universe} of any universe $\univ$ is the universe $\univ^+$ obtained from the finite list
-\[ \vdash \univ \type \quad X: \univ \vdash \sT(X) \type\]
+\begin{defn} The \textbf{successor universe} of any universe $\UU$ is the universe $\UU^+$ obtained from the finite list
+\[ \vdash \UU \univ \quad X: \UU \vdash \sT(X) \univ\]
 \end{defn}
-Thus the successor universe contains both $\univ$ and any type in $\univ$. 
+Thus the successor universe contains both $\UU$ and any type in $\UU$. 
 
-\begin{defn} The \textbf{join} of two universes $\univ$ and $\mathcal{V}$ is the universe $\univ \sqcup \mathcal{V}$ obtained by applying the postulate to the type families
-\[ X : \univ \vdash \sT_\univ(X) \type \qquad Y : \mathcal{V} \vdash \sT_{\mathcal{V}}(Y) \type\]
+\begin{defn} The \textbf{join} of two universes $\UU$ and $\mathcal{V}$ is the universe $\UU \sqcup \mathcal{V}$ obtained by applying the postulate to the type families
+\[ X : \UU \vdash \sT_\UU(X) \univ \qquad Y : \mathcal{V} \vdash \sT_{\mathcal{V}}(Y) \univ\]
 \end{defn}
 
-\subsection*{Observational equality on $\bN$}
+\subsection*{Observational equality on \texorpdfstring{$\bN$}{N}}
 
-To illustrate what universes are for, we define a type family $m : \bN, n : \bN \vdash \Eq_\bN(m,n) \type$ that we call \textbf{observational equality} on $\bN$. Because type families can now be thought of as functions $\Eq_\bN : \bN \to \bN \to \univ$ we can use the induction principle of $\bN$ to define this type family.  We'll then prove that $\Eq_\bN$ is \textbf{logically equivalent} to the identity type family; in fact, we'll later see that these types are \textbf{equivalent}, once we know what that means. The advantage of the type family $\Eq_\bN$ is that it's characterized more explicitly, so this will help us prove theorems about the identity type family over the natural numbers.
+To illustrate what universes are for, we define a type family $m : \bN, n : \bN \vdash \Eq_\bN(m,n) \univ$ that we call \textbf{observational equality} on $\bN$. Because type families can now be thought of as functions $\Eq_\bN : \bN \to \bN \to \UU$ we can use the induction principle of $\bN$ to define this type family.  We'll then prove that $\Eq_\bN$ is \textbf{logically equivalent} to the identity type family; in fact, we'll later see that these types are \textbf{equivalent}, once we know what that means. The advantage of the type family $\Eq_\bN$ is that it's characterized more explicitly, so this will help us prove theorems about the identity type family over the natural numbers.
 
-\begin{defn} We define \textbf{observational equality} of $\bN$ as the type family $\Eq_\bN : \bN \to \bN \to \univ$ satisfying
+\begin{defn} We define \textbf{observational equality} of $\bN$ as the type family $\Eq_\bN : \bN \to \bN \to \UU$ satisfying
 \[ \Eq_\bN(0_\bN,0_\bN) \doteq \1 \quad \Eq_\bN(\suc(n),0_\bN) \doteq \emptyset \quad \Eq_\bN(0,\suc(n)) \doteq \emptyset \quad \Eq_\bN(\suc(m), \suc(n)) \doteq \Eq_\bN(m,n).\]
 \end{defn}
 
@@ -1126,6 +1129,106 @@ which is precisely the claim.
 \end{proof}
 
 \section*{September 27: Modular arithmetic}
+
+Having fully described Martin-L\"{o}f's dependent type theory, we may now start developing some mathematics in it. The fundamental idea used to develop mathematics is something we've already previewed: the Curry-Howard interpretation.
+
+\subsection*{The Curry-Howard interpretation}
+
+The Curry-Howard interpretation is an interpretation of logic into type theory. In type theory, there is no separation between the logical framework and the general theory of collections of mathematical objects the way there is in the more traditional setup with Zermelo-Fraenkel set theory, which is postulated by axioms in first order logic. The idea is that propositions may be expressed as types with proofs of those propositions expressed as terms in those types. For example:
+
+\begin{defn} We say that a natural number $d$ divides a natural number $n$ if there is a term in the type
+\[ d \mid n \coloneq \sum_{k : \bN} d \cdot k = n \]
+defined using the multiplication $\cdot$ on $\bN$, the identity type of $\bN$, and the dependent sum of the type family $k : \bN \vdash d \cdot k = n \univ$.
+\end{defn}
+
+Just as existential quantification $(\exists)$ is expressed using $\Sigma$-types, universal quantification $(\forall)$ is expressed using $\Pi$-types. For example, the type
+\[ \prod_{n : \bN} 1 \mid n\]
+asserts that every natural number is divisible by 1. The term
+\[ \lambda n. (n, \term{left-unit}(n)) : \prod_{n : \bN} 1 \mid n\]
+proves this result.
+
+\begin{prop} Let $d, m,n : \bN$. If $d$ divides any two of $m$, $n$, and $m+n$, then $d$ divides the third.
+\end{prop}
+\begin{proof}
+We prove only that if $d \mid m$ and $d \mid n$ then $d \mid m+n$.
+By hypothesis we have terms:
+\[ H : \sum_{k : \bN} d \cdot k = m \quad \text{and} \quad K : \sum_{k : \bN} d \cdot k = n.\]
+By $\Sigma$-induction, we may assume that $H$ is given by a pair $(h : \bN, p : d \cdot h = m)$ and $K$ is given by a pair $(k : \bN, q : d \cdot k = n)$. To get a term in $\sum_{x : \bN} d \cdot x = m + n$ we may use $x \coloneq h + k$. Our goal is then to define an identification $d \cdot (h + k) = m + n$ which we obtain as a concatenation
+\[
+\begin{tikzcd} d \cdot (h+ k ) \arrow[r, equals, "\term{dist}"] & d \cdot h + d \cdot k \arrow[r, equals, "\ap_{+d \cdot k}p"] & m + d \cdot k \arrow[r, equals, "\ap_{m+}q"] & m + n
+\end{tikzcd}
+\]
+\end{proof}
+
+We have observed many similarities between the rules of various type constructors and tautologies from logic. For instance, the elimination rule for the non-dependent function type supplies a function
+\[ \term{modus-ponens} : A \times (A \to B) \to B.\]
+One important difference is that general types may contain multiple terms that cannot be identified: i.e., for which it is possible to prove that $x =_A y \to \emptyset$. Later we'll study the following predicate on types:
+\[ \term{is-prop}(A) \coloneq \prod_{x,y : A} x =_A y\]
+which asserts that \emph{if} $A$ has multiple terms (which it may not) those terms can always be identified. This will be the $n=-1$ level of a hierarchy of $n$-types for $n \geq -2$.
+
+\subsection*{The congruence relations on \texorpdfstring{$\bN$}{N}}
+
+The family of identity types can be understood as a type-valued binary relation on a type.
+
+\begin{defn} For a type $A$, a \textbf{typal binary relation} on $A$ is a family of types $x, y : A \vdash R(x,y) \univ$. A binary relation $R$ is 
+\begin{itemize}
+\item \textbf{reflexive} if it comes with a term $\rho : \prod_{x :A} R(x,x)$,
+\item \textbf{symmetric} if it comes with a term $\sigma : \prod_{x,y :A} R(x,y) \to R(y,x)$,
+\item \textbf{transitive} if it comes with a term $\tau : \prod_{x,y,z : A} \to R(x,y) \to R(y,z) \to R(x,z)$
+\end{itemize}
+A \textbf{typal equivalence relation} on $A$ is a reflexive, symmetric, and transitive, typal binary relation.
+\end{defn}
+
+For instance, for each $k : \bN$ we can define the relation of congruence modulo $k$ by defining a type
+\[ x \equiv y \mod k\]
+for each $x,y : \bN$ comprised of proofs that $x$ is equivalent to $y$ modulo $k$. Following Gauss, we say that $x$ is equivalent to $y$ mod $k$ if $k$ divides the symmetric difference $\term{dist}_\bN(x,y)$ defined recursively by
+\[ \term{dist}_\bN(0,0) \coloneq 0 \quad \term{dist}_\bN(0, y+1) \coloneq y+1 \quad \term{dist}_\bN(x+1,0) \coloneq x+1, \quad \term{dist}_\bN(x+1,y+1) \coloneq \term{dist}_\bN(x,y).\]
+
+\begin{defn} For $k,x,y : \bN$ define
+\[ x \equiv y \mod k \coloneq k \mid \term{dist}_\bN(x,y).\]
+Note this defines the \emph{type} $x \equiv y \mod k$. A term is then a pair comprised of an $\ell : \bN$ together with an identification $k \cdot \ell = \term{dist}_\bN(x,y)$.
+\end{defn}
+
+We leave the following to the course text:
+
+\begin{prop} For each $k$, the typal relation $\equiv \mod k$ is an equivalence relation.
+\end{prop}
+
+\subsection*{The standard finite types}
+
+The standard finite sets are classically defined as the sets $\{ n \in \bN \mid n < k\}$, so how do we interpret a subset $\{ x  \in A \mid P(x)\}$ characterized by a predicate in type theory?
+
+In the Curry-Howard interpretation, the predicate $P(x)$ is interpreted as a type family and the type of terms $x$ in $A$ for which $P(x)$ is true is interpreted by the $\Sigma$-type $\sum_{x : A} P(x)$. Note for a general type family $P(x)$ it won't necessarily be the case that the map $\pr_1 \colon \sum_{x :A} P(x) \to A$ is a monomorphism\footnote{Though this will be the case if each type $P(x)$ is a proposition in the sense alluded to above.} so this construction operates a bit differently than in set theory.
+
+Through this mechanism it is possible to define the classical finite sets as 
+\[ \type{Classical-Fin}_k \coloneq \sum_{n : \bN}n < k \]
+though the standard definition is as follows:
+
+\begin{defn} We define the type family $\type{Fin}$ of \textbf{standard finite types} inductively (using the induction principle of $\bN$ and the universe $\UU$) as follows:
+\[ \type{Fin}_0 \coloneq \emptyset, \quad \type{Fin}_{k+1} \coloneq \type{Fin}_k + \1.\]
+\end{defn}
+
+Write $i$ for $\inl : \type{Fin}_k \to \type{Fin}_{k+1}$ and $\star$ for the point $\inr(\star) : \type{Fin}_{k+1}$.
+
+\subsection*{The natural numbers modulo $k+1$}
+
+Given an equivalence relation $\sim$ on a set $A$ the quotient $A_{/\sim}$ comes equipped with a quotient map $q \colon A \to A_{/\sim}$ that satisfies two important properties:
+\begin{enumerate}
+\item $q$ is \textbf{effective}: $q(x) = q(y)$ if and only if $x \sim y$
+\item $q$ is surjective: for all $[z] \in A_{/\sim}$ there is some $z \in A$ so that $q(z) = [z]$.
+\end{enumerate}
+
+Both properties can be expressed in type theory, though there are some subtleties.
+
+\begin{defn} In the context of types $A$ and $B$ there is a type family $\type{is-surj} \colon (A \to B) \to \UU$ defined by
+\[ \type{is-surj}(f) \coloneq \prod_{b : B} \sum_{a : A} f(a) =_B b.\]
+\end{defn}
+
+The subtlety is that this really defines a \emph{split} notion of surjectivity. A term $p$ in $\type{is-surj}(f)$ defines a function that for each term $b : B$ produces a term of $\sum_{a : A} f(a) =_B b$. By compositing $p$ with $\pr_1 : \sum_{a : A} f(a) =_B b \to A$, we obtain a function $s \colon B \to A$. By composing $p$ with $\pr_2 : \sum_{a : A} f(s(b)) =_B b$ we also obtain a proof that $s$ is a \textbf{section} of $f$. Thus surjective functions in homotopy type theory are really \textbf{split} surjective functions.
+
+Challenge define $[-]_{k+1} \colon \bN \to \type{Fin}_{k+1}$.
+
+
 \section*{September 29: Elementary number theory}
 
 \part{The Univalent Foundations of Mathematics}
@@ -1157,3 +1260,7 @@ which is precisely the claim.
 
 
 \end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
