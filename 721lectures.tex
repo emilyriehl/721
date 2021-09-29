@@ -256,7 +256,7 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\tr}{\term{tr}}
 \newcommand{\apd}{\term{apd}}
 
-\newcommand{\UU}{\mathcal{U}}
+\newcommand{\UU}{{\mathcal{U}}}
 \newcommand{\sT}{\mathcal{T}}
 \newcommand{\Id}{\textup{\text{Id}}}
 \newcommand{\Eq}{\textup{\text{Eq}}}
@@ -1194,6 +1194,14 @@ We leave the following to the course text:
 \begin{prop} For each $k$, the typal relation $\equiv \mod k$ is an equivalence relation.
 \end{prop}
 
+There are other important relations on $\bN$ that are not-equivalence relations.
+
+\begin{defn} The binary relation $\leq$ on $\bN$ is defined by induction by
+  \[ 0 \leq 0 \coloneq \1 \quad 0 \leq n+1 \coloneq \1 \quad n+1 \leq 0 \coloneq \emptyset \quad m+1 \leq n+1 \coloneq m \leq n.\]
+  Similarly, the binary relation $<$ is defined by
+  \[ 0 < 0 \coloneq \emptyset \quad 0 < n+1 \coloneq \1 \quad n+1 < 0 \coloneq \emptyset \quad m+1 < n+1 \coloneq m < n.\]
+  \end{defn}
+
 \subsection*{The standard finite types}
 
 The standard finite sets are classically defined as the sets $\{ n \in \bN \mid n < k\}$, so how do we interpret a subset $\{ x  \in A \mid P(x)\}$ characterized by a predicate in type theory?
@@ -1309,10 +1317,65 @@ There is something called the ``with-abstraction'' that gives a concise syntax f
 
 \subsection*{The well-ordering principle of $\bN$}
 
-\subsection*{The greatest common divisor}
+The traditional well-ordering principle is about subsets of $\bN$, or equivalently, about predicates on $\bN$. In type theory, we replace these by decidable type families over $\bN$.
+
+\begin{defn} Let $P \colon \bN \to \UU$. A number $n : \bN$ is a \textbf{lower bound} for $P$ if it comes equipped with a term in the type
+  \[ \type{is-lower-bound}_{P}(n) \coloneq \prod_{k : \bN} P(k) \to n \leq k\]
+  Similarly,
+  \[ \type{is-uppwer-bound}_{P}(n) \coloneq \prod_{k : \bN} P(k) \to k \leq n\]
+  \end{defn}
+
+  \begin{thm}[well-ordering principle]
+    Let $P$ be a decidable family oer $\bN$ with $d$ a witness that $P$ is decidable. Then there is a function
+    \[ w(P,d) : \left( \sum_{n : \bN}P(n)\right) \to \left( \sum_{m : \bN}P(m) \times \type{is-lower-bound}(m)\right).\]
+  \end{thm}
+  In other words, if $P(n)$ is inhabited for some $n$ then there is a smallest $m : \bN$ so that $P(m)$ is inhabited.
+
+  \begin{proof}
+    We will show that for any decidable type family $Q : \bN \to \UU$ that there is a function
+    \[ Q(n) \to \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_Qm
+    \]
+    by induction on $n$. When $n=0$ we can use $m=0$ since 0 is always a lower bound. For the inductive step we may assume we have the displayed function for every type family $Q$ and consider a decidable type family $Q$ with a term $q : Q(n+1)$. Our goal is to construct a term in the type
+    \[ \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m\]. Since $Q(0)$ is decidable it suffices to construct a function
+    \[ Q(0) + \neg Q(0) \to  \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m
+    \]
+    so we can do a case analysis. If we have $Q(0)$ then it follows immediately that $m=0$ is minimal.  If $\neq Q(0)$, then we can consider the decidable family $Q' \colon \bN \to \UU$ defined by $Q(n) \coloneq Q'(\suc(n))$. Since $q : Q'(n)$ we get a minimal element $m$ for $Q'$ by the inductive hypothesis. But since $Q(0)$ is assumed to be false then $m+1$ is the minimal element for $Q$.   \emd{proof}
+    
+  
+  
+%\subsection*{The greatest common divisor}
 
 \subsection*{The infinitude of primes}  
 
+FOr natural numbers $d$ and $n$ we say $d$ is a \textbf{proper divisor} of $n$ if it comes with a term in the type
+\[ \type{is-proper-divisor}(n,d) \coloneq (d \neq n) \times (d \mid n)\]
+With this notation we can say a natural number $n$ is \textbf{prime} if it comes with a term in the type
+\[ \type{is-prime}(n) \coloneq \prod_{x : \bN}\type{is-proper-divisor}(n,x) \leftrightarrow (x=1)\]
+
+The proof of the infinitude of primes proceeds by constructing a prime number larger than $n$ for any $n : \bN$. So we can consider the type family for $n,m : \bN$
+\[ R(n,m) \coloneq (n < m) \times \prod_{x : \bN} (x \leq n) \to (x \mid m) \to (x=1)\]
+of pairs so that $m$ is greater than $n$ and $m$ is relatively prime to all numbers $x \leq n$. Since $n!+1$ satisfies these properties for any $n$, the type family $m \mapsto R(n,m)$ in context $n : \bN$ is inhabited. Thus, by the well-ordering principle, it has a least element $p$ and this $p$ must be prime.
+
+Using the results we skipped it's possible to prove:
+
+\begin{lem} The type $R(n,m)$ is decidable for each $n, m : \bN$.
+\end{lem}
+
+We leave it to the reader to verify that $R(n,n!+1)$ is inhabited. Using these ingredients, we prove the infinitude of primes in the following form:
+
+\begin{thm} For each $n$, there is a prime number $p : \bN$ so that $n < p$.
+  \end{thm}
+  \begin{proof}
+    It suffices to show this for each non-zero $n$ since the case $n=0$ follows. So let $n$ be a non-zero natural number.
+
+    Since the type $R(n,m)$ is decidable for each $m$ and since $R(n,n!+1)$ holds by the well-ordering principle there is a minimal $p : \bN$ so that $R(n,p)$. We will show that $p$ is prime by constructing a term in the type
+    \[ \type{is-prime}(p) \coloneq (p \neq 1) \times \prod_{x: \bN} \type{is-proper-divisor}(p,x) \to (x = 1).\]
+    By construction, $n < p$ and $n$ is non-zero so $p \neq 1$. So now let $x$ be a proper divisor of $p$. Since $R(n,p)$ holds by construction we can show that $x=1$ by proving that $x \leq n$. Since $p$ is non-zero and $x \mid p$ we must have $x < p$. By minimality of $p$ it follows that $\neg R(n,x)$ holds. However, any divisor of $x$ must also divide $p$ by transitivity of divisibility, so \[
+      \prod_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1).\]
+    Since $\neg R(n,x)$ holds we conclude that $\neg(n < x)$. It follows that $x \leq n$.
+  \end{proof}
+ 
+  
 \part{The Univalent Foundations of Mathematics}
 
 \section*{October 4: Equivalences}
@@ -1344,5 +1407,6 @@ There is something called the ``with-abstraction'' that gives a concise syntax f
 \end{document}
 %%% Local Variables:
 %%% mode: latex
+%%% TeX-master: t
 %%% TeX-master: t
 %%% End:
