@@ -1210,6 +1210,8 @@ though the standard definition is as follows:
 
 Write $i$ for $\inl : \type{Fin}_k \to \type{Fin}_{k+1}$ and $\star$ for the point $\inr(\star) : \type{Fin}_{k+1}$.
 
+By induction we can define functions $\iota_k \colon \type{Fin}_k \to \bN$ for each $k$. When $k=0$ there is nothing to show. To define $\iota_{k+1} \colon \type{Fin}_{k+1} \to \bN$ we can use $\iota_k$  and define $\iota_{k+1}(i(x)) \coloneq \iota_k(x)$ and $\iota_{k+1}(\star)\coloneq k$.
+
 \subsection*{The natural numbers modulo $k+1$}
 
 Given an equivalence relation $\sim$ on a set $A$ the quotient $A_{/\sim}$ comes equipped with a quotient map $q \colon A \to A_{/\sim}$ that satisfies two important properties:
@@ -1226,10 +1228,90 @@ Both properties can be expressed in type theory, though there are some subtletie
 
 The subtlety is that this really defines a \emph{split} notion of surjectivity. A term $p$ in $\type{is-surj}(f)$ defines a function that for each term $b : B$ produces a term of $\sum_{a : A} f(a) =_B b$. By compositing $p$ with $\pr_1 : \sum_{a : A} f(a) =_B b \to A$, we obtain a function $s \colon B \to A$. By composing $p$ with $\pr_2 : \sum_{a : A} f(s(b)) =_B b$ we also obtain a proof that $s$ is a \textbf{section} of $f$. Thus surjective functions in homotopy type theory are really \textbf{split} surjective functions.
 
-Challenge define $[-]_{k+1} \colon \bN \to \type{Fin}_{k+1}$.
+Our next challenge is to define the quotient maps $[-]_{k} \colon \bN \to \type{Fin}_{k}$ that compute the remainder modulo $k$. Our strategy will be to define this function by induction on $n : \bN$. The idea is that the term $0_\bN : \bN$ should get sent to some $0$ while successors in $\bN$ should be sent to successors in $\type{Fin}_k$, taken in the cyclic order. We define these auxiliary structures first.
+
+\begin{defn} We define $\term{zero}_k : \type{Fin}_{k+1}$ recursively by
+\[ \term{zero}_0 \coloneq \star \quad \term{zero}_{k+1} \coloneq i(\term{zero})_k.\]
+
+We then define $\term{skip-zero}_k : \type{Fin}_k \to \type{Fin}_{k+1}$ recursively by
+\[ \term{skip-zero}_{k+1}(i(x)) \coloneq i(\term{skip-zero}_k(x)) \quad \term{skip-zero}_{k+1}(\star) \coloneq \star.\]
+
+Finally, we define $\term{succ}_k : \type{Fin}_k \to \type{Fin}_k$ recursively by
+\[ \term{succ}_{k+1}(i(x)) \coloneq \term{skip-zero}_k(x) \qquad \term{succ}_{k+1}(\star) \coloneq \term{zero}_k.\]
+\end{defn}
 
 
-\section*{September 29: Elementary number theory}
+\begin{defn} For any $k : \bN$ define $[-]_{k+1} \colon \bN \to \type{Fin}_{k+1}$ by
+\[ [0]_{k+1} \coloneq 0 \quad \text{and} \quad [n+1]_{k+1} \coloneq \term{succ}_{k+1}[n]_{k+1}.\]
+\end{defn}
+
+The text goes on to show that 
+\begin{itemize}
+\item $n \equiv \iota [n]_{k} \mod k$ for all $n$ and $k$,
+\item $[n]_k = [m]_k$ if and only of $n \equiv m \mod k$,
+\item and the map $[-]_k \colon \bN \to \type{Fin}_k$ is split surjective.
+\end{itemize}
+
+Then it is possible to use this quotient map to define the cyclic group structure on $\type{Fin}_k$.
+
+\section*{September 29: Decidability in elementary number theory}
+
+In constructive mathematics it is not possible to prove the law of excluded middle: namely that $P \vee \neg P$ for an arbitrary proposition $P$. Similarly in type theory, it is not possible to construct a term of type $A + \neg A$ for arbitrary $A$. But certain types do come with such terms.
+
+\subsection*{Decidability}
+
+\begin{defn} A type $A$ is \textbf{decidable} if it comes equipped with an element of type
+\[ \type{is-decidable}(A) \coloneq A + \neg A.\]
+A type family $P \colon A \to \UU$ is \textbf{decidable} if $P(a)$ is decidable for every $a : A$.
+\end{defn}
+
+\begin{ex}
+The primary way to show that $A$ is decidable is either to provide a term $a : A$ or provide a function $na : A \to \emptyset$. In particular $\1$ is decidable since we have $\inl(\star) : \type{is-decidable}(\1)$. Similarly $\emptyset$ is decidable since we have $\inr(\id) : \type{is-decidable}(\emptyset)$.
+\end{ex}
+
+\begin{rmk}
+If $A$ and $B$ are decidable then so are $A+B$, $A \times B$, and $A \to B$. Proofs use case analysis over the coproduct types $A + \neg A$ and $B + \neg B$. 
+\end{rmk}
+
+\begin{defn} A type $A$ \textbf{has decidable equality} if the identity type $x=_Ay$ is decidable for every $x, y : A$. Thus
+\[ \type{has-decidable-eq}(A) \coloneq \prod_{x,y: A} \type{is-decidable}(x=_Ay).\]
+\end{defn}
+
+\begin{lem} Suppose $A$ and $B$ are types so that $A \leftrightarrows B$. Then $A$ is decidable if and only if $B$ is decidable.
+\end{lem}
+\begin{proof}
+A proof of $A \leftrightarrow B$ supplies functions $f \colon A \to B$ and $g \colon B \to A$. Using the contrapositive function we obtain $\term{contrapositive}(f) : \neg B \to \neg A$ and $\term{contrapositive}(g) \colon \neg A \to \neg B$. We therefore have functions
+\[ f + \term{contrapositive}(g) \colon A + \neg A \to B + \neg B \qquad g + \term{contrapositive}(f) : B + \neg B \to A + \neg A,\]
+proving the logical equivalence of $\type{is-decidable}(A)$ and $\type{is-decidable}(B)$. In particular, if either type is inhabited, both must be. 
+\end{proof}
+
+\begin{cor} $\bN$ has decidable equality.
+\end{cor}
+\begin{proof}
+We have shown that the identity types of $\bN$ are logically equivalent to the observational equality types, which were defined to be $\1$ or $\emptyset$. As both types are decidable, the identity types of $\bN$ must be as well.
+\end{proof}
+
+\begin{rmk} We will prove later that if a type has decidable equality then it must be a \textbf{set} in a technical sense to be introduced. Even so, not all sets have decidable equality unless one assumes that the law of excluded middle is true for all propositions.
+\end{rmk}
+
+\subsection*{Case analysis}
+
+Suppose you'd like to define a function by case analysis such as $\term{collatz} : \bN \to \bN$
+\[ \term{collatz}(n) \coloneq \begin{cases} n/2 & n\ \text{is~odd} \\ 2n+1 & n\ \text{is~even} \end{cases}\]
+To justify this sort of case analysis we use a term
+\[ d : \prod_{n : \bN} \type{is-decidable} (2 \mid n)\]
+whose construction we skipped. Note that $2 \mid n$ and $\neg(2 \mid n)$ cannot both hold because if so we could evaluate the function $\term{odd}(n) : \neg(2 \mid n)$ at the term $\term{even}(n) : 2 \mid n$ to get a contradiction. So this $d$ can be thought of as a proof that for all $n : \bN$, $n$ is odd or $n$ is even (but not both).
+
+This puts us into the following abstract setup. Our goal is to define a function $c : \prod_{x :A} C(x)$, namely the function $\term{collatz} : \bN \to \bN$. We already have a function $d : \prod_{x :A} B(x)$, namely $d : \prod_{n : \bN} \type{is-decidable}(2 \mid n)$. So it suffices to define a function $h : \prod_{x:A} B(x) \to C(x)$ because then we can define $c(x) \coloneq h(x,d(x))$. In this case this means we need a function
+\[ h : \prod_{n : \bN} \type{is-decidable} (2 \mid n) \to \bN\] which we can now define by cases from
+\[ h\term{-even}(n) \coloneq \lambda n. n/2 \colon (2 \mid n) \to \bN \quad \text{and} \quad h\term{-odd}(n) \coloneq \lambda n. 3n+1 : \neg(2 \mid n) \to \bN.\]
+There is something called the ``with-abstraction'' that gives a concise syntax for functions defined in this manner.
+
+\subsection*{The well-ordering principle of $\bN$}
+
+\subsection*{The greatest common divisor}
+
+\subsection*{The infinitude of primes}  
 
 \part{The Univalent Foundations of Mathematics}
 
