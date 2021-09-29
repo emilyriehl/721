@@ -1277,6 +1277,9 @@ A type family $P \colon A \to \UU$ is \textbf{decidable} if $P(a)$ is decidable 
 The primary way to show that $A$ is decidable is either to provide a term $a : A$ or provide a function $na : A \to \emptyset$. In particular $\1$ is decidable since we have $\inl(\star) : \type{is-decidable}(\1)$. Similarly $\emptyset$ is decidable since we have $\inr(\id) : \type{is-decidable}(\emptyset)$.
 \end{ex}
 
+\begin{ex} Since the type families $n, m: \bN \vdash n \leq m \univ$ and $n, m : \bN \vdash n < m \univ$ were defined by induction from the types $\emptyset$ and $\1$, it follows that these type families are decidable.
+\end{ex}
+
 \begin{rmk}
 If $A$ and $B$ are decidable then so are $A+B$, $A \times B$, and $A \to B$. Proofs use case analysis over the coproduct types $A + \neg A$ and $B + \neg B$. 
 \end{rmk}
@@ -1285,7 +1288,7 @@ If $A$ and $B$ are decidable then so are $A+B$, $A \times B$, and $A \to B$. Pro
 \[ \type{has-decidable-eq}(A) \coloneq \prod_{x,y: A} \type{is-decidable}(x=_Ay).\]
 \end{defn}
 
-\begin{lem} Suppose $A$ and $B$ are types so that $A \leftrightarrows B$. Then $A$ is decidable if and only if $B$ is decidable.
+\begin{lem} Suppose $A$ and $B$ are types so that $A \leftrightarrow B$. Then $A$ is decidable if and only if $B$ is decidable.
 \end{lem}
 \begin{proof}
 A proof of $A \leftrightarrow B$ supplies functions $f \colon A \to B$ and $g \colon B \to A$. Using the contrapositive function we obtain $\term{contrapositive}(f) : \neg B \to \neg A$ and $\term{contrapositive}(g) \colon \neg A \to \neg B$. We therefore have functions
@@ -1327,27 +1330,26 @@ The traditional well-ordering principle is about subsets of $\bN$, or equivalent
 
   \begin{thm}[well-ordering principle]
     Let $P$ be a decidable family oer $\bN$ with $d$ a witness that $P$ is decidable. Then there is a function
-    \[ w(P,d) : \left( \sum_{n : \bN}P(n)\right) \to \left( \sum_{m : \bN}P(m) \times \type{is-lower-bound}(m)\right).\]
+    \[ w(P,d) : \left( \sum_{n : \bN}P(n)\right) \to \left( \sum_{m : \bN}P(m) \times \type{is-lower-bound}_P(m)\right).\]
   \end{thm}
   In other words, if $P(n)$ is inhabited for some $n$ then there is a smallest $m : \bN$ so that $P(m)$ is inhabited.
 
   \begin{proof}
     We will show that for any decidable type family $Q : \bN \to \UU$ that there is a function
-    \[ Q(n) \to \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_Qm
+    \[ Q(n) \to \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_Q(m)
     \]
     by induction on $n$. When $n=0$ we can use $m=0$ since 0 is always a lower bound. For the inductive step we may assume we have the displayed function for every type family $Q$ and consider a decidable type family $Q$ with a term $q : Q(n+1)$. Our goal is to construct a term in the type
-    \[ \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m\]. Since $Q(0)$ is decidable it suffices to construct a function
+    \[ \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}(m)\]. Since $Q(0)$ is decidable it suffices to construct a function
     \[ Q(0) + \neg Q(0) \to  \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m
     \]
-    so we can do a case analysis. If we have $Q(0)$ then it follows immediately that $m=0$ is minimal.  If $\neq Q(0)$, then we can consider the decidable family $Q' \colon \bN \to \UU$ defined by $Q(n) \coloneq Q'(\suc(n))$. Since $q : Q'(n)$ we get a minimal element $m$ for $Q'$ by the inductive hypothesis. But since $Q(0)$ is assumed to be false then $m+1$ is the minimal element for $Q$.   \emd{proof}
+    so we can do a case analysis. If we have $Q(0)$ then it follows immediately that $m=0$ is minimal.  If $\neq Q(0)$, then we can consider the decidable family $Q' \colon \bN \to \UU$ defined by $Q(n) \coloneq Q'(\suc(n))$. Since $q : Q'(n)$ we get a minimal element $m$ for $Q'$ by the inductive hypothesis. But since $Q(0)$ is assumed to be false then $m+1$ is the minimal element for $Q$.   
+    \end{proof}
     
   
-  
-%\subsection*{The greatest common divisor}
 
 \subsection*{The infinitude of primes}  
 
-FOr natural numbers $d$ and $n$ we say $d$ is a \textbf{proper divisor} of $n$ if it comes with a term in the type
+For natural numbers $d$ and $n$ we say $d$ is a \textbf{proper divisor} of $n$ if it comes with a term in the type
 \[ \type{is-proper-divisor}(n,d) \coloneq (d \neq n) \times (d \mid n)\]
 With this notation we can say a natural number $n$ is \textbf{prime} if it comes with a term in the type
 \[ \type{is-prime}(n) \coloneq \prod_{x : \bN}\type{is-proper-divisor}(n,x) \leftrightarrow (x=1)\]
@@ -1372,7 +1374,8 @@ We leave it to the reader to verify that $R(n,n!+1)$ is inhabited. Using these i
     \[ \type{is-prime}(p) \coloneq (p \neq 1) \times \prod_{x: \bN} \type{is-proper-divisor}(p,x) \to (x = 1).\]
     By construction, $n < p$ and $n$ is non-zero so $p \neq 1$. So now let $x$ be a proper divisor of $p$. Since $R(n,p)$ holds by construction we can show that $x=1$ by proving that $x \leq n$. Since $p$ is non-zero and $x \mid p$ we must have $x < p$. By minimality of $p$ it follows that $\neg R(n,x)$ holds. However, any divisor of $x$ must also divide $p$ by transitivity of divisibility, so \[
       \prod_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1).\]
-    Since $\neg R(n,x)$ holds we conclude that $\neg(n < x)$. It follows that $x \leq n$.
+    Since \[\neg R(n,x) \doteq \neg \left((n < x) \times \prod_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1) \right)\]
+         holds we conclude that $\neg(n < x)$. On account of the logical equivalence $\neg(n < x ) \leftrightarrow (x \leq n)$, it follows that $x \leq n$.
   \end{proof}
  
   
