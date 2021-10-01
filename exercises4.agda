@@ -22,8 +22,8 @@ data Id {i : Level}{A : UU i}(a : A) : A → UU i where
 ap : {i j : Level}{A : UU i}{B : UU j}{x y : A} → (f : A → B) → (Id x y) → (Id (f x) (f y))
 ap f refl = refl 
 
--- Exercise: define a function componentwise-equality that proves that if two functions f g : A → B are identifiable
--- then for all a : A the terms f a and g a are identifiable.
+-- Exercise: define a function componentwise-equality that proves that if two dependent functions
+-- f g : (a : A) → B a are identifiable then for all a : A the terms f a and g a are identifiable.
 -- In summary: identifiable functions are "pointwise identifiable"
 -- The converse implication does not hold in dependent type theory but does hold in homotopy type theory (as we will prove soon).
 
@@ -53,6 +53,7 @@ A ↔ B = (A → B) × (B → A)
 -- Exercise: define a type family that asks whether a function is surjective
 -- The curly braces {A = A}{B = B} are giving agda the names for some implicit arguments you will need to define this term.
 -- is-surj : {i j : Level}{A : UU i}{B : UU j} → (A → B) → UU (i ⊔ j)
+-- is-surj {A = A}{B = B} f = ?
 
 -- Exercise: define the type family that asks whether a function has a section 
 -- Here f : A → B has a section if there is some s : B → A so that f (s b) = b for all b in B.
@@ -121,7 +122,7 @@ Bool-In-World false = ∅
 
 -- Exercise: use the transport function and the type family Bool-In-World to give a second proof that true ≠ false
 
--- Exercise: provide two proofs, "pf1" and "pf2", of the proposition {i j : Level}{P : UU i}{Q : UU j} → (P × Q) → (P + Q)
+-- Exercise: provide two proofs, "pf1" and "pf2", of the proposition {P Q : UU lzero} → (P × Q) → (P + Q)
 
 -- You can prove that pf1 ≠ pf2 by solving the following exercises
 
