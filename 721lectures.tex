@@ -1,4 +1,4 @@
-
+% !TEX program = lualatex
 % The following code introduces a new \if macro which we use to switch
 % compilation between the published and internet versions of the book
 %
@@ -262,6 +262,9 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\Eq}{\textup{\text{Eq}}}
 
 
+\newcommand{\bool}{\type{bool}}
+\newcommand{\true}{\term{true}}
+\newcommand{\false}{\term{false}}
 
 \begin{document}
 
@@ -1381,7 +1384,195 @@ We leave it to the reader to verify that $R(n,n!+1)$ is inhabited. Using these i
   
 \part{The Univalent Foundations of Mathematics}
 
+The univalent foundations build's on Martin-L\"{o}f's dependent type theory by adding a few new axioms inspired by the interpretation of types as $\infty$-groupoids or spaces rather than sets. One of these axioms, Voevodsky's \emph{univalence axiom}, is inconsistent with the interpretation of types as sets. When we meet the hierarchy of truncation levels, we'll see that some types behave like types and some types behave like sets while others have non-trivial higher-dimensional structures. 
+
 \section*{October 4: Equivalences}
+
+Recall the notion of \textbf{logical equivalence} between types $A$ and $B$
+\[ A \leftrightarrow B \coloneq (A \to B) \times (B \to A).\]
+
+For instance, you proved on your homework that $\bool$ and $\1+\1$ are logically equivalent by constructing functions
+\[
+\begin{tikzcd}[row sep=tiny, column sep=large] \bool \arrow[r, "{\term{bool-to-1+1}}"] & \1+\1 & \1+\1 \arrow[r, "\term{1+1-to-bool}"] & \bool \\
+\true \arrow[r, mapsto] & \inl(\star) & \inl(\star) \arrow[r, mapsto] & \true \\ \false \arrow[r, mapsto] & \inr(\star) & \inr(\star) \arrow[r, mapsto] & \bool
+\end{tikzcd}
+\]
+These inverse implications are obviously related. Our next goal is to develop language to explain how.
+
+\subsection*{Homotopies}
+
+Surprisingly, we are not able, in dependent type theory, to construct identifications between functions $\term{1+1-to-bool} \circ \term{bool-to-1+1}$ and $\id_\bool$ or between $\suc$ and $\lambda n, n+1$. We can, however, construct \emph{pointwise identifications} between these pairs of functions, which in homotopy type theory are commonly called \textbf{homotopies}:
+
+\begin{defn} Let $f,g : \prod_{x:A} B(x)$. The type $f\sim g$ of \textbf{homotopies} from $f$ to $g$ is defined to be the type of pointwise identifications:
+\[ f \sim g\coloneq \prod_{x :A} f(x) =_{B(x)} g(x).\]
+\end{defn}
+
+\begin{rmk} Given three functions as below
+\[
+\begin{tikzcd} A \arrow[rr, "h"] \arrow[dr, "f"'] & & C \\ & B \arrow[ur, "g"']
+\end{tikzcd}
+\]
+we say the triangle \textbf{commutes} if $h\sim g \circ f$.
+\end{rmk}
+
+Note if $H, K : f \sim g \coloneq \prod_{x :A} f(x) = g(x)$ are homotopies we can treat them as dependent functions in their own right and consider \textbf{homotopies between homotopies}, i.e., terms of the type $H \sim K \coloneq \prod_{x :A} H(x) = K(x)$. This continues all the way up.
+
+Indeed, the $\infty$-groupoid structure of identity types extends to homotopies as follows:
+
+\begin{defn} For any type family $B \colon A \to \UU$ we have operations
+\[ \term{refl-htpy} : \prod_{f : \prod_{x:A}B(x)} f \sim f \quad \term{inv-htpy} : \prod_{f,g :\prod_{x:A}B(x)} (f \sim g) \to (g \sim f) \]
+\[ \term{concat-htpy} : \prod_{f,g,h : \prod_{x:A}B(x)} f \sim g \to g \sim h \to f \sim h\]
+defined pointwise by
+\[ \term{refl-htpy}(f) = \lambda x .\refl_{f(x)} \quad \term{inv-htpy}(H) \coloneq \lambda x. {H(x)}^{-1} \quad \term{concat-htpy}(H,K) \coloneq \lambda x. H(x) \cdot K(x)\]
+We abbreviate these latter two terms by writing $H^{-1}$ and $H \cdot K$.
+\end{defn}
+
+Note we don't abbreviate $\term{refl-htpy}_f : f \sim f \coloneq \prod_{x :A} f(x)=_{B(x)} f(x)$ as $\refl_f : f =_{\prod_{x:A}B(x)}f$ as these terms live in different types.
+
+\begin{prop} Homotopies satisfy the groupoid laws up to homotopy:
+\begin{enumerate}
+\item There is a homotopy $\term{assoc-htpy}(H,K,L) : (H \cdot K) \cdot L \sim H \cdot (K \cdot L)$ for any homotopies $H : f \sim g$, $K : g \sim h$, $L \colon h \sim i$.
+\item There are homotopies $\term{left-unit-htpy}(H) : \term{refl-htpy}_f \cdot H \sim H$ and $\term{right-unit-htpy}(H) : H \cdot \term{refl-htpy}_g \sim H$.
+\item There are homotopies $\term{left-inv-htpy}(H) : H^{-1} \cdot H \sim \term{refl-htpy}_g$ and $\term{right-inv-htpy}(H) \colon H \cdot H^{-1} \sim \term{refl-htpy}_f$.
+\end{enumerate}
+\end{prop}
+
+In addition to the groupoid operations we make use of the following \textbf{whiskering operations} on homotopies which are relevant in the setting of functions
+\[
+\begin{tikzcd} A \arrow[r, "f"] & B \arrow[r, bend left, "g"] \arrow[r, bend right, "h"'] & C \arrow[r, "k"] & D
+\end{tikzcd}
+\]
+
+\begin{defn} Given the functions above and a homotopy $H \colon g \sim h$ define homopies
+\[ H \circ f \coloneq \lambda a. H(f(a)) \colon g \circ f \sim h \circ f\]
+and
+\[
+k \circ H \coloneq \lambda_b. \ap_k(H(b)) \colon k \circ g \sim k \circ h.\]
+\end{defn}
+
+\subsection*{Bi-invertible maps}
+
+We now explain what it means for a function $f \colon A \to B$ between types to define an \textbf{equivalence}. On explanation is that an equivalence is like a homotopy equivalence in topology, but we actually define the type family $\type{is-equiv}$ in a manner that makes equivalences look more like ``bi-invertible maps'' for reasons that we will explain.
+
+\begin{defn} Let $f \colon A \to B$. 
+\begin{enumerate}
+\item The type of \textbf{sections} of $f$ is defined to be the type
+\[ \type{sec}(f) \coloneq \sum_{g : B \to A} f\circ g \simeq \id_B.\]
+\item The type of \textbf{retractions} of $f$ is defined to be the type
+\[ \type{retr}(f) \coloneq \sum_{h : B \to A} h \circ f \simeq \id_A.\]
+\item We say $f$ is an \textbf{equivalence} if it has a section and a retraction:
+\[ \type{is-equiv}(f) \colon \type{sec}(f) \times \type{retr}(f).\]
+\end{enumerate}
+We write $A \simeq B$ for the type $\sum_{f : A \to B} \type{is-equiv}(f)$ of all equivalences from $A$ to $B$.
+\end{defn}
+
+Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : B \to A$ and two homotopies $G : f \circ g \simeq \id_B$ and $H \colon h \circ f \simeq \id_A$. We have seen a bunch of examples:
+
+\begin{ex} $\quad$
+\begin{itemize}
+\item Identity functions are equivalences.
+\item $\term{bool-to-1+1} \colon \bool \to \1+\1$ and $\term{1+1-to-bool} \colon \1+\1 \to \bool$ are inverse equivalences.
+\item $\term{neg-bool} \colon \bool \to \bool$ is an equivalence.
+\item $\term{pred} \colon \bZ \to \bZ$ is an equivalence, inverse to $\term{succ} \colon \bZ \to \bZ$.
+\end{itemize}
+\end{ex}
+
+We might also define
+\[ \type{has-inverse}(f) \coloneq \sum_{g : B \to A} (f \circ g \simeq \id_B) \times (g \circ f \simeq \id_A).\]
+The reason we did not define equivalences to be functions that have inverses is that we wanted being an equivalence to be a \textbf{property} associated to a map $f$ rather than a \textbf{structure} on the map, in a sense we'll discuss soon. Essentially because of the uniqueness of reflexivity paths, if $f$ is an equivalence then it only has one section and homotopy and only one retraction and homotopy, up to homotopy. We'll see, however, that the data of inverses to $f$ can be more complicated.
+
+But even though $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ may differ:
+
+\begin{prop} The types $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ are logically equivalent. In particular, if $f$ is an equivalence it has a two-sided inverse.
+\end{prop}
+\begin{proof}
+The data of an inverse obviously defines the data of an equivalence, so we have $\type{has-inverse}(f) \to \type{is-equiv}(f)$.
+
+For the converse, suppose we have $g,h \colon B \to A$ and homotopies $G : f \circ g \simeq \id_B$ and $H \colon h \circ f \simeq \id_A$.  Then for any $b : B$ we have
+\[
+\begin{tikzcd} g(b) \arrow[r, equals, "H(g(b))^{-1}"] & h(f(g(b))) \arrow[r, equals, "\ap_h(G(b))"] & h(b)
+\end{tikzcd}
+\]
+defining a homotopy $K \colon g \simeq h$. Using this we can see that $g$ is also a retraction of $f$ by the identification for any $a :A$
+\[
+\begin{tikzcd} g(f(a)) \arrow[r, "K(f(a))", equals] & h(f(a)) \arrow[r, "H(a)"] & a
+\end{tikzcd}
+\]
+\end{proof}
+
+\begin{cor} A section or retraction of an equivalence is an equivalence. 
+\end{cor}
+\begin{proof}
+We've just seen that the section of an equivalence is also a retraction and thus is an invertible map with inverse $f$. A dual construction applies to a retraction.
+\end{proof}
+
+Up to equivalence, types satisfy many familiar laws, such as
+\begin{align*}
+A+B &\simeq B + A & A \times B &\simeq B \times A\\
+A \times \1 &\simeq A & A+\emptyset &\simeq A \\
+A \times (B + C) &\simeq (A \times B) + (A \times C
+ \end{align*}
+where the required equivalences and homotopies can be constructed by induction. These equivalences extend to cases such as
+\[ \sum_{x : \emptyset} B(x) \simeq \emptyset \quad \sum_{x : \1}B(x)\simeq B(\star).\]
+and
+\[ \sum_{z : \sum_{x : A}B(x)} C(z) \simeq \sum_{x :A} \sum_{y : B(x)} C(x,y) \quad \sum_{w : A +B}C(w) \simeq \sum_{x :A} C(\inl x) + \sum_{y : B} C(\inr y).\]
+
+In the presence of an additional axiom, we'll be able to prove similar equivalences involving function types, but we can't deduce these just yet.
+
+\subsection*{Characterizing the identity types of \texorpdfstring{$\Sigma$}{Sigma}-types}
+
+We return to the theme of characterizing identity types to characterize the identity type of a $\Sigma$-type, up to equivalence. We follow the same outline used to characterize the identity type family of the natural numbers above:
+\begin{enumerate}
+\item We define a binary relation $R \colon A \to A \to \UU$ that we suspect is equivalent to the identity type family.
+\item Prove reflexivity by constructing a term in $\prod_{x :A} R(x,x)$.
+\item Use reflexivity and path induction to define a canonical map $\prod_{x,y:A} x=_A y \to R(x,y)$.
+\item Show that the map $x=_A y \to R(x,y)$ is an equivalence for each $x,y :A$.
+\end{enumerate}
+The last step is usually the most difficult and we will refine our techniques for dealing with it soon.
+
+In this section, we consider $B \colon A \to \UU$ and the corresponding type $\sum_{x:A} B(x)$. Given dependent pairs $(a,b)$ and $(a',b')$ we might imagine that the data of an identification between them involves a pair of identifications comprised firstly of a path $p : a =_A a'$ and then of a path $q : \tr_B(p, b) = b'$. We first turn this idea into a binary relation.
+
+\begin{defn} Define 
+\[ \Eq_\Sigma \colon \left(\sum_{x:A}B(x)\right) \to \left(\sum_{x:A}B(x)\right) \to \UU\]
+by 
+\[ \Eq_\Sigma(s,t) \coloneq \sum_{p : \pr_1(s) = \pr_1(t)} \tr_B(p, \pr_2(s)) = \pr_2(t).\]
+\end{defn}
+
+\begin{lem} The relation $\Eq_\Sigma$ is reflexive.
+\end{lem}
+\begin{proof} By $\Sigma$-induction it suffices to let $s : \sum_{x:A}B(x)$ be a pair $(a : A, b : B(a))$ in which case we have
+\[ \lambda a,\lambda b. (\refl_a,\refl_b) \colon \prod_{x :A}\prod_{y:B(x)} \sum_{p : x =x} \tr_B(p,y) = y\]
+since we have a definitional equality $\tr_B(\refl_a,b) \doteq b$.
+\end{proof}
+
+By path induction, we may define a map $\term{pair-eq} : s =t \to \Eq_\Sigma(s,t)$ for any $s,t : \Sigma_{x:A}B(x)$ by sending $\refl_s$ to the corresponding reflexivity term.
+
+\begin{thm} For any type family $B \colon A \to \UU$, the map
+\[ \term{pair-eq} \colon (s=t) \to \Eq_\Sigma(s,t)\]
+is an equivalence for every $s,t : \sum_{x:A}B(x)$.
+\end{thm}
+\begin{proof}
+We define an inverse equivalence $\term{eq-pair} \colon \Eq_\Sigma(s,t) \to (s=t)$ by repeated $\Sigma$-induction. For pairs $(a,b)$ and $(a',b')$ we must define
+\[ \term{eq-pair} \colon \sum_{p : a =a'} \tr_B(p,b)=b' \to ((a,b) = (a',b'))\]
+which we again do by $\Sigma$-induction. It suffices to to define a function in the type
+\[ \prod_{p: a = a'} (\tr_B(p,b) = b') \to ((a,b)= (a',b')).\]
+By double path induction we may first assume $b'$ is $\tr_B(p,b)$ and the second path is $\refl$. Then by path induction we may assume that $a'$ is $a$ and $p$ is refl in which case we send this pair $(\refl_a,\refl_b)$ to $\refl_{(a,b)} : ((a,b) = (a,b))$.
+
+To see that $\term{eq-pair}$ is a section of $\term{pair-eq}$ we require identifications
+\[ \term{pair-eq}(\term{eq-pair}(p,q)) = (p,q)\]
+for each $(p,q) : \sum_{p : a=a'}\tr_B(p,b)=b'$. By a double path induction it suffices to identify
+\[ \term{pair-eq}(\term{eq-pair}(\refl_a,\refl_b)) = (\refl_a,\refl_b)\] and the left-hand side is judgmentally equal to the right-hand side, so we may use $\refl_{(\refl_a,\refl_b)}$.
+
+To see that  $\term{eq-pair}$ is a retraction of $\term{pair-eq}$ we require identifications
+\[ \term{eq-pair}(\term{pair-eq} (p)) = p\]
+for each $p : s=t$. By path induction we may take $t$ to be $s$ and $p$ to be $\refl_s$. Then we require
+\[ \term{eq-pair}(\refl_{\pr_1(s)},\refl_{\pr_2(t)}) = \refl_s.\]
+By $\Sigma$-induction we may consider the case of a pair $(a,b)$ in which case we require
+\[ \term{eq-pair}(\refl_a,\refl_b) = \refl_{(a,b)}.\]
+Since the left-hand side we defined to be the right-hand side, we may use $\refl$.
+\end{proof}
+
+
 \section*{October 6: Contractibility}
 \section*{October 11: The fundamental theorem of identity types}
 \section*{October 13: Propositions, sets, and general truncation levels}
