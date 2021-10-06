@@ -209,14 +209,6 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\ZZ}{\mathbb{Z}}
 \newcommand{\kk}{\mathbbe{k}}
 
-%
-\newcommand{\we}{\mathcal{W}}
-\newcommand{\cof}{\mathcal{C}}
-\newcommand{\fib}{\mathcal{F}}
-\newcommand{\mono}{\mathcal{M}}
-\newcommand{\epi}{\mathcal{E}}
-\newcommand{\sk}{\mathrm{sk}}
-
 \newcommand{\sA}{\mathcal{A}}
 \newcommand{\sB}{\mathcal{B}}
 \newcommand{\sC}{\mathcal{C}}
@@ -265,6 +257,13 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\bool}{\type{bool}}
 \newcommand{\true}{\term{true}}
 \newcommand{\false}{\term{false}}
+
+\newcommand{\is}[1]{\type{is-{#1}}}
+\newcommand{\iscontr}{\type{is-contr}}
+\newcommand{\isprop}{\type{is-prop}}
+\newcommand{\isequiv}{\type{is-equiv}}
+
+\newcommand{\fib}{\type{fib}}
 
 \begin{document}
 
@@ -421,7 +420,7 @@ A derivation in type theory is a finite rooted tree where each node is a valid r
 Consider a section $b$ of a family $B$ over $A$ in context $\Gamma$, as encoded by a judgment:
 \[ \Gamma, x : A \vdash b(x) : B(x).\]
 We think of the section $b$ as a function that takes as input $x : A$ and produces a term $b(x) : B(x)$. Since the type of the output is allowed to depend on the term being input, this isn't quite an ordinary function but a \textbf{dependent function}. The type of all dependent functions is the \textbf{dependent function type}
-\[ \prod_{x : A} B(x)\]
+\[ \Pi_{x : A} B(x)\]
 
 What is a thing in mathematics? Structuralism says the ontology of a thing is determined by its behavior. In dependent type theory, we define dependent function types by stating their rules, which have the following forms:
 \begin{enumerate}
@@ -430,23 +429,23 @@ What is a thing in mathematics? Structuralism says the ontology of a thing is de
 \item \textbf{elimination rules}  tell us how the terms of a type may be used
 \item  \textbf{computation rules} tell us how the introduction and elimination rules interact
 \end{enumerate}
-There are also \textbf{congruence rules} that tell us that all constructions respect judgmental equality. See your book for more details.
+There are also \textbf{congruence rules} that tell us that all constructions respect judgmental equality. See \cite{Rijke} for more details.
 
 \begin{defn}[dependent function types]
 The $\Pi$-\textbf{formation rule} has the form:
 \[
-\inferrule{ \Gamma, x : A \vdash B(x) \univ}{\Gamma \vdash \prod_{x :A} B(x) \univ}
+\inferrule{ \Gamma, x : A \vdash B(x) \univ}{\Gamma \vdash \Pi_{x :A} B(x) \univ}
 \]
 
 The $\Pi$-\textbf{introduction rule} has the form:
 \[
-\inferrule{ \Gamma, x : A \vdash b(x) : B(x)}{ \Gamma \vdash \lambda x. b(x) : \prod_{x :A} B(x)}
+\inferrule{ \Gamma, x : A \vdash b(x) : B(x)}{ \Gamma \vdash \lambda x. b(x) : \Pi_{x :A} B(x)}
 \]
 The $\lambda$-\textbf{abstraction} $\lambda x. b(x)$ can be thought of as notation for $x \mapsto b(x)$. 
 
 The $\Pi$-\textbf{elimination rule} has the form of the evaluation function:
 \[
-\inferrule{ \Gamma \vdash f : \prod_{x :A} B(x)}{\Gamma, x :A \vdash f(x) : B(x)}
+\inferrule{ \Gamma \vdash f : \Pi_{x :A} B(x)}{\Gamma, x :A \vdash f(x) : B(x)}
 \]
 
 Finally, there are two computation rules: the $\beta$-\textbf{rule}
@@ -455,7 +454,7 @@ Finally, there are two computation rules: the $\beta$-\textbf{rule}
 \]
 and the $\eta$-\textbf{rule}, which says that all elements of a $\Pi$-type are dependent functions:
 \[
-\inferrule{ \Gamma \vdash f : \prod_{x : A}B(x)}{\Gamma \vdash \lambda x. f(x) \doteq f : \prod_{x :A} B(x)}\]
+\inferrule{ \Gamma \vdash f : \Pi_{x : A}B(x)}{\Gamma \vdash \lambda x. f(x) \doteq f : \Pi_{x :A} B(x)}\]
 \end{defn}
 
 
@@ -469,10 +468,10 @@ The formation rule is derived from the formation rule for $\Pi$-types together w
 \[
 \inferrule{
 \inferrule{ \Gamma \vdash A \univ \\ \Gamma \vdash B \univ}{\Gamma, x : A \vdash B \univ}}
-{\Gamma \vdash \prod_{x : A}B \univ}
+{\Gamma \vdash \Pi_{x : A}B \univ}
 \]
 We adopt the notation
-\[ A \to B \coloneq \prod_{x : A} B\]
+\[ A \to B \coloneq \Pi_{x : A} B\]
 for the dependent function type in the case where the type family $B$ is constant over $x : A$.
 
 The introduction, evaluation, and computation rules are instances of term conversion: eg
@@ -546,16 +545,16 @@ What then corresponds to a proof that $\forall n, P(n)$?
 
 The induction principle is encoded by the following rule:
 \[
-\inferrule{ \Gamma, n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
-{ \Gamma \vdash \term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)}
+\inferrule{ \Gamma, n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \Pi_{n : \bN} (P(n) \to P(\suc(n))) }
+{ \Gamma \vdash \term{ind}_\bN(p_0,p_S) : \Pi_{n : \bN} P(n)}
 \]
 
 \begin{rmk} There are other forms this rule might take that are interderivable with this one.
 \end{rmk}
 
-The computation rules say that the function $\term{ind}_\bN(p_0,p_S) : \prod_{n : \bN} P(n)$ behaves like it should on $0_\bN$ and successors:
+The computation rules say that the function $\term{ind}_\bN(p_0,p_S) : \Pi_{n : \bN} P(n)$ behaves like it should on $0_\bN$ and successors:
 \[
-\inferrule{ \Gamma , n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \prod_{n : \bN} (P(n) \to P(\suc(n))) }
+\inferrule{ \Gamma , n : \bN \vdash P(n) \univ \\ \Gamma \vdash p_0 : P(0_\bN) \\ \Gamma \vdash p_S : \Pi_{n : \bN} (P(n) \to P(\suc(n))) }
 { \Gamma \vdash \term{ind}_\bN(p_0,p_S)(0_\bN) \doteq p_0 : P(0_\bN)}
 \]
 and under the same premises
@@ -585,8 +584,8 @@ We \emph{will} be able to prove such equalities using the identity types, to be 
 
 \subsection*{Pattern matching}
 
-To define a dependent function $f : \prod_{n : \bN} P(n)$ by induction on $n$ it suffices, by the elimination rule for the natural numbers type, to provide two terms:
-\[ p_0 : P(0_\bN) \qquad p_S : \prod_{n : \bN} P(n) \to P(\suc(n)).\]
+To define a dependent function $f : \Pi_{n : \bN} P(n)$ by induction on $n$ it suffices, by the elimination rule for the natural numbers type, to provide two terms:
+\[ p_0 : P(0_\bN) \qquad p_S : \Pi_{n : \bN} P(n) \to P(\suc(n)).\]
 Thus the definition of $f$ may be presented by writing
 \[ f(0_\bN) \coloneq p_0 \qquad f(\suc(n)) \coloneq p_S(n,f(n)).\]
 This defines the function $f$ by \textbf{pattern matching} on the variable $n$. When a function is defined in this form, the judgmental equalities accompanying the definition are immediately displayed.
@@ -601,7 +600,7 @@ See \url{https://github.com/emilyriehl/721/blob/master/introduction.agda}
 The rules for the natural numbers type $\bN$ tell us:
 \begin{enumerate}
 \item how to form terms in $\bN$, and
-\item how to define dependent functions in $\prod_{n : \bN} P(n)$ for any type family $n : \bN \vdash P(n) \univ$,
+\item how to define dependent functions in $\Pi_{n : \bN} P(n)$ for any type family $n : \bN \vdash P(n) \univ$,
 \end{enumerate}
 while providing two computation rules for those dependent functions.
 
@@ -630,7 +629,7 @@ The formal definition of the \textbf{unit type} is as follows:
 As an inductive type, the definition is packaged as follows:
 
 \begin{defn} The \textbf{unit type} is a type $\1$ equipped with a term $\star : \1$ satisfying the inductive principle that for any family $x : \1 \vdash P(x)$ there is a function
-\[ \ind_\1 : P(\star) \to \prod_{x : 1} P(x)\]
+\[ \ind_\1 : P(\star) \to \Pi_{x : 1} P(x)\]
 with the computation rule $\ind_1(p,\star) \doteq p$.
 \end{defn}
 
@@ -648,7 +647,7 @@ In agda, this definition has the form:
 
 \begin{defn}
 The empty type is a type $\emptyset$ satisfying the induction principle that for any family of types $x : \emptyset \vdash P(x)$ there is a term
-\[ \ind_\emptyset : \prod_{x : \emptyset} P(x).\]
+\[ \ind_\emptyset : \Pi_{x : \emptyset} P(x).\]
 \end{defn}
 
 That is the empty type is the inductive type with no constructors. Thus there are no computation rules. In agda, this definition has the form:
@@ -701,7 +700,7 @@ Inductive types can be defined outside the empty context. For instance, the form
 \begin{defn} Given types $A$ and $B$ the \textbf{coproduct type} is the type equipped with 
 \[ \inl : A \to A + B \qquad \inr : B \to A+ B\]
 satisfying the induction principle that says that for any family of types $x : A + B \vdash P(x) \univ$ there is a term
-\[ \ind_+ : \left( \prod_{x : A} P(\inl (x))\right) \to \left( \prod_{y : B} P(\inr(y))\right) \to \prod_{z : A + B}P(z)\]
+\[ \ind_+ : \left( \Pi_{x : A} P(\inl (x))\right) \to \left( \Pi_{y : B} P(\inr(y))\right) \to \Pi_{z : A + B}P(z)\]
 satisfying the computation rules
 \[ \ind_+(f,g, \inl(x)) \doteq f(x) \qquad \ind_+(f,g, \inr(y)) \doteq g(y).\]
 \end{defn}
@@ -725,12 +724,12 @@ Since $\bZ$ is built from inductive types it is then an inductive type given wit
 
 Of all the inductive types we've introduced, the final one is perhaps the most important.
 
-Recall a \textbf{dependent function} $\lambda x . f(x) : \prod_{x : A}B(x)$ is like an ordinary function except the output type is allowed to vary with the input term. Similarly, a \textbf{dependent pair} $(a,b) : \sum_{x : A}B(x)$ is like an ordinary (ordered) pair except the type of the second term $b : B(a)$ is allowed to vary with the first term $a :A$.
+Recall a \textbf{dependent function} $\lambda x . f(x) : \Pi_{x : A}B(x)$ is like an ordinary function except the output type is allowed to vary with the input term. Similarly, a \textbf{dependent pair} $(a,b) : \Sigma_{x : A}B(x)$ is like an ordinary (ordered) pair except the type of the second term $b : B(a)$ is allowed to vary with the first term $a :A$.
 
-\begin{defn} Consider a type family $x : A \vdash B(x) \univ$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\sum_{x :A}B(x)$ is the inductive type equipped with the function
-\[ \pair : \prod_{x : A} \left(B(x) \to \prod_{y : A}B(y)\right).\]
-The induction principle asserts that for any family of types $p : \sum_{x :A} B(x) \vdash P(p) \univ$ there is a function
-\[ \ind_\Sigma : \left( \prod_{x :A} \prod_{y : B}P(\pair(x,y) \right) \to \left( \prod_{z : \sum_{x :A}B(x)}P(z) \right)
+\begin{defn} Consider a type family $x : A \vdash B(x) \univ$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\Sigma_{x :A}B(x)$ is the inductive type equipped with the function
+\[ \pair : \Pi_{x : A} \left(B(x) \to \Pi_{y : A}B(y)\right).\]
+The induction principle asserts that for any family of types $p : \Sigma_{x :A} B(x) \vdash P(p) \univ$ there is a function
+\[ \ind_\Sigma : \left( \Pi_{x :A} \Pi_{y : B}P(\pair(x,y) \right) \to \left( \Pi_{z : \Sigma_{x :A}B(x)}P(z) \right)
 \]
 satisfying the computation rule $\ind_\Sigma (g,\pair(x,y)) \doteq g(x,y)$.
 \end{defn}
@@ -738,17 +737,17 @@ satisfying the computation rule $\ind_\Sigma (g,\pair(x,y)) \doteq g(x,y)$.
 It is common to write ``$(x,y)$'' as shorthand for ``$\pair(x,y)$.''
 
 \begin{defn} Given a type family $x :A \vdash B(x) \univ$ by the induction principle for $\Sigma$-types, we have a function
-\[ \pr_1 : \sum_{x :A}B(x) \to A\]
+\[ \pr_1 : \Sigma_{x :A}B(x) \to A\]
 defined by $\pr_1(x,y) \coloneq x$ and a dependent function
-\[ \pr_2 :  \prod_{ p : \sum_{x :A}B(x)} B(\pr_1(p))\]
+\[ \pr_2 :  \Pi_{ p : \Sigma_{x :A}B(x)} B(\pr_1(p))\]
 defined by $\pr_2(x,y) \coloneq y$.
 \end{defn}
 
-When $B$ is a constant type family over $A$, the type $\sum_{x : A}B$ is the type of ordinary pairs $(x,y)$ where $x :A $ and $y: B$. Thus \textbf{product types} arise as special cases of $\Sigma$-types.
+When $B$ is a constant type family over $A$, the type $\Sigma_{x : A}B$ is the type of ordinary pairs $(x,y)$ where $x :A $ and $y: B$. Thus \textbf{product types} arise as special cases of $\Sigma$-types.
 
-\begin{defn} Given types $A$ and $B$ their product type is the type $A \times B \coloneq \sum_{x :A}B$. It comes with a pairing function
+\begin{defn} Given types $A$ and $B$ their product type is the type $A \times B \coloneq \Sigma_{x :A}B$. It comes with a pairing function
 \[ (-,-) : A \to B \to A \times B\] and satisfies an induction principle:
-\[ \ind_\times : \prod_{x : A} \prod_{y : B} P(x,y) \to \prod_{z : A \times B} P(z)\]
+\[ \ind_\times : \Pi_{x : A} \Pi_{y : B} P(x,y) \to \Pi_{z : A \times B} P(z)\]
 satisfying the computation rule $\ind_\times (g,(x,y)) \doteq g(x,y)$.
 \end{defn}
 
@@ -774,7 +773,7 @@ where ``$x=y$'' is commonly used as an abbreviation for ``$x=_Ay$'' when the typ
 We can define identity types as inductive types in either a one-sided or two-sided fashion. The induction rule may be easier to understand from the one-sided point of view, so we present it first.
 
 \begin{defn}[one-sided identity types] Given a type $A$ and a term $a : A$, the \textbf{identity type} of $A$ at $a$ is the inductive family of types $x : A \vdash a =_A x \univ$ with a single constructor $\refl_a : a =_A a$. The induction principle is postulates that for any type family $x : A, p : a =_A x \vdash P(x,p) \univ$ there is a function
-\[ \pathind_a : P(a, \refl_a) \to \prod_{x : A} \prod_{p : a =_A x} P(x,p)\]
+\[ \pathind_a : P(a, \refl_a) \to \Pi_{x : A} \Pi_{p : a =_A x} P(x,p)\]
 satisfying $\pathind_a(q,a, \refl_a) \doteq q$.
 \end{defn}
 
@@ -785,14 +784,14 @@ More formally, identity types are defined by the following rules:
 \inferrule{ \Gamma \vdash a : A}{ \Gamma, x : A \vdash a =_A x \univ} \qquad
 \inferrule{\Gamma \vdash a : A}{\Gamma \vdash \refl_a : a =_A a}\]
 \[ 
-\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \univ}{\Gamma \vdash \pathind_a : P(a,\refl_a) \to \prod_{x :A}\prod_{p : a =_A x}P(x,p)} \qquad
+\inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \univ}{\Gamma \vdash \pathind_a : P(a,\refl_a) \to \Pi_{x :A}\Pi_{p : a =_A x}P(x,p)} \qquad
 \inferrule{\Gamma \vdash a : A \\ \Gamma, x : A, p: a=_A x \vdash P(x,p) \univ}{\Gamma \vdash \pathind_a(q,a, \refl_a) \doteq q : P(a,\refl_a)}
 \]
 
 Equally, the identity type can be considered in a two-sided fashion:
 \begin{defn}[two-sided identity types]
  Given a type $A$, the \textbf{identity type} of $A$ is the inductive family of types $x : A, y :A \vdash x =_A y \univ$ with a single constructor $x : A \vdash \refl_x : x =_A x$. The induction principle is postulates that for any type family $x : A, y : A, p : x =_A y \vdash P(x,y,p) \univ$ there is a function
-\[ \pathind : \prod_{a : A} P(a, a, \refl_a) \to \prod_{x : A} \prod_{y: A}\prod_{p : x =_A y} P(x,y,p)\]
+\[ \pathind : \Pi_{a : A} P(a, a, \refl_a) \to \Pi_{x : A} \Pi_{y: A}\Pi_{p : x =_A y} P(x,y,p)\]
 satisfying $\pathind(q,a, a,\refl_a) \doteq q$.
 \end{defn}
 
@@ -801,7 +800,7 @@ In this form, the identity types are defined by the following rules:
 \inferrule{ \Gamma \vdash A}{ \Gamma, x : A, y : A \vdash x =_A y \univ} \qquad
 \inferrule{\Gamma \vdash A}{\Gamma, x :A \vdash \refl_x : x =_A x}\]
 \[ 
-\inferrule{\Gamma \vdash A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \univ}{\Gamma \vdash \pathind : \prod_{a : A} P(a,a,\refl_a) \to \prod_{x :A}\prod_{y :A}\prod_{p : x =_A y}P(x,y, p)} \quad
+\inferrule{\Gamma \vdash A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \univ}{\Gamma \vdash \pathind : \Pi_{a : A} P(a,a,\refl_a) \to \Pi_{x :A}\Pi_{y :A}\Pi_{p : x =_A y}P(x,y, p)} \quad
 \inferrule{\Gamma \vdash  A \\ \Gamma, x : A, y : A, p: x=_A y \vdash P(x,y,p) \univ}{\Gamma, a : A \vdash  \pathind (q,a,a,\refl_a) \doteq q : P(a,a,\refl_a)}
 \]
 
@@ -812,11 +811,11 @@ These presentations are interderivable.
 Mathematical equality, as traditionally understood, is an equivalence relation: it's reflexive, symmetric, and transitive. But all we've asserted about identity types is that they are inductively generated by the reflexivity terms! As we'll now start to discover, considerable additional structure follows.
 
 \begin{prop}[symmetry] For any type $A$, three is an  \textbf{inverse operation}
-\[ \inv : \prod_{x, y :A} x = y \to y =x.\]
+\[ \inv : \Pi_{x, y :A} x = y \to y =x.\]
 \end{prop}
 \begin{proof}
 We define $\inv$ by path induction. By the introduction rule for function types it suffices to define $\inv p : y =x$ for $p : x = y$. Consider the type family $x : A, y : A, p: x = y \vdash P(x,y,p) \coloneq y = x$. By path induction to inhabit $y=x$ it suffices to assume $x = y$ and $p$ is $\refl_x$ in which case we may define $\inv \refl_x \coloneq \refl_x : x=x$. Thus $\inv$ is
-\[ \pathind (\lambda x, \refl x) : \prod_{x :A} \prod_{y :A} \prod_{x = y} y =x.\]
+\[ \pathind (\lambda x, \refl x) : \Pi_{x :A} \Pi_{y :A} \Pi_{x = y} y =x.\]
 \end{proof}
 
 \begin{ntn} Write $p^{-1}$ for $\inv(p)$.
@@ -824,13 +823,13 @@ We define $\inv$ by path induction. By the introduction rule for function types 
 
 \begin{prop}[transitivity]
 For any type $A$, there is a  \textbf{concatenation} operation
-\[ \concat : \prod_{x,y,z :A} x= y \to y=z \to x = z.\] 
+\[ \concat : \Pi_{x,y,z :A} x= y \to y=z \to x = z.\] 
 \end{prop}
 \begin{proof}
 We define $\concat$ by appealing to the path induction principle for identity types. 
-By the introduction rule for dependent function types, to define $\concat$ you may assume given $p : x=y$. The task is then to define $\concat (p) : \prod_{z} y =z \to x = z$.  For this, consider the type family $x :A , y : A, p : x = y \vdash P(x,y,p)$ where $P(x,y,p) \coloneq \prod_{z : A} (y = z) \to (x = z)$. By applying the function $\pathind$ to get a term of this type it suffices to assume $y$ is $x$ and $p$ is $\refl_x$. So we need only define $\concat( \refl_x) : \prod_{z :A} x =z \to x = z$ and we define this to be the identity function $\id_{x = z}$. Thus the function $\concat$ is 
-\[  \pathind( \lambda x, \lambda z, \id_{x=z}) : \prod_{x :A}\prod_{y :A} \prod_{p : x = y} \prod_{z :A} y=z \to x =z,\]
-which can be regarded as a function in the type $\prod_{x,y,z :A} x= y \to y=z \to x = z$ by swapping the order of the arguments $p$ and $z$.
+By the introduction rule for dependent function types, to define $\concat$ you may assume given $p : x=y$. The task is then to define $\concat (p) : \Pi_{z} y =z \to x = z$.  For this, consider the type family $x :A , y : A, p : x = y \vdash P(x,y,p)$ where $P(x,y,p) \coloneq \Pi_{z : A} (y = z) \to (x = z)$. By applying the function $\pathind$ to get a term of this type it suffices to assume $y$ is $x$ and $p$ is $\refl_x$. So we need only define $\concat( \refl_x) : \Pi_{z :A} x =z \to x = z$ and we define this to be the identity function $\id_{x = z}$. Thus the function $\concat$ is 
+\[  \pathind( \lambda x, \lambda z, \id_{x=z}) : \Pi_{x :A}\Pi_{y :A} \Pi_{p : x = y} \Pi_{z :A} y=z \to x =z,\]
+which can be regarded as a function in the type $\Pi_{x,y,z :A} x= y \to y=z \to x = z$ by swapping the order of the arguments $p$ and $z$.
 \end{proof}
 
 \begin{ntn} Write $p \cdot q$ for $\concat(p,q)$.
@@ -838,20 +837,20 @@ which can be regarded as a function in the type $\prod_{x,y,z :A} x= y \to y=z \
 
 While the elimination rule for identity types is quite strong the corresponding computation rule is relatively weak. It's not strong enough to show that $(p \cdot q) \cdot r$ and $p \cdot (q \cdot r)$ are judgmentally equal for any $p : x = y$, $q : y = z$, and $r : z = q$. In fact there are countermodels that show that this is false in general. However, since both $(p \cdot q) \cdot r$ and $p \cdot (q \cdot r)$ are terms of type $x = w$ we can ask whether there is an identification between them and it turns out this is always true.
 
-\begin{prop}[associativity] Given $x,y,z,w  :A$ and identifications $p : x = y$, $q : y =z$, and $r : z = q$, there is an associator
+\begin{prop}[associativity] Given $x,y,z,w  :A$ and identifications $p : x = y$, $q : y =z$, and $r : z = w$, there is an associator
 \[ \assoc (p,q,r) : (p \cdot q) \cdot r = p \cdot (q \cdot r)\]
 \end{prop}
 \begin{proof} We define $\assoc(p,q,r)$ by path induction. 
 
-Consider the type family $x :A, y : A, p: x = y \vdash \prod_{z :A} \prod_{q : y =z} \prod_{w:A} \prod_{r : z =w} (p \cdot q) \cdot r = p \cdot (q \cdot r)$. To define a term $\assoc (p,q,r)$ in here it suffices to assume $y$ is $x$ and $p$ is $\refl_x$ and define
-\[ \lambda z. \lambda q. \lambda w. \lambda r. \assoc(\refl_x, q,r) : \prod_{z :A} \prod_{q : x =z} \prod_{w:A} \prod_{r : z =w} (\refl_x \cdot q) \cdot r = \refl_x \cdot (q \cdot r).\]
+Consider the type family $x :A, y : A, p: x = y \vdash \Pi_{z :A} \Pi_{q : y =z} \Pi_{w:A} \Pi_{r : z =w} (p \cdot q) \cdot r = p \cdot (q \cdot r)$. To define a term $\assoc (p,q,r)$ in here it suffices to assume $y$ is $x$ and $p$ is $\refl_x$ and define
+\[ \lambda z. \lambda q. \lambda w. \lambda r. \assoc(\refl_x, q,r) : \Pi_{z :A} \Pi_{q : x =z} \Pi_{w:A} \Pi_{r : z =w} (\refl_x \cdot q) \cdot r = \refl_x \cdot (q \cdot r).\]
 By the definition of concatenation, $\refl_x \cdot q \doteq q$ and $\refl_x \cdot (q \cdot r) \doteq q \cdot r$. So we must define 
 \[ \assoc(\refl_x, q,r) :  q \cdot r = q \cdot r\]
 and we can take this term to be $\refl_{q \cdot r}$.
 \end{proof}
 
 \begin{prop}[units] For any type $A$, there are left and right \textbf{unit laws}
-\[ \lambda x. \lambda y. \lambda p. \term{left-unit}(p) :  \lambda {x,y : A} \prod_{p: x = y} \refl_x \cdot p = p \qquad  \lambda x. \lambda y. \lambda p.\term{right-unit}(p) : \prod_{x , y : A} \prod_{p : x = y} p \cdot \refl_y = p.\]
+\[ \lambda x. \lambda y. \lambda p. \term{left-unit}(p) :  \lambda {x,y : A} \Pi_{p: x = y} \refl_x \cdot p = p \qquad  \lambda x. \lambda y. \lambda p.\term{right-unit}(p) : \Pi_{x , y : A} \Pi_{p : x = y} p \cdot \refl_y = p.\]
 \end{prop}
 \begin{proof}
 We are asked to define  dependent functions that takes $x, y :A$ and $p : x = y$ and produce terms
@@ -861,7 +860,7 @@ By path induction, it suffices to assume $y$ is $x$ and $p$ is $\refl_x$, in whi
 \end{proof}
 
 \begin{prop}[inverses] For any type $A$, there are left and right \textbf{inverse laws}
-\[  \lambda x. \lambda y. \lambda p.\term{left-inv}(p) : \prod_{x,y :A} \prod_{p : x= y} p^{-1} \cdot p = \refl_y \qquad  \lambda x. \lambda y. \lambda p.\term{right-inv}(p) : \prod_{x,y :A} \prod_{p : x=y} p \cdot p^{-1} = \refl_x.\]
+\[  \lambda x. \lambda y. \lambda p.\term{left-inv}(p) : \Pi_{x,y :A} \Pi_{p : x= y} p^{-1} \cdot p = \refl_y \qquad  \lambda x. \lambda y. \lambda p.\term{right-inv}(p) : \Pi_{x,y :A} \Pi_{p : x=y} p \cdot p^{-1} = \refl_x.\]
 \end{prop}
 \begin{proof}
 We are asked to define  dependent functions that takes $x, y :A$ and $p : x = y$ and produce terms
@@ -889,12 +888,12 @@ The definition of the identity types says that the family of types $a =x$ indexe
 
 There is a sense however in which the reflexivity term is unique:
 
-\begin{prop} For any type $A$ and $a : A$, $(a, \refl_a)$ is the unique term of the type $\sum_{x : A} a =x$. That is, for any $z : \sum_{x :A} a =x$, there is an identification $(a, \refl_a) = z$.
+\begin{prop} For any type $A$ and $a : A$, $(a, \refl_a)$ is the unique term of the type $\Sigma_{x : A} a =x$. That is, for any $z : \Sigma_{x :A} a =x$, there is an identification $(a, \refl_a) = z$.
 \end{prop}
-\begin{proof} We're trying to define a dependent function that takes $z : \sum_{x :A} a =x$ and gives a term in the identity type $(a,\refl_a) =_{\sum_{x :A} a =x} z$. By $\Sigma$-induction it suffices to assume $z$ is a pair $(x,p)$ where $x :A$ and $p : a =x$ and construct an identification $(a, \refl_a) =_{\sum_{x :A} a =x} (x,p)$. So now we're trying to define a dependent function that takes $x :A$ and $p : a =x$ and constructs an identification $(a, \refl_a) =_{\sum_{x :A} a =x} (x,p)$. By path induction, it suffices to assume $x$ is $a$ and $p$ is $\refl_a$. But now we can use reflexivity to show that $(a, \refl_a) = (a, \refl_a)$.
+\begin{proof} We're trying to define a dependent function that takes $z : \Sigma_{x :A} a =x$ and gives a term in the identity type $(a,\refl_a) =_{\Sigma_{x :A} a =x} z$. By $\Sigma$-induction it suffices to assume $z$ is a pair $(x,p)$ where $x :A$ and $p : a =x$ and construct an identification $(a, \refl_a) =_{\Sigma_{x :A} a =x} (x,p)$. So now we're trying to define a dependent function that takes $x :A$ and $p : a =x$ and constructs an identification $(a, \refl_a) =_{\Sigma_{x :A} a =x} (x,p)$. By path induction, it suffices to assume $x$ is $a$ and $p$ is $\refl_a$. But now we can use reflexivity to show that $(a, \refl_a) = (a, \refl_a)$.
 \end{proof}
 
-In terminology to be introduced later, this result says that the type $\sum_{x : A} a =x$ is \textbf{contractible} with the term  $(a, \refl_a)$ serving as its \textbf{center of contraction}.
+In terminology to be introduced later, this result says that the type $\Sigma_{x : A} a =x$ is \textbf{contractible} with the term  $(a, \refl_a)$ serving as its \textbf{center of contraction}.
 
 
 \subsection*{The action of paths on functions}
@@ -902,10 +901,10 @@ In terminology to be introduced later, this result says that the type $\sum_{x :
 The structural rules of type theory guarantee that any function (and indeed any construction in type theory) preserve definitional equality. We now show that in addition every function preserves identifications.
 
 \begin{prop} Let $f \colon A \to B$. There is an operation that defines the \textbf{action on paths} of $f$
-\[ \ap_f : \prod_{x,y :A} (x=y) \to (f(x) = f(y))\]
+\[ \ap_f : \Pi_{x,y :A} (x=y) \to (f(x) = f(y))\]
 that satisfies the coherence conditions
-\[ \apcoh{id}_A : \prod_{x,y:A} \prod_{p : x= y} p = \ap_{\id_A}(p)\]
-\[ \apcoh{comp}(f,g) : \prod_{x,y:A} \prod_{p: x=y} \ap_g(\ap_f(p))= \ap_{g\circ f}(p).\]
+\[ \apcoh{id}_A : \Pi_{x,y:A} \Pi_{p : x= y} p = \ap_{\id_A}(p)\]
+\[ \apcoh{comp}(f,g) : \Pi_{x,y:A} \Pi_{p: x=y} \ap_g(\ap_f(p))= \ap_{g\circ f}(p).\]
 \end{prop}
 \begin{proof}
 By path induction to define $\ap_f(p) : f(x)=f(y)$ it suffices to assume $y$ is $x$ and $p$ is $\refl_x$. We may then define $\ap_f(\refl_x) \coloneq \refl_{f(x)} : f(x) = f(x)$.
@@ -935,12 +934,12 @@ Similarly, we define $\apcoh{concat}(f,p,q)$ by path induction on $p$ (since con
 
 \subsection*{Transport}
 
-The term $\ap_f$ defines the action of a non-dependent function $f \colon A \to B$ on paths in $A$. It's natural to ask whether a dependent function $f : \prod_{z:A}B(z)$ also induces an action on paths. There's a challenge here, though. If $x,y : A$ are terms belonging to the base type, then we can form the type $x=_A y$ to ask whether they are identifiable. But the terms $f(x) : B(x)$ and $f(y) : B(y)$  belong to different types and are not identifiable. But nevertheless if there is  path $p : x = y$ identifying $y$ with $x$ intuition suggests there should be some way to compare $f(y)$ to $f(x)$.
+The term $\ap_f$ defines the action of a non-dependent function $f \colon A \to B$ on paths in $A$. It's natural to ask whether a dependent function $f : \Pi_{z:A}B(z)$ also induces an action on paths. There's a challenge here, though. If $x,y : A$ are terms belonging to the base type, then we can form the type $x=_A y$ to ask whether they are identifiable. But the terms $f(x) : B(x)$ and $f(y) : B(y)$  belong to different types and are not identifiable. But nevertheless if there is  path $p : x = y$ identifying $y$ with $x$ intuition suggests there should be some way to compare $f(y)$ to $f(x)$.
 
 To achieve this, we must construct a different sort of action of paths function first. This is called the  \textbf{transport} function for dependent types $x :A \vdash B(x) \univ$ that, given an identification $p : x = y$ in the base type, can be used to transport any term in $B(x)$ to a term in $B(y)$.
 
 \begin{prop} For any type family $x : A \vdash B(x) \univ$, there is a \textbf{transport operation}
-\[ \tr_B : \prod_{x,y :A} (x=y) \to (B(x) \to B(y)).\]
+\[ \tr_B : \Pi_{x,y :A} (x=y) \to (B(x) \to B(y)).\]
 \end{prop}
 \begin{proof}
 By path induction it suffices to define $\tr_B(\refl_x)) \coloneq \id_{B(x)}$.
@@ -948,14 +947,14 @@ By path induction it suffices to define $\tr_B(\refl_x)) \coloneq \id_{B(x)}$.
 
 As an application of transport we can now defined the action on paths of a dependent function.
 
-\begin{prop} For any dependent function $f : \prod_{z: A} B(z)$ and identification $p : x=_A y$ there is a path
+\begin{prop} For any dependent function $f : \Pi_{z: A} B(z)$ and identification $p : x=_A y$ there is a path
 \[ \apd_f(p) : \tr_B(p, f(x)) =_{B(y)} f(y).\]
 \end{prop}
 \begin{proof}
 The function
- \[ \lambda x . \lambda y. \lambda p. \apd_f(p) : \prod_{x,y:A} \prod_{p : x=y} \tr_B(p, f(x)) =_{B(y)} f(y)\]
+ \[ \lambda x . \lambda y. \lambda p. \apd_f(p) : \Pi_{x,y:A} \Pi_{p : x=y} \tr_B(p, f(x)) =_{B(y)} f(y)\]
  may be defined by path induction on $p$. It suffices to construct a path
- \[ \lambda x . \apd_f(\refl_x) : \prod_{x :A} \tr_B(\refl_x,f(x)) =_{B(x)} f(x).\]
+ \[ \lambda x . \apd_f(\refl_x) : \Pi_{x :A} \tr_B(\refl_x,f(x)) =_{B(x)} f(x).\]
 Since  $\tr_B(\refl_x),f(x)) \doteq f(x)$ we may defined $\apd_f(\refl_x) \coloneq \refl_{f(x)}$.
 \end{proof}
 
@@ -1008,7 +1007,7 @@ We have $\suc((k+m)+n) \doteq (k+m)+\suc(n)$ and $\suc(k+(m+n)) \doteq k + \suc(
 \section*{September 22: Universes}
 
 Recall that in Martin-L\"{o}f's dependent type theory, $\bN$ was defined as the inductive type freely generated by a term $0_\bN : \bN$ and a function $\suc :\bN \to \bN$. The corresponding induction principle gives a strengthened version of the Dedekind-Peano principle of mathematical induction, but two of the traditional axioms---namely that $0_\bN$ is not a successor and $\suc$ is injective---are missing. Using our type forming operations, we can define the types that assert those axioms:
-\[ \prod_{n : \bN} (n = 0_\bN) \to \emptyset \qquad \prod_{n,m : \bN} (\suc(n) = \suc(m)) \to (n = m)\]
+\[ \Pi_{n : \bN} (n = 0_\bN) \to \emptyset \qquad \Pi_{n,m : \bN} (\suc(n) = \suc(m)) \to (n = m)\]
 but we don't yet have the tools needed to construct terms in those types. Type theoretic \emph{universes} will enable us to construct terms in these types and prove many other things besides.
 
 Informally, a universe $\UU$ can be thought of as a ``type whose terms are types.'' More precisely, a universe is a type $\UU$ together with a type family $X : \UU \vdash \sT(X)$ called the \emph{universal type family}. We think of the term $X$ as an \emph{encoding} of the type $\sT(X)$ though its common to conflate these notions notationally, writing ``$X$'' for both the encoding and the type.
@@ -1026,15 +1025,15 @@ In the presence of a universe $\UU$, a family of small types $x : A \vdash B(x) 
 \item $\UU$ is closed under coproducts in the sense that it comes equipped with a function
 \[ \check{+} \colon \UU \to \UU \to \UU\] that satisfies $\sT(X\check{+}Y) \doteq \sT(X) + \sT(Y)$.
 \item $\UU$ is closed under $\Pi$-types in the sense that it comes equipped with a function
-\[ \check{\Pi} \colon \prod_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
-\[ \sT(\check{\Pi}(X,P)) \doteq \prod_{x : \sT(X)} \sT(P(x))\]
+\[ \check{\Pi} \colon \Pi_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
+\[ \sT(\check{\Pi}(X,P)) \doteq \Pi_{x : \sT(X)} \sT(P(x))\]
 for all $X : \UU$ and $P \colon \sT(X) \to \UU$.
 \item $\UU$ is closed under $\Sigma$-types in the sense that it comes equipped with a function
-\[ \check{\Sigma} \colon \prod_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
-\[ \sT(\check{\Sigma}(X,P)) \doteq \sum_{x : \sT(X)} \sT(P(x))\]
+\[ \check{\Sigma} \colon \Pi_{X: \UU} (\sT(X) \to \UU) \to \UU\] satisfying
+\[ \sT(\check{\Sigma}(X,P)) \doteq \Sigma_{x : \sT(X)} \sT(P(x))\]
 for all $X : \UU$ and $P \colon \sT(X) \to \UU$.
 \item $\UU$ is closed under identity types in the sense that it comes equipped with a function
-\[ \check{\Id} : \prod_{X : \UU} \sT(X) \to \sT(X) \to \UU\]
+\[ \check{\Id} : \Pi_{X : \UU} \sT(X) \to \sT(X) \to \UU\]
 satisfying
 \[ \sT(\Id(X,x,y)) \doteq (x = y)\]
 for all $X: \UU$ and $x,y : \sT(X)$.
@@ -1083,7 +1082,7 @@ To illustrate what universes are for, we define a type family $m : \bN, n : \bN 
 \end{defn}
 
 \begin{lem} Observational equality on $\bN$ is reflexive:
-\[ \refl-\Eq_\bN : \prod_{n : \bN} \Eq_\bN(n,n).\]
+\[ \refl-\Eq_\bN : \Pi_{n : \bN} \Eq_\bN(n,n).\]
 \end{lem}
 \begin{proof}
 We define $\refl-\Eq_\bN$ by induction by $\refl-\Eq_\bN(0_\bN) \coloneq \star$ and $\refl-\Eq_\bN(\suc(n)) \coloneq \refl-\Eq_\bN(n)$.
@@ -1093,9 +1092,9 @@ We define $\refl-\Eq_\bN$ by induction by $\refl-\Eq_\bN(0_\bN) \coloneq \star$ 
 \[ (m = n) \to \Eq_\bN(m,n) \quad \text{and} \quad \Eq_\bN(m,n) \to (m=n).\]
 \end{prop}
 \begin{proof}
-By path induction, there is a function $\term{id-to-eq} : \prod_{m,n: \bN} (m =n) \to \Eq_\bN(m,n)$ defined by $\term{id-to-eq}(n,\refl_n) \coloneq \refl-\Eq_\bN(n)$. 
+By path induction, there is a function $\term{id-to-eq} : \Pi_{m,n: \bN} (m =n) \to \Eq_\bN(m,n)$ defined by $\term{id-to-eq}(n,\refl_n) \coloneq \refl-\Eq_\bN(n)$. 
 
-For the converse, we define a function $\term{eq-to-id} : \prod_{m,n : \bN} \Eq_\bN(m,n) \to (m=n)$ by induction on $m$ and $n$. We define $\term{eq-to-id}(0_\bN,0_\bN) : \Eq_\bN(0_\bN,0_\bN) \to (0_\bN = 0_\bN)$, by induction on $\Eq_\bN(0_\bN,0_\bN) \doteq \1$ to be the function that sends $\star : \1$ to $\refl_{0_\bN} : 0_\bN = 0_\bN$. We define the functions $\term{eq-to-id}(\suc(n),0_\bN)$ and $\term{eq-to-id}(0_\bN,\suc(n))$ using $\term{ex-falso}$, since both of these are maps out of the empty type. Finally, to define $\term{eq-to-id}(\suc(m),\suc(n))$ we may use a function $f : \Eq_\bN(m,n) \to (m=n)$, in which case, $\term{eq-to-id}(\suc(m),\suc(n))$  is defined to be the composite function
+For the converse, we define a function $\term{eq-to-id} : \Pi_{m,n : \bN} \Eq_\bN(m,n) \to (m=n)$ by induction on $m$ and $n$. We define $\term{eq-to-id}(0_\bN,0_\bN) : \Eq_\bN(0_\bN,0_\bN) \to (0_\bN = 0_\bN)$, by induction on $\Eq_\bN(0_\bN,0_\bN) \doteq \1$ to be the function that sends $\star : \1$ to $\refl_{0_\bN} : 0_\bN = 0_\bN$. We define the functions $\term{eq-to-id}(\suc(n),0_\bN)$ and $\term{eq-to-id}(0_\bN,\suc(n))$ using $\term{ex-falso}$, since both of these are maps out of the empty type. Finally, to define $\term{eq-to-id}(\suc(m),\suc(n))$ we may use a function $f : \Eq_\bN(m,n) \to (m=n)$, in which case, $\term{eq-to-id}(\suc(m),\suc(n))$  is defined to be the composite function
 \[ \Eq_\bN(\suc(m),\suc(n)) \xrightarrow{\id} \Eq(m,n) \xrightarrow{f} (m=n) \xrightarrow{\ap_{\suc}} (\suc(m)=\suc(n)).\]
 \end{proof}
 
@@ -1104,7 +1103,7 @@ For the converse, we define a function $\term{eq-to-id} : \prod_{m,n : \bN} \Eq_
 \end{ntn}
 
 Thus the logical equivalence defines a term in the type
-\[ \prod_{m,n : \bN} \Eq_\bN(m,n) \leftrightarrow (m=n).\]
+\[ \Pi_{m,n : \bN} \Eq_\bN(m,n) \leftrightarrow (m=n).\]
 
 \subsection*{Peano's axioms}
 
@@ -1125,7 +1124,7 @@ Using the logical equivalences $(m=n) \leftrightarrow \Eq_\bN(m,n)$ we define th
 \end{thm}
 \begin{proof}
 We have a family of maps
-\[ \lambda n, \term{id-to-eq}(0_\bN,n) : \prod_{n : \bN} (0_\bN = n) \to \Eq_\bN(0_\bN,n).\]
+\[ \lambda n, \term{id-to-eq}(0_\bN,n) : \Pi_{n : \bN} (0_\bN = n) \to \Eq_\bN(0_\bN,n).\]
 Since $\Eq_\bN(0_\bN, \suc(n)) \doteq \emptyset$ we have
 \[ \term{id-to-eq}(0_\bN,\suc(n)) : (0_\bN = \suc(n)) \to \emptyset\]
 which is precisely the claim.
@@ -1140,14 +1139,14 @@ Having fully described Martin-L\"{o}f's dependent type theory, we may now start 
 The Curry-Howard interpretation is an interpretation of logic into type theory. In type theory, there is no separation between the logical framework and the general theory of collections of mathematical objects the way there is in the more traditional setup with Zermelo-Fraenkel set theory, which is postulated by axioms in first order logic. The idea is that propositions may be expressed as types with proofs of those propositions expressed as terms in those types. For example:
 
 \begin{defn} We say that a natural number $d$ divides a natural number $n$ if there is a term in the type
-\[ d \mid n \coloneq \sum_{k : \bN} d \cdot k = n \]
+\[ d \mid n \coloneq \Sigma_{k : \bN} d \cdot k = n \]
 defined using the multiplication $\cdot$ on $\bN$, the identity type of $\bN$, and the dependent sum of the type family $k : \bN \vdash d \cdot k = n \univ$.
 \end{defn}
 
 Just as existential quantification $(\exists)$ is expressed using $\Sigma$-types, universal quantification $(\forall)$ is expressed using $\Pi$-types. For example, the type
-\[ \prod_{n : \bN} 1 \mid n\]
+\[ \Pi_{n : \bN} 1 \mid n\]
 asserts that every natural number is divisible by 1. The term
-\[ \lambda n. (n, \term{left-unit}(n)) : \prod_{n : \bN} 1 \mid n\]
+\[ \lambda n. (n, \term{left-unit}(n)) : \Pi_{n : \bN} 1 \mid n\]
 proves this result.
 
 \begin{prop} Let $d, m,n : \bN$. If $d$ divides any two of $m$, $n$, and $m+n$, then $d$ divides the third.
@@ -1155,8 +1154,8 @@ proves this result.
 \begin{proof}
 We prove only that if $d \mid m$ and $d \mid n$ then $d \mid m+n$.
 By hypothesis we have terms:
-\[ H : \sum_{k : \bN} d \cdot k = m \quad \text{and} \quad K : \sum_{k : \bN} d \cdot k = n.\]
-By $\Sigma$-induction, we may assume that $H$ is given by a pair $(h : \bN, p : d \cdot h = m)$ and $K$ is given by a pair $(k : \bN, q : d \cdot k = n)$. To get a term in $\sum_{x : \bN} d \cdot x = m + n$ we may use $x \coloneq h + k$. Our goal is then to define an identification $d \cdot (h + k) = m + n$ which we obtain as a concatenation
+\[ H : \Sigma_{k : \bN} d \cdot k = m \quad \text{and} \quad K : \Sigma_{k : \bN} d \cdot k = n.\]
+By $\Sigma$-induction, we may assume that $H$ is given by a pair $(h : \bN, p : d \cdot h = m)$ and $K$ is given by a pair $(k : \bN, q : d \cdot k = n)$. To get a term in $\Sigma_{x : \bN} d \cdot x = m + n$ we may use $x \coloneq h + k$. Our goal is then to define an identification $d \cdot (h + k) = m + n$ which we obtain as a concatenation
 \[
 \begin{tikzcd} d \cdot (h+ k ) \arrow[r, equals, "\term{dist}"] & d \cdot h + d \cdot k \arrow[r, equals, "\ap_{+d \cdot k}p"] & m + d \cdot k \arrow[r, equals, "\ap_{m+}q"] & m + n
 \end{tikzcd}
@@ -1166,7 +1165,7 @@ By $\Sigma$-induction, we may assume that $H$ is given by a pair $(h : \bN, p : 
 We have observed many similarities between the rules of various type constructors and tautologies from logic. For instance, the elimination rule for the non-dependent function type supplies a function
 \[ \term{modus-ponens} : A \times (A \to B) \to B.\]
 One important difference is that general types may contain multiple terms that cannot be identified: i.e., for which it is possible to prove that $x =_A y \to \emptyset$. Later we'll study the following predicate on types:
-\[ \term{is-prop}(A) \coloneq \prod_{x,y : A} x =_A y\]
+\[ \term{is-prop}(A) \coloneq \Pi_{x,y : A} x =_A y\]
 which asserts that \emph{if} $A$ has multiple terms (which it may not) those terms can always be identified. This will be the $n=-1$ level of a hierarchy of $n$-types for $n \geq -2$.
 
 \subsection*{The congruence relations on \texorpdfstring{$\bN$}{N}}
@@ -1175,9 +1174,9 @@ The family of identity types can be understood as a type-valued binary relation 
 
 \begin{defn} For a type $A$, a \textbf{typal binary relation} on $A$ is a family of types $x, y : A \vdash R(x,y) \univ$. A binary relation $R$ is 
 \begin{itemize}
-\item \textbf{reflexive} if it comes with a term $\rho : \prod_{x :A} R(x,x)$,
-\item \textbf{symmetric} if it comes with a term $\sigma : \prod_{x,y :A} R(x,y) \to R(y,x)$,
-\item \textbf{transitive} if it comes with a term $\tau : \prod_{x,y,z : A} \to R(x,y) \to R(y,z) \to R(x,z)$
+\item \textbf{reflexive} if it comes with a term $\rho : \Pi_{x :A} R(x,x)$,
+\item \textbf{symmetric} if it comes with a term $\sigma : \Pi_{x,y :A} R(x,y) \to R(y,x)$,
+\item \textbf{transitive} if it comes with a term $\tau : \Pi_{x,y,z : A} \to R(x,y) \to R(y,z) \to R(x,z)$
 \end{itemize}
 A \textbf{typal equivalence relation} on $A$ is a reflexive, symmetric, and transitive, typal binary relation.
 \end{defn}
@@ -1209,10 +1208,10 @@ There are other important relations on $\bN$ that are not-equivalence relations.
 
 The standard finite sets are classically defined as the sets $\{ n \in \bN \mid n < k\}$, so how do we interpret a subset $\{ x  \in A \mid P(x)\}$ characterized by a predicate in type theory?
 
-In the Curry-Howard interpretation, the predicate $P(x)$ is interpreted as a type family and the type of terms $x$ in $A$ for which $P(x)$ is true is interpreted by the $\Sigma$-type $\sum_{x : A} P(x)$. Note for a general type family $P(x)$ it won't necessarily be the case that the map $\pr_1 \colon \sum_{x :A} P(x) \to A$ is a monomorphism\footnote{Though this will be the case if each type $P(x)$ is a proposition in the sense alluded to above.} so this construction operates a bit differently than in set theory.
+In the Curry-Howard interpretation, the predicate $P(x)$ is interpreted as a type family and the type of terms $x$ in $A$ for which $P(x)$ is true is interpreted by the $\Sigma$-type $\Sigma_{x : A} P(x)$. Note for a general type family $P(x)$ it won't necessarily be the case that the map $\pr_1 \colon \Sigma_{x :A} P(x) \to A$ is a monomorphism\footnote{Though this will be the case if each type $P(x)$ is a proposition in the sense alluded to above.} so this construction operates a bit differently than in set theory.
 
 Through this mechanism it is possible to define the classical finite sets as 
-\[ \type{Classical-Fin}_k \coloneq \sum_{n : \bN}n < k \]
+\[ \type{Classical-Fin}_k \coloneq \Sigma_{n : \bN}n < k \]
 though the standard definition is as follows:
 
 \begin{defn} We define the type family $\type{Fin}$ of \textbf{standard finite types} inductively (using the induction principle of $\bN$ and the universe $\UU$) as follows:
@@ -1234,10 +1233,10 @@ Given an equivalence relation $\sim$ on a set $A$ the quotient $A_{/\sim}$ comes
 Both properties can be expressed in type theory, though there are some subtleties.
 
 \begin{defn} In the context of types $A$ and $B$ there is a type family $\type{is-surj} \colon (A \to B) \to \UU$ defined by
-\[ \type{is-surj}(f) \coloneq \prod_{b : B} \sum_{a : A} f(a) =_B b.\]
+\[ \type{is-surj}(f) \coloneq \Pi_{b : B} \Sigma_{a : A} f(a) =_B b.\]
 \end{defn}
 
-The subtlety is that this really defines a \emph{split} notion of surjectivity. A term $p$ in $\type{is-surj}(f)$ defines a function that for each term $b : B$ produces a term of $\sum_{a : A} f(a) =_B b$. By compositing $p$ with $\pr_1 : \sum_{a : A} f(a) =_B b \to A$, we obtain a function $s \colon B \to A$. By composing $p$ with $\pr_2 : \sum_{a : A} f(s(b)) =_B b$ we also obtain a proof that $s$ is a \textbf{section} of $f$. Thus surjective functions in homotopy type theory are really \textbf{split} surjective functions.
+The subtlety is that this really defines a \emph{split} notion of surjectivity. A term $p$ in $\type{is-surj}(f)$ defines a function that for each term $b : B$ produces a term of $\Sigma_{a : A} f(a) =_B b$. By compositing $p$ with $\pr_1 : \Sigma_{a : A} f(a) =_B b \to A$, we obtain a function $s \colon B \to A$. By composing $p$ with $\pr_2 : \Sigma_{a : A} f(s(b)) =_B b$ we also obtain a proof that $s$ is a \textbf{section} of $f$. Thus surjective functions in homotopy type theory are really \textbf{split} surjective functions.
 
 Our next challenge is to define the quotient maps $[-]_{k} \colon \bN \to \type{Fin}_{k}$ that compute the remainder modulo $k$. Our strategy will be to define this function by induction on $n : \bN$. The idea is that the term $0_\bN : \bN$ should get sent to some $0$ while successors in $\bN$ should be sent to successors in $\type{Fin}_k$, taken in the cyclic order. We define these auxiliary structures first.
 
@@ -1288,7 +1287,7 @@ If $A$ and $B$ are decidable then so are $A+B$, $A \times B$, and $A \to B$. Pro
 \end{rmk}
 
 \begin{defn} A type $A$ \textbf{has decidable equality} if the identity type $x=_Ay$ is decidable for every $x, y : A$. Thus
-\[ \type{has-decidable-eq}(A) \coloneq \prod_{x,y: A} \type{is-decidable}(x=_Ay).\]
+\[ \type{has-decidable-eq}(A) \coloneq \Pi_{x,y: A} \type{is-decidable}(x=_Ay).\]
 \end{defn}
 
 \begin{lem} Suppose $A$ and $B$ are types so that $A \leftrightarrow B$. Then $A$ is decidable if and only if $B$ is decidable.
@@ -1313,11 +1312,11 @@ We have shown that the identity types of $\bN$ are logically equivalent to the o
 Suppose you'd like to define a function by case analysis such as $\term{collatz} : \bN \to \bN$
 \[ \term{collatz}(n) \coloneq \begin{cases} n/2 & n\ \text{is~odd} \\ 2n+1 & n\ \text{is~even} \end{cases}\]
 To justify this sort of case analysis we use a term
-\[ d : \prod_{n : \bN} \type{is-decidable} (2 \mid n)\]
+\[ d : \Pi_{n : \bN} \type{is-decidable} (2 \mid n)\]
 whose construction we skipped. Note that $2 \mid n$ and $\neg(2 \mid n)$ cannot both hold because if so we could evaluate the function $\term{odd}(n) : \neg(2 \mid n)$ at the term $\term{even}(n) : 2 \mid n$ to get a contradiction. So this $d$ can be thought of as a proof that for all $n : \bN$, $n$ is odd or $n$ is even (but not both).
 
-This puts us into the following abstract setup. Our goal is to define a function $c : \prod_{x :A} C(x)$, namely the function $\term{collatz} : \bN \to \bN$. We already have a function $d : \prod_{x :A} B(x)$, namely $d : \prod_{n : \bN} \type{is-decidable}(2 \mid n)$. So it suffices to define a function $h : \prod_{x:A} B(x) \to C(x)$ because then we can define $c(x) \coloneq h(x,d(x))$. In this case this means we need a function
-\[ h : \prod_{n : \bN} \type{is-decidable} (2 \mid n) \to \bN\] which we can now define by cases from
+This puts us into the following abstract setup. Our goal is to define a function $c : \Pi_{x :A} C(x)$, namely the function $\term{collatz} : \bN \to \bN$. We already have a function $d : \Pi_{x :A} B(x)$, namely $d : \Pi_{n : \bN} \type{is-decidable}(2 \mid n)$. So it suffices to define a function $h : \Pi_{x:A} B(x) \to C(x)$ because then we can define $c(x) \coloneq h(x,d(x))$. In this case this means we need a function
+\[ h : \Pi_{n : \bN} \type{is-decidable} (2 \mid n) \to \bN\] which we can now define by cases from
 \[ h\term{-even}(n) \coloneq \lambda n. n/2 \colon (2 \mid n) \to \bN \quad \text{and} \quad h\term{-odd}(n) \coloneq \lambda n. 3n+1 : \neg(2 \mid n) \to \bN.\]
 There is something called the ``with-abstraction'' that gives a concise syntax for functions defined in this manner.
 
@@ -1326,24 +1325,24 @@ There is something called the ``with-abstraction'' that gives a concise syntax f
 The traditional well-ordering principle is about subsets of $\bN$, or equivalently, about predicates on $\bN$. In type theory, we replace these by decidable type families over $\bN$.
 
 \begin{defn} Let $P \colon \bN \to \UU$. A number $n : \bN$ is a \textbf{lower bound} for $P$ if it comes equipped with a term in the type
-  \[ \type{is-lower-bound}_{P}(n) \coloneq \prod_{k : \bN} P(k) \to n \leq k\]
+  \[ \type{is-lower-bound}_{P}(n) \coloneq \Pi_{k : \bN} P(k) \to n \leq k\]
   Similarly,
-  \[ \type{is-uppwer-bound}_{P}(n) \coloneq \prod_{k : \bN} P(k) \to k \leq n\]
+  \[ \type{is-uppwer-bound}_{P}(n) \coloneq \Pi_{k : \bN} P(k) \to k \leq n\]
   \end{defn}
 
   \begin{thm}[well-ordering principle]
     Let $P$ be a decidable family oer $\bN$ with $d$ a witness that $P$ is decidable. Then there is a function
-    \[ w(P,d) : \left( \sum_{n : \bN}P(n)\right) \to \left( \sum_{m : \bN}P(m) \times \type{is-lower-bound}_P(m)\right).\]
+    \[ w(P,d) : \left( \Sigma_{n : \bN}P(n)\right) \to \left( \Sigma_{m : \bN}P(m) \times \type{is-lower-bound}_P(m)\right).\]
   \end{thm}
   In other words, if $P(n)$ is inhabited for some $n$ then there is a smallest $m : \bN$ so that $P(m)$ is inhabited.
 
   \begin{proof}
     We will show that for any decidable type family $Q : \bN \to \UU$ that there is a function
-    \[ Q(n) \to \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_Q(m)
+    \[ Q(n) \to \Sigma_{m : \bN}Q(m) \times \type{is-lower-bound}_Q(m)
     \]
     by induction on $n$. When $n=0$ we can use $m=0$ since 0 is always a lower bound. For the inductive step we may assume we have the displayed function for every type family $Q$ and consider a decidable type family $Q$ with a term $q : Q(n+1)$. Our goal is to construct a term in the type
-    \[ \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}(m)\]. Since $Q(0)$ is decidable it suffices to construct a function
-    \[ Q(0) + \neg Q(0) \to  \sum_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m
+    \[ \Sigma_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}(m)\]. Since $Q(0)$ is decidable it suffices to construct a function
+    \[ Q(0) + \neg Q(0) \to  \Sigma_{m : \bN}Q(m) \times \type{is-lower-bound}_{Q}m
     \]
     so we can do a case analysis. If we have $Q(0)$ then it follows immediately that $m=0$ is minimal.  If $\neq Q(0)$, then we can consider the decidable family $Q' \colon \bN \to \UU$ defined by $Q(n) \coloneq Q'(\suc(n))$. Since $q : Q'(n)$ we get a minimal element $m$ for $Q'$ by the inductive hypothesis. But since $Q(0)$ is assumed to be false then $m+1$ is the minimal element for $Q$.   
     \end{proof}
@@ -1355,10 +1354,10 @@ The traditional well-ordering principle is about subsets of $\bN$, or equivalent
 For natural numbers $d$ and $n$ we say $d$ is a \textbf{proper divisor} of $n$ if it comes with a term in the type
 \[ \type{is-proper-divisor}(n,d) \coloneq (d \neq n) \times (d \mid n)\]
 With this notation we can say a natural number $n$ is \textbf{prime} if it comes with a term in the type
-\[ \type{is-prime}(n) \coloneq \prod_{x : \bN}\type{is-proper-divisor}(n,x) \leftrightarrow (x=1)\]
+\[ \type{is-prime}(n) \coloneq \Pi_{x : \bN}\type{is-proper-divisor}(n,x) \leftrightarrow (x=1)\]
 
 The proof of the infinitude of primes proceeds by constructing a prime number larger than $n$ for any $n : \bN$. So we can consider the type family for $n,m : \bN$
-\[ R(n,m) \coloneq (n < m) \times \prod_{x : \bN} (x \leq n) \to (x \mid m) \to (x=1)\]
+\[ R(n,m) \coloneq (n < m) \times \Pi_{x : \bN} (x \leq n) \to (x \mid m) \to (x=1)\]
 of pairs so that $m$ is greater than $n$ and $m$ is relatively prime to all numbers $x \leq n$. Since $n!+1$ satisfies these properties for any $n$, the type family $m \mapsto R(n,m)$ in context $n : \bN$ is inhabited. Thus, by the well-ordering principle, it has a least element $p$ and this $p$ must be prime.
 
 Using the results we skipped it's possible to prove:
@@ -1374,10 +1373,10 @@ We leave it to the reader to verify that $R(n,n!+1)$ is inhabited. Using these i
     It suffices to show this for each non-zero $n$ since the case $n=0$ follows. So let $n$ be a non-zero natural number.
 
     Since the type $R(n,m)$ is decidable for each $m$ and since $R(n,n!+1)$ holds by the well-ordering principle there is a minimal $p : \bN$ so that $R(n,p)$. We will show that $p$ is prime by constructing a term in the type
-    \[ \type{is-prime}(p) \coloneq (p \neq 1) \times \prod_{x: \bN} \type{is-proper-divisor}(p,x) \to (x = 1).\]
+    \[ \type{is-prime}(p) \coloneq (p \neq 1) \times \Pi_{x: \bN} \type{is-proper-divisor}(p,x) \to (x = 1).\]
     By construction, $n < p$ and $n$ is non-zero so $p \neq 1$. So now let $x$ be a proper divisor of $p$. Since $R(n,p)$ holds by construction we can show that $x=1$ by proving that $x \leq n$. Since $p$ is non-zero and $x \mid p$ we must have $x < p$. By minimality of $p$ it follows that $\neg R(n,x)$ holds. However, any divisor of $x$ must also divide $p$ by transitivity of divisibility, so \[
-      \prod_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1).\]
-    Since \[\neg R(n,x) \doteq \neg \left((n < x) \times \prod_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1) \right)\]
+      \Pi_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1).\]
+    Since \[\neg R(n,x) \doteq \neg \left((n < x) \times \Pi_{y : \bN} (y \leq n) \to (y \mid x) \to (y=1) \right)\]
          holds we conclude that $\neg(n < x)$. On account of the logical equivalence $\neg(n < x ) \leftrightarrow (x \leq n)$, it follows that $x \leq n$.
   \end{proof}
  
@@ -1403,8 +1402,8 @@ These inverse implications are obviously related. Our next goal is to develop la
 
 Surprisingly, we are not able, in dependent type theory, to construct identifications between functions $\term{1+1-to-bool} \circ \term{bool-to-1+1}$ and $\id_\bool$ or between $\suc$ and $\lambda n, n+1$. We can, however, construct \emph{pointwise identifications} between these pairs of functions, which in homotopy type theory are commonly called \textbf{homotopies}:
 
-\begin{defn} Let $f,g : \prod_{x:A} B(x)$. The type $f\sim g$ of \textbf{homotopies} from $f$ to $g$ is defined to be the type of pointwise identifications:
-\[ f \sim g\coloneq \prod_{x :A} f(x) =_{B(x)} g(x).\]
+\begin{defn} Let $f,g : \Pi_{x:A} B(x)$. The type $f\sim g$ of \textbf{homotopies} from $f$ to $g$ is defined to be the type of pointwise identifications:
+\[ f \sim g\coloneq \Pi_{x :A} f(x) =_{B(x)} g(x).\]
 \end{defn}
 
 \begin{rmk} Given three functions as below
@@ -1415,19 +1414,19 @@ Surprisingly, we are not able, in dependent type theory, to construct identifica
 we say the triangle \textbf{commutes} if $h\sim g \circ f$.
 \end{rmk}
 
-Note if $H, K : f \sim g \coloneq \prod_{x :A} f(x) = g(x)$ are homotopies we can treat them as dependent functions in their own right and consider \textbf{homotopies between homotopies}, i.e., terms of the type $H \sim K \coloneq \prod_{x :A} H(x) = K(x)$. This continues all the way up.
+Note if $H, K : f \sim g \coloneq \Pi_{x :A} f(x) = g(x)$ are homotopies we can treat them as dependent functions in their own right and consider \textbf{homotopies between homotopies}, i.e., terms of the type $H \sim K \coloneq \Pi_{x :A} H(x) = K(x)$. This continues all the way up.
 
 Indeed, the $\infty$-groupoid structure of identity types extends to homotopies as follows:
 
 \begin{defn} For any type family $B \colon A \to \UU$ we have operations
-\[ \term{refl-htpy} : \prod_{f : \prod_{x:A}B(x)} f \sim f \quad \term{inv-htpy} : \prod_{f,g :\prod_{x:A}B(x)} (f \sim g) \to (g \sim f) \]
-\[ \term{concat-htpy} : \prod_{f,g,h : \prod_{x:A}B(x)} f \sim g \to g \sim h \to f \sim h\]
+\[ \term{refl-htpy} : \Pi_{f : \Pi_{x:A}B(x)} f \sim f \quad \term{inv-htpy} : \Pi_{f,g :\Pi_{x:A}B(x)} (f \sim g) \to (g \sim f) \]
+\[ \term{concat-htpy} : \Pi_{f,g,h : \Pi_{x:A}B(x)} f \sim g \to g \sim h \to f \sim h\]
 defined pointwise by
 \[ \term{refl-htpy}(f) = \lambda x .\refl_{f(x)} \quad \term{inv-htpy}(H) \coloneq \lambda x. {H(x)}^{-1} \quad \term{concat-htpy}(H,K) \coloneq \lambda x. H(x) \cdot K(x)\]
 We abbreviate these latter two terms by writing $H^{-1}$ and $H \cdot K$.
 \end{defn}
 
-Note we don't abbreviate $\term{refl-htpy}_f : f \sim f \coloneq \prod_{x :A} f(x)=_{B(x)} f(x)$ as $\refl_f : f =_{\prod_{x:A}B(x)}f$ as these terms live in different types.
+Note we don't abbreviate $\term{refl-htpy}_f : f \sim f \coloneq \Pi_{x :A} f(x)=_{B(x)} f(x)$ as $\refl_f : f =_{\Pi_{x:A}B(x)}f$ as these terms live in different types.
 
 \begin{prop} Homotopies satisfy the groupoid laws up to homotopy:
 \begin{enumerate}
@@ -1457,13 +1456,13 @@ We now explain what it means for a function $f \colon A \to B$ between types to 
 \begin{defn} Let $f \colon A \to B$. 
 \begin{enumerate}
 \item The type of \textbf{sections} of $f$ is defined to be the type
-\[ \type{sec}(f) \coloneq \sum_{g : B \to A} f\circ g \simeq \id_B.\]
+\[ \type{sec}(f) \coloneq \Sigma_{g : B \to A} f\circ g \simeq \id_B.\]
 \item The type of \textbf{retractions} of $f$ is defined to be the type
-\[ \type{retr}(f) \coloneq \sum_{h : B \to A} h \circ f \simeq \id_A.\]
+\[ \type{retr}(f) \coloneq \Sigma_{h : B \to A} h \circ f \simeq \id_A.\]
 \item We say $f$ is an \textbf{equivalence} if it has a section and a retraction:
 \[ \type{is-equiv}(f) \colon \type{sec}(f) \times \type{retr}(f).\]
 \end{enumerate}
-We write $A \simeq B$ for the type $\sum_{f : A \to B} \type{is-equiv}(f)$ of all equivalences from $A$ to $B$.
+We write $A \simeq B$ for the type $\Sigma_{f : A \to B} \type{is-equiv}(f)$ of all equivalences from $A$ to $B$.
 \end{defn}
 
 Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : B \to A$ and two homotopies $G : f \circ g \simeq \id_B$ and $H \colon h \circ f \simeq \id_A$. We have seen a bunch of examples:
@@ -1478,7 +1477,7 @@ Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : 
 \end{ex}
 
 We might also define
-\[ \type{has-inverse}(f) \coloneq \sum_{g : B \to A} (f \circ g \simeq \id_B) \times (g \circ f \simeq \id_A).\]
+\[ \type{has-inverse}(f) \coloneq \Sigma_{g : B \to A} (f \circ g \simeq \id_B) \times (g \circ f \simeq \id_A).\]
 The reason we did not define equivalences to be functions that have inverses is that we wanted being an equivalence to be a \textbf{property} associated to a map $f$ rather than a \textbf{structure} on the map, in a sense we'll discuss soon. Essentially because of the uniqueness of reflexivity paths, if $f$ is an equivalence then it only has one section and homotopy and only one retraction and homotopy, up to homotopy. We'll see, however, that the data of inverses to $f$ can be more complicated.
 
 But even though $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ may differ:
@@ -1513,9 +1512,9 @@ A \times \1 &\simeq A & A+\emptyset &\simeq A \\
 A \times (B + C) &\simeq (A \times B) + (A \times C
  \end{align*}
 where the required equivalences and homotopies can be constructed by induction. These equivalences extend to cases such as
-\[ \sum_{x : \emptyset} B(x) \simeq \emptyset \quad \sum_{x : \1}B(x)\simeq B(\star).\]
+\[ \Sigma_{x : \emptyset} B(x) \simeq \emptyset \quad \Sigma_{x : \1}B(x)\simeq B(\star).\]
 and
-\[ \sum_{z : \sum_{x : A}B(x)} C(z) \simeq \sum_{x :A} \sum_{y : B(x)} C(x,y) \quad \sum_{w : A +B}C(w) \simeq \sum_{x :A} C(\inl x) + \sum_{y : B} C(\inr y).\]
+\[ \Sigma_{z : \Sigma_{x : A}B(x)} C(z) \simeq \Sigma_{x :A} \Sigma_{y : B(x)} C(x,y) \quad \Sigma_{w : A +B}C(w) \simeq \Sigma_{x :A} C(\inl x) + \Sigma_{y : B} C(\inr y).\]
 
 In the presence of an additional axiom, we'll be able to prove similar equivalences involving function types, but we can't deduce these just yet.
 
@@ -1524,24 +1523,24 @@ In the presence of an additional axiom, we'll be able to prove similar equivalen
 We return to the theme of characterizing identity types to characterize the identity type of a $\Sigma$-type, up to equivalence. We follow the same outline used to characterize the identity type family of the natural numbers above:
 \begin{enumerate}
 \item We define a binary relation $R \colon A \to A \to \UU$ that we suspect is equivalent to the identity type family.
-\item Prove reflexivity by constructing a term in $\prod_{x :A} R(x,x)$.
-\item Use reflexivity and path induction to define a canonical map $\prod_{x,y:A} x=_A y \to R(x,y)$.
+\item Prove reflexivity by constructing a term in $\Pi_{x :A} R(x,x)$.
+\item Use reflexivity and path induction to define a canonical map $\Pi_{x,y:A} x=_A y \to R(x,y)$.
 \item Show that the map $x=_A y \to R(x,y)$ is an equivalence for each $x,y :A$.
 \end{enumerate}
 The last step is usually the most difficult and we will refine our techniques for dealing with it soon.
 
-In this section, we consider $B \colon A \to \UU$ and the corresponding type $\sum_{x:A} B(x)$. Given dependent pairs $(a,b)$ and $(a',b')$ we might imagine that the data of an identification between them involves a pair of identifications comprised firstly of a path $p : a =_A a'$ and then of a path $q : \tr_B(p, b) = b'$. We first turn this idea into a binary relation.
+In this section, we consider $B \colon A \to \UU$ and the corresponding type $\Sigma_{x:A} B(x)$. Given dependent pairs $(a,b)$ and $(a',b')$ we might imagine that the data of an identification between them involves a pair of identifications comprised firstly of a path $p : a =_A a'$ and then of a path $q : \tr_B(p, b) = b'$. We first turn this idea into a binary relation.
 
 \begin{defn} Define 
-\[ \Eq_\Sigma \colon \left(\sum_{x:A}B(x)\right) \to \left(\sum_{x:A}B(x)\right) \to \UU\]
+\[ \Eq_\Sigma \colon \left(\Sigma_{x:A}B(x)\right) \to \left(\Sigma_{x:A}B(x)\right) \to \UU\]
 by 
-\[ \Eq_\Sigma(s,t) \coloneq \sum_{p : \pr_1(s) = \pr_1(t)} \tr_B(p, \pr_2(s)) = \pr_2(t).\]
+\[ \Eq_\Sigma(s,t) \coloneq \Sigma_{p : \pr_1(s) = \pr_1(t)} \tr_B(p, \pr_2(s)) = \pr_2(t).\]
 \end{defn}
 
 \begin{lem} The relation $\Eq_\Sigma$ is reflexive.
 \end{lem}
-\begin{proof} By $\Sigma$-induction it suffices to let $s : \sum_{x:A}B(x)$ be a pair $(a : A, b : B(a))$ in which case we have
-\[ \lambda a,\lambda b. (\refl_a,\refl_b) \colon \prod_{x :A}\prod_{y:B(x)} \sum_{p : x =x} \tr_B(p,y) = y\]
+\begin{proof} By $\Sigma$-induction it suffices to let $s : \Sigma_{x:A}B(x)$ be a pair $(a : A, b : B(a))$ in which case we have
+\[ \lambda a,\lambda b. (\refl_a,\refl_b) \colon \Pi_{x :A}\Pi_{y:B(x)} \Sigma_{p : x =x} \tr_B(p,y) = y\]
 since we have a definitional equality $\tr_B(\refl_a,b) \doteq b$.
 \end{proof}
 
@@ -1549,18 +1548,18 @@ By path induction, we may define a map $\term{pair-eq} : s =t \to \Eq_\Sigma(s,t
 
 \begin{thm} For any type family $B \colon A \to \UU$, the map
 \[ \term{pair-eq} \colon (s=t) \to \Eq_\Sigma(s,t)\]
-is an equivalence for every $s,t : \sum_{x:A}B(x)$.
+is an equivalence for every $s,t : \Sigma_{x:A}B(x)$.
 \end{thm}
 \begin{proof}
 We define an inverse equivalence $\term{eq-pair} \colon \Eq_\Sigma(s,t) \to (s=t)$ by repeated $\Sigma$-induction. For pairs $(a,b)$ and $(a',b')$ we must define
-\[ \term{eq-pair} \colon \sum_{p : a =a'} \tr_B(p,b)=b' \to ((a,b) = (a',b'))\]
-which we again do by $\Sigma$-induction. It suffices to to define a function in the type
-\[ \prod_{p: a = a'} (\tr_B(p,b) = b') \to ((a,b)= (a',b')).\]
+\[ \term{eq-pair} \colon \Sigma_{p : a =a'} \tr_B(p,b)=b' \to ((a,b) = (a',b'))\]
+which we again do by $\Sigma$-induction. It suffices to  define a function in the type
+\[ \Pi_{p: a = a'} (\tr_B(p,b) = b') \to ((a,b)= (a',b')).\]
 By double path induction we may first assume $b'$ is $\tr_B(p,b)$ and the second path is $\refl$. Then by path induction we may assume that $a'$ is $a$ and $p$ is refl in which case we send this pair $(\refl_a,\refl_b)$ to $\refl_{(a,b)} : ((a,b) = (a,b))$.
 
 To see that $\term{eq-pair}$ is a section of $\term{pair-eq}$ we require identifications
 \[ \term{pair-eq}(\term{eq-pair}(p,q)) = (p,q)\]
-for each $(p,q) : \sum_{p : a=a'}\tr_B(p,b)=b'$. By a double path induction it suffices to identify
+for each $(p,q) : \Sigma_{p : a=a'}\tr_B(p,b)=b'$. By a double path induction it suffices to identify
 \[ \term{pair-eq}(\term{eq-pair}(\refl_a,\refl_b)) = (\refl_a,\refl_b)\] and the left-hand side is judgmentally equal to the right-hand side, so we may use $\refl_{(\refl_a,\refl_b)}$.
 
 To see that  $\term{eq-pair}$ is a retraction of $\term{pair-eq}$ we require identifications
@@ -1572,8 +1571,149 @@ By $\Sigma$-induction we may consider the case of a pair $(a,b)$ in which case w
 Since the left-hand side we defined to be the right-hand side, we may use $\refl$.
 \end{proof}
 
-
 \section*{October 6: Contractibility}
+
+Contractible types are singletons up to homotopy. In this section, we'll see several characterizations of contractibility and then relativize our discussion to include so-called ``contractible maps.''
+
+\subsection*{Contractible types}
+
+The term ``contractibility'' is inspired by the homotopical interpretation of type theory but it can also be thought of as an expression of ``uniqueness'': we say that a type $A$ is contractible just when it contains a unique element in a sense encoded by the Curry-Howard interpretation:
+
+\begin{defn} A type $A$ is \textbf{contractible} if it comes equipped with a term in the type
+\[ \is{contr}(A) \coloneq \Sigma_{c :A}\Pi_{x :A} c =x.\]
+Given $(c,C) : \is{contr}(A)$ we refer to $c :A$ as the \textbf{center of contraction} and $C : \Pi_{x:A} c =x$ as the \textbf{contraction} or \textbf{contracting homotopy}.
+\end{defn}
+
+\begin{q} This terminology suggests that $C$ is a homotopy between some pair of functions. Which functions?
+\end{q}
+
+\begin{ex} The unit type is easily seen to be contractible. We take $\star : \1$ as the center of contraction and define $C : \Pi_{x:\1} \star = x$ by singleton induction: in the case where $x$ is $\star$, we define $C(\star) = \refl_\star$.
+\end{ex}
+
+We've met another example of a contractible type already.
+
+\begin{thm} For any $a : A$ the type
+\[ \Sigma_{x:A}a =x\]
+is contractible.
+\end{thm}
+\begin{proof}
+We take $(a,\refl_a) : \Sigma_{x:A} a =x$ to be the center of contraction. In our proof of the uniqueness of reflexivity we constructed the required contracting homotopy.
+\end{proof}
+
+\subsection*{Singleton induction}
+
+Contractible types satisfy an induction principle similar to singleton types.
+
+\begin{defn} Suppose $A$ comes with a term $a :A$. Then we say $A$ satisfies \textbf{singleton induction} if for every type family $B$ over $A$ the map
+\[
+\term{ev-pt} : \left(\Pi_{x:A} B(x)\right) \to B(a)
+\]
+defined by $\term{ev-pt}f \coloneq f(a)$ has a section. The data of this section is then given by a function and a homotopy
+\[ \term{ind-sing}_a : B(a) \to \Pi_{x:A} B(x) \quad \text{and} \quad \term{comp-sing}_a : \term{ev-pt}\circ\term{ind-sing}_a \simeq \id.\]
+\end{defn}
+
+The singleton induction principle is almost the same as the induction principle for the unit type except for one point of difference: the ``computation rule'' for singleton induction is stated using an \emph{identification} rather than a judgmental equality.  Note in particular, that $\star : \1$ satisfies singleton induction with $\lambda x . \refl_x$ as the required homotopy.
+
+\begin{thm} For a type $A$ the following are logically equivalent.
+\begin{enumerate}
+\item $A$ is contractible.
+\item $A$ comes equipped with a term $a : A$ satisfying singleton induction.
+\end{enumerate}
+\end{thm}
+\begin{proof}
+Suppose we have $(a,C) : \is{contr}(A) \coloneq \sum_{c :A} \prod_{x:A} c =x$. We may replace the homotopy $C : \term{const}_a \sim \id_A$ by a new homotopy $C'$ defined by $C'(x) = C(a)^{-1} \cdot C(x)$. We then have an identification $\term{left-inv} : C'(a) = \refl_a$. So without loss of generality we suppose $(a,C) : \is{contr}(A)$ comes with a term $p : C(a) = \refl_a$.
+
+Consider a type family $B$ over $A$. For each $b : B(a)$ our goal is to define $\term{ind-sing}_a(b) : \prod_{x:A}B(x)$, which we do by
+\[ \term{ind-sing}_a(b) \coloneq \tr_B(C(x),b) : B(x).\]
+It remains to construct an identification $\term{ind-sing}_a(b,a) = b$. We have a function
+\[ \lambda (q : a=x). \tr_B(q,b)\] that evaluates at the path $C(a)$ to give $\term{ind-sing}_a(b)$ and evalutes at the path $\refl_a$ to give $b$. When we apply this function to the path $p : C(a) = \refl_a$ we get the desired identification.
+
+Conversely, suppose $a :A$ satisfies singleton induction. To prove that $A$ is contractible with center of contraction $a$ we apply singleton induction to the type family $B(x) \coloneq a = x$ to obtain \[\term{ind-sing}_a : a =a \to \Pi_{x:A} a=x.\] Now $\term{ind-sing}_a(\refl_a)$ is a contracting homotopy.
+\end{proof}
+
+\subsection*{Fibers}
+
+\begin{defn} Let $f \colon A \to B$ be a function between types and consider $b : B$. The \textbf{fiber} of $f$ over $b$ is the type
+\[ \fib_f(b) \coloneq \Sigma_{a:A} f(a) =b.\]
+\end{defn}
+
+That is the fiber is what in other contexts might get called the ``homotopy fiber'': it is comprised of those terms $a:A$ whose images $f(a):B$ are identified with $b$. 
+
+It will be useful to identify the identity type of the fiber, which we do by following our usual strategy.
+
+\begin{defn} Let $f : A \to B$ and $b : B$. Given two terms $(a,p), (a',p') : \fib_f(b)$ define a type
+\[ \type{Eq-fib}_f((a,p),(a',p')) \coloneq \Sigma_{\alpha : a = a'} p = \ap_f(\alpha) \cdot p'.\]
+\end{defn}
+
+Note $\type{Eq-fib}_f :  \fib_f(b) \to \fib_f(b) \to \UU$ is reflexive since we have
+\[ \lambda(a,p). (\refl_a,\refl_p) \colon \Pi_{(a,p) :\fib_f(b)} \type{Eq-fib}_f((a,p),(a,p)).\]
+
+\begin{prop} Consider $f \colon A \to B$ and $b :B$. The canonical map
+\[ (a,p) =_{\fib_f(b)} (a',p') \to \type{Eq-fib}_f((a,p),(a',p'))\]
+induced by the reflexivity term is an equivalence for any pair of points $(a,p), (a',p') : \fib_f(b)$.
+\end{prop}
+\begin{proof}
+For the inverse equivalence, we need a function
+\[ \left(\Sigma_{\alpha : a = a'} p = \ap_f(\alpha) \cdot p' \right) \to (a,p) =_{\fib_f(b)} (a',p').\]
+By $\Sigma$-induction it suffices to consider the image of a pair $\alpha : a = a'$ and $\beta : p = \ap_f(\alpha) \cdot p'$. By path induction we may take $p$ to be $\ap_f(\alpha) \cdot p'$ and $\beta$ to be $\refl$. By path induction again, we may take $a$ to be $a'$ and $\alpha$ to be $\refl$. Since $\ap_f(\refl)\cdot p'$ is judgmentally equal to $p'$ we may use $\refl$ as our identification between $(a',\ap_f(\refl)\cdot p')$ and $(a',p')$. The construction of the homotopies witnessing the left and right inverses are similar.
+\end{proof}
+
+
+\subsection*{Contractible maps and equivalences}
+
+\begin{defn} We say that a function $f \colon A \to B$ is \textbf{contractible} if it comes equipped with a term of type
+\[ \is{contr}(f) \coloneq \Pi_{b:B} \is{contr}(\fib_f(b)).\]
+\end{defn}
+
+\begin{thm} Any contractible map is an equivalence.
+\end{thm}
+\begin{proof}
+Suppose $f \colon A \to B$ is contractible. The center of contraction $(g(b),G(B))$ in each fiber gives rise to a dependent function
+\[ \lambda b. (g(b),G(B)) \colon \Pi_{b:B} \fib_f(b).\]
+In particular $g : B \to A$ defines a map and $G \colon f \circ g \sim \id_B$ defines a homotopy. So $g$ is a section of $f$.
+
+It remains to show that $g$ is also a retraction of $f$ by defining a term in the type $g \circ f \sim \id_A$. For each $a : A$ we have an identification $p : f(g(f(a))) = f(a)$ since $g$ is a section of $f$. So $(g(f(a)),p) : \fib_f(f(a))$. Since this type is contractible there is an identification $\beta : (g(f(a)),p) = (a, \refl_{f(a)})$. The base path $\ap_{\pr_1}(\beta) : g(f(a)) = a$ gives the desired identification.
+\end{proof}
+
+In fact, equivalences necessarily also define contractible maps, which we show in a few steps. Recall an \textbf{invertible map} is a map $f \colon A \to B$ equipped with $g \colon B \to A$ and homotopies $G : f \circ g \sim \id$ and $H : g \circ f \sim \id$. Then the whiskered homotopies $G \circ f$ and $f \circ H$ both have the $f \circ g \circ f \simeq f$.
+
+\begin{defn} A map $f \colon A \to B$ is \textbf{coherently invertible} if it comes with
+\[ g : B \to A, \quad G : f \circ g \sim \id, \quad H : g \circ f \sim \id, \quad K : G \circ f \sim f \circ H.\]
+\end{defn}
+
+\begin{prop} Any coherently invertible map has contractible fibers.
+\end{prop}
+\begin{proof}
+Given $f \colon A \to B$ together with
+\[ g : B \to A, \quad G : f \circ g \sim \id, \quad H : g \circ f \sim \id, \quad K : G \circ f \sim f \circ H.\]
+we wish to show that $\fib_f(b)$ is contractible for any $b : B$. We take $(g(b), G(b)) : \fib_f(b)$ as the center of contraction. 
+
+For the contracting homotopy it suffices to define a term in the equivalent type
+\[ \prod_{a :A} \prod_{p : f(a) = b} \type{Eq-fib}_f((g(b),G(B)), (a,p).\]
+By path induction on $p$ it suffices to define a term in the type
+\[ \prod_{a :A} \type{Eq-fib}_f((g(f(a)),G(f(a))),(a, \refl_{f(a)})).\]
+By the definition of $\type{Eq-fib}_f$ this means that we need, for each $a:A$, a path $H(a) : g(f(a))=a$ and a further identification
+\[ G(f(a)) = \ap_f(H(a)) \cdot \refl_{f(a)}.\]
+We have $K(a) : G(f(a)) = \ap_f(H(a))$ so we get the identification we want by composing with $\term{right-unit-htpy}$.\end{proof}
+
+Our next goal is to show that any invertible map $f \colon A \to B$ equipped with $g \colon B \to A$ and homotopies $G : f \circ g \sim \id$ and $H : g \circ f \sim \id$ can be improved to a coherently invertible map at the cost of replacing $G$ with a new homotopy $G'  : f \circ g \sim \id$ satisfying the coherence $K : f \circ H \sim G' \circ f$. The upshot is that we have a map
+\[ \type{has-inverse}(f) \to \is{coh-invertible}(f).\]
+The construction is by messy path algebra that you can read about in \cite[\S 10.4]{Rijke}.
+
+
+
+\begin{cor} For any type $A$ and term $a :A$ the type
+\[ \Sigma_{x:A} x =a\] is contractible.
+\end{cor}
+\begin{proof}
+This type is the fiber of the identity function $\id_A \colon A \to A$ over $a :A$. Since $\id_A$ is an equivalence, this type must be contractible.
+\end{proof}
+
+Soon we'll have a second proof: we'll be able to use the equivalence $\inv \colon (a =x) \to (x =a)$ to define an equivalence $\lambda x. \inv \colon \Sigma_{x:A} a =x \to \Sigma_{x:A} x =a$. It follows easily that any type equivalent to a contractible type is contractible.
+
+
+
+
 \section*{October 11: The fundamental theorem of identity types}
 \section*{October 13: Propositions, sets, and general truncation levels}
 \section*{October 18: Function extensionality}
@@ -1594,8 +1734,12 @@ Since the left-hand side we defined to be the right-hand side, we may use $\refl
 \section*{December 1: Homotopy groups of types}
 \section*{December 6: Classifying types of groups}
 
+\bibliographystyle{alpha}
+\begin{thebibliography}{R}
 
+\bibitem[R]{Rijke} Egbert Rijke, \emph{Introduction to Homotopy Type Theory}, available from \url{https://hott.zulipchat.com}
 
+\end{thebibliography}
 
 
 \end{document}
