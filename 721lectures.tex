@@ -1176,7 +1176,7 @@ The family of identity types can be understood as a type-valued binary relation 
 \begin{itemize}
 \item \textbf{reflexive} if it comes with a term $\rho : \Pi_{x :A} R(x,x)$,
 \item \textbf{symmetric} if it comes with a term $\sigma : \Pi_{x,y :A} R(x,y) \to R(y,x)$,
-\item \textbf{transitive} if it comes with a term $\tau : \Pi_{x,y,z : A} \to R(x,y) \to R(y,z) \to R(x,z)$
+\item \textbf{transitive} if it comes with a term $\tau : \Pi_{x,y,z : A}  R(x,y) \to R(y,z) \to R(x,z)$
 \end{itemize}
 A \textbf{typal equivalence relation} on $A$ is a reflexive, symmetric, and transitive, typal binary relation.
 \end{defn}
@@ -1327,7 +1327,7 @@ The traditional well-ordering principle is about subsets of $\bN$, or equivalent
 \begin{defn} Let $P \colon \bN \to \UU$. A number $n : \bN$ is a \textbf{lower bound} for $P$ if it comes equipped with a term in the type
   \[ \type{is-lower-bound}_{P}(n) \coloneq \Pi_{k : \bN} P(k) \to n \leq k\]
   Similarly,
-  \[ \type{is-uppwer-bound}_{P}(n) \coloneq \Pi_{k : \bN} P(k) \to k \leq n\]
+  \[ \type{is-upper-bound}_{P}(n) \coloneq \Pi_{k : \bN} P(k) \to k \leq n\]
   \end{defn}
 
   \begin{thm}[well-ordering principle]
@@ -1383,7 +1383,7 @@ We leave it to the reader to verify that $R(n,n!+1)$ is inhabited. Using these i
   
 \part{The Univalent Foundations of Mathematics}
 
-The univalent foundations build's on Martin-L\"{o}f's dependent type theory by adding a few new axioms inspired by the interpretation of types as $\infty$-groupoids or spaces rather than sets. One of these axioms, Voevodsky's \emph{univalence axiom}, is inconsistent with the interpretation of types as sets. When we meet the hierarchy of truncation levels, we'll see that some types behave like types and some types behave like sets while others have non-trivial higher-dimensional structures. 
+The univalent foundations build on Martin-L\"{o}f's dependent type theory by adding a few new axioms inspired by the interpretation of types as $\infty$-groupoids or spaces rather than sets. One of these axioms, Voevodsky's \emph{univalence axiom}, is inconsistent with the interpretation of types as sets. When we meet the hierarchy of truncation levels, we'll see that some types behave like types and some types behave like sets while others have non-trivial higher-dimensional structures. 
 
 \section*{October 4: Equivalences}
 
@@ -1451,21 +1451,21 @@ k \circ H \coloneq \lambda_b. \ap_k(H(b)) \colon k \circ g \sim k \circ h.\]
 
 \subsection*{Bi-invertible maps}
 
-We now explain what it means for a function $f \colon A \to B$ between types to define an \textbf{equivalence}. On explanation is that an equivalence is like a homotopy equivalence in topology, but we actually define the type family $\type{is-equiv}$ in a manner that makes equivalences look more like ``bi-invertible maps'' for reasons that we will explain.
+We now explain what it means for a function $f \colon A \to B$ between types to define an \textbf{equivalence}. One explanation is that an equivalence is like a homotopy equivalence in topology, but we actually define the type family $\type{is-equiv}$ in a manner that makes equivalences look more like ``bi-invertible maps'' for reasons that we will explain.
 
 \begin{defn} Let $f \colon A \to B$. 
 \begin{enumerate}
 \item The type of \textbf{sections} of $f$ is defined to be the type
-\[ \type{sec}(f) \coloneq \Sigma_{g : B \to A} f\circ g \simeq \id_B.\]
+\[ \type{sec}(f) \coloneq \Sigma_{g : B \to A} f\circ g \sim \id_B.\]
 \item The type of \textbf{retractions} of $f$ is defined to be the type
-\[ \type{retr}(f) \coloneq \Sigma_{h : B \to A} h \circ f \simeq \id_A.\]
+\[ \type{retr}(f) \coloneq \Sigma_{h : B \to A} h \circ f \sim \id_A.\]
 \item We say $f$ is an \textbf{equivalence} if it has a section and a retraction:
 \[ \type{is-equiv}(f) \colon \type{sec}(f) \times \type{retr}(f).\]
 \end{enumerate}
 We write $A \simeq B$ for the type $\Sigma_{f : A \to B} \type{is-equiv}(f)$ of all equivalences from $A$ to $B$.
 \end{defn}
 
-Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : B \to A$ and two homotopies $G : f \circ g \simeq \id_B$ and $H \colon h \circ f \simeq \id_A$. We have seen a bunch of examples:
+Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : B \to A$ and two homotopies $G : f \circ g \sim \id_B$ and $H \colon h \circ f \sim \id_A$. We have seen a bunch of examples:
 
 \begin{ex} $\quad$
 \begin{itemize}
@@ -1477,22 +1477,22 @@ Explicitly the data of a term in $\type{is-equiv}(f)$ involves two maps $g, h : 
 \end{ex}
 
 We might also define
-\[ \type{has-inverse}(f) \coloneq \Sigma_{g : B \to A} (f \circ g \simeq \id_B) \times (g \circ f \simeq \id_A).\]
+\[ \type{has-inverse}(f) \coloneq \Sigma_{g : B \to A} (f \circ g \sim \id_B) \times (g \circ f \sim \id_A).\]
 The reason we did not define equivalences to be functions that have inverses is that we wanted being an equivalence to be a \textbf{property} associated to a map $f$ rather than a \textbf{structure} on the map, in a sense we'll discuss soon. Essentially because of the uniqueness of reflexivity paths, if $f$ is an equivalence then it only has one section and homotopy and only one retraction and homotopy, up to homotopy. We'll see, however, that the data of inverses to $f$ can be more complicated.
 
-But even though $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ may differ:
+But even though the data encoded by terms in $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ may differ, these types are closely related:
 
 \begin{prop} The types $\type{is-equiv}(f)$ and $\type{has-inverse}(f)$ are logically equivalent. In particular, if $f$ is an equivalence it has a two-sided inverse.
 \end{prop}
 \begin{proof}
 The data of an inverse obviously defines the data of an equivalence, so we have $\type{has-inverse}(f) \to \type{is-equiv}(f)$.
 
-For the converse, suppose we have $g,h \colon B \to A$ and homotopies $G : f \circ g \simeq \id_B$ and $H \colon h \circ f \simeq \id_A$.  Then for any $b : B$ we have
+For the converse, suppose we have $g,h \colon B \to A$ and homotopies $G : f \circ g \sim \id_B$ and $H \colon h \circ f \sim \id_A$.  Then for any $b : B$ we have
 \[
 \begin{tikzcd} g(b) \arrow[r, equals, "H(g(b))^{-1}"] & h(f(g(b))) \arrow[r, equals, "\ap_h(G(b))"] & h(b)
 \end{tikzcd}
 \]
-defining a homotopy $K \colon g \simeq h$. Using this we can see that $g$ is also a retraction of $f$ by the identification for any $a :A$
+defining a homotopy $K \colon g \sim h$. Using this we can see that $g$ is also a retraction of $f$ by the identification for any $a :A$
 \[
 \begin{tikzcd} g(f(a)) \arrow[r, "K(f(a))", equals] & h(f(a)) \arrow[r, "H(a)"] & a
 \end{tikzcd}
@@ -1509,7 +1509,7 @@ Up to equivalence, types satisfy many familiar laws, such as
 \begin{align*}
 A+B &\simeq B + A & A \times B &\simeq B \times A\\
 A \times \1 &\simeq A & A+\emptyset &\simeq A \\
-A \times (B + C) &\simeq (A \times B) + (A \times C
+A \times (B + C) &\simeq (A \times B) + (A \times C)
  \end{align*}
 where the required equivalences and homotopies can be constructed by induction. These equivalences extend to cases such as
 \[ \Sigma_{x : \emptyset} B(x) \simeq \emptyset \quad \Sigma_{x : \1}B(x)\simeq B(\star).\]
@@ -1609,7 +1609,7 @@ Contractible types satisfy an induction principle similar to singleton types.
 \term{ev-pt} : \left(\Pi_{x:A} B(x)\right) \to B(a)
 \]
 defined by $\term{ev-pt}f \coloneq f(a)$ has a section. The data of this section is then given by a function and a homotopy
-\[ \term{ind-sing}_a : B(a) \to \Pi_{x:A} B(x) \quad \text{and} \quad \term{comp-sing}_a : \term{ev-pt}\circ\term{ind-sing}_a \simeq \id.\]
+\[ \term{ind-sing}_a : B(a) \to \Pi_{x:A} B(x) \quad \text{and} \quad \term{comp-sing}_a : \term{ev-pt}\circ\term{ind-sing}_a \sim \id.\]
 \end{defn}
 
 The singleton induction principle is almost the same as the induction principle for the unit type except for one point of difference: the ``computation rule'' for singleton induction is stated using an \emph{identification} rather than a judgmental equality.  Note in particular, that $\star : \1$ satisfies singleton induction with $\lambda x . \refl_x$ as the required homotopy.
@@ -1675,7 +1675,7 @@ In particular $g : B \to A$ defines a map and $G \colon f \circ g \sim \id_B$ de
 It remains to show that $g$ is also a retraction of $f$ by defining a term in the type $g \circ f \sim \id_A$. For each $a : A$ we have an identification $p : f(g(f(a))) = f(a)$ since $g$ is a section of $f$. So $(g(f(a)),p) : \fib_f(f(a))$. Since this type is contractible there is an identification $\beta : (g(f(a)),p) = (a, \refl_{f(a)})$. The base path $\ap_{\pr_1}(\beta) : g(f(a)) = a$ gives the desired identification.
 \end{proof}
 
-In fact, equivalences necessarily also define contractible maps, which we show in a few steps. Recall an \textbf{invertible map} is a map $f \colon A \to B$ equipped with $g \colon B \to A$ and homotopies $G : f \circ g \sim \id$ and $H : g \circ f \sim \id$. Then the whiskered homotopies $G \circ f$ and $f \circ H$ both have the $f \circ g \circ f \simeq f$.
+In fact, equivalences necessarily also define contractible maps, which we show in a few steps. Recall an \textbf{invertible map} is a map $f \colon A \to B$ equipped with $g \colon B \to A$ and homotopies $G : f \circ g \sim \id$ and $H : g \circ f \sim \id$. Then the whiskered homotopies $G \circ f$ and $f \circ H$ both have the $f \circ g \circ f \sim f$.
 
 \begin{defn} A map $f \colon A \to B$ is \textbf{coherently invertible} if it comes with
 \[ g : B \to A, \quad G : f \circ g \sim \id, \quad H : g \circ f \sim \id, \quad K : G \circ f \sim f \circ H.\]
@@ -1711,10 +1711,165 @@ This type is the fiber of the identity function $\id_A \colon A \to A$ over $a :
 
 Soon we'll have a second proof: we'll be able to use the equivalence $\inv \colon (a =x) \to (x =a)$ to define an equivalence $\lambda x. \inv \colon \Sigma_{x:A} a =x \to \Sigma_{x:A} x =a$. It follows easily that any type equivalent to a contractible type is contractible.
 
-
-
-
 \section*{October 11: The fundamental theorem of identity types}
+
+ \subsection*{Families of equivalences}
+ 
+For any family of maps $f \colon \Pi_{x:A} B(x) \to C(x)$ there is a map
+\[ \term{tot}(f) : \Sigma_{x:A} B(x) \to \Sigma_{x:A}C(x)\]
+defined by $\lambda(x,y).(x,f(x,y))$. 
+
+\begin{thm} For any  family of maps $f \colon \Pi_{x:A} B(x) \to C(x)$ the following are logically equivalent:
+\begin{enumerate}
+\item The family $f$ is a \textbf{family of equivalences}: for each $x :A$ the map $f(x)$ is an equivalence.
+\item The map $\term{tot}(f)$ is an equivalence.
+\end{enumerate}
+\end{thm}
+\begin{proof}
+Recall equivalences are contractible maps: meaning maps whose fibers are all contractible. So it suffices to show that $f(x)$ is a contractible map for each $x$ if and only if $\term{tot}(f)$ is a contractible map. For this, we must show for each $x :A$ and $c : C(x)$ that $\fib_{f(x)}(c)$ is contractible if and only if $\fib_{\type{tot}(f)}(x,c)$ is contractible. But in fact these fibers are always equivalent, as the following lemma shows.
+\end{proof}
+
+\begin{lem} For any  family of maps $f \colon \Pi_{x:A} B(x) \to C(x)$ and any term $t : \sum_{x:A}C(x)$ there is an equivalence
+\[
+\fib_{\term{tot}(f)}(t) \simeq \fib_{f(\pr_1(t))}\pr_2(t).\]
+\end{lem}
+\begin{proof}
+For all ${t: \Sigma_{x:A}C(x)}$ define $\phi(t) \colon  \fib_{\term{tot}(f)}(t) \to \fib_{f(\pr_1(t))}\pr_2(t)$ by pattern matching by taking $(x,f(x,y),(x,y), \refl)$ to $(y,\refl)$. To see that $\phi(t)$ is an equivalence for each $t : \Sigma_{x:A}C(x)$ we construct an inverse by pattern matching \[ \phi(x,f(x,y),y, \refl) \coloneq ((x,y),\refl)\] and homotopies by pattern matching in which case both homotopies reduce to $\refl$.
+\end{proof}
+
+Now consider a closely related situation where we are given a map $f \colon A \to B$ and a family $C \colon B \to \UU$. We have a map
+\[ \lambda(x,z).(f(x),z): \Sigma_{x:A} C(f(x)) \to \Sigma_{y :B}C(y).\]
+Again, by the same style of argument, if $f$ is an equivalence then this map is an equivalence (because the fibers are equivalent), but in this case the converse does not hold: consider $\true : \1 \to \bool$ and the type family $\false = b : \bool \to \UU$.
+
+Nevertheless we can use the one-sided implication to extend the previous theorem as follows. Given $f \colon A \to B$ and a family of maps $g : \Pi_{x:A}C(x) \to D(f(x))$ where $C$ is a type family over $A$ and $D$ is a type family over $B$, we say that $g$ is a \textbf{family of maps over} $f$. Define
+\[ \term{tot}_f(g) : \Sigma_{x:A}C(x) \to \Sigma_{y:B}D(y)\] by $\term{tot}_f(g)(x,z) \coloneq (f(x),g(x,z))$.
+
+\begin{thm} Suppose $g$ is a family of maps over $f$ and $f$ is an equivalence. Then the following are logically equivalent:
+\begin{enumerate}
+\item The family of maps $g$ over $f$ is a family of equivalences.
+\item The map $\term{tot}_f(g)$ is an equivalence.
+\end{enumerate}
+\end{thm}
+\begin{proof}
+We have a commuting triangle of maps
+\[
+\begin{tikzcd} \Sigma_{x:A}C(x) \arrow[rr, "\term{tot}_f(g)"] \arrow[dr, "\term{tot}(g)"'] & & \Sigma_{y:B}D(y) \\ & \Sigma_{x:A}D(f(x)) \arrow[ur, "{\lambda(x,z).(f(x),z)}"'] 
+\end{tikzcd}
+\]
+Since $f$ is an equivalence, the bottom right map is an equivalence. The equivalences are closed under the 2-of-3 property (meaning if any two of a composable pair and their composite are equivalences so is the third map). Thus $\term{tot}(g)$ is an equivalence if and only if $\term{tot}_f(g)$ is an equivalence. And by the previous theorem, the first condition asserts that $g$ is a family of equivalences.
+\end{proof}
+
+\subsection*{The fundamental theorem}
+
+The fundamental theorem of identity types provides necessary and sufficient conditions for a type family $B \colon A \to \UU$ and terms $a : A$ and $b : B(a)$ to define a family of equivalences $\Pi_{x:A}(a=x) \simeq B(x)$ by $(a,\refl)\mapsto b$. In fact, we'll see we can be a bit less particular about how exactly the family of equivalences is defined.
+
+\begin{defn} Given a type $A$ and a term $a:A$ a \textbf{(unary) identity system} on $A$ at $a$ is given by a type family $B : A \to \UU$ and a term $b : B(a)$ so that for any family of types $P \colon \Sigma_{x:A}B(x) \to \UU$ the function
+\[ \ev_{a,b} \colon \Pi_{x:A} \Pi_{y:B(x)}P(x,y) \to P(a,b)\] has a section.
+\end{defn}
+
+That is, if $(B,b)$ is an identity system at $(A,a)$ and $P$ is a family of types over $x:A$ and $y:B(x)$ then for each $p : P(a,b)$ there is a dependent function $f :\Pi_{x:A} \Pi_{y:B(x)} P(x,y)$ so that $f(a,b) = p$. This is a variant of the path induction principal where the computation rule is given by an identification.
+
+\begin{thm}[fundamental theorem of identity types] Let $A$ be a type, let $a :A$, and let $B : A \to \UU$. Then the following are logically equivalent for any family of maps \[ f : \Pi_{x:A}(a=x) \to B(x).\]
+\begin{enumerate}
+\item $f$ is a family of equivalences.
+\item The total space $\Sigma_{x:A}B(x)$ is contractible.
+\item The family $B$ is an identity system.
+\end{enumerate}
+In particular, for any $b : B(a)$ the canonical map \[\term{path-ind}_a(b) \colon \Pi_{x:A}(a=x)\to B(x)\] is a family of equivalences if and only if $\Sigma_{x:A}B(x)$ is contractible. 
+\end{thm}
+\begin{proof}
+By our theorem characterizing families of equivalences $f$ is a family of equivalences iff $\term{tot}(f)$ induces an equivalence
+\[ \left(\Sigma_{x:A}(a=x) \right) \simeq \left(\Sigma_{x:A}B(x)\right).\]
+The left-hand type is contractible so this is the case if and only if $\Sigma_{x:A}B(x)$ is contractible. This proves the equivalence of (i) and (ii). 
+
+For the equivalence of (ii) and (iii) consider the commutative triangle:
+\[
+\begin{tikzcd} \Pi_{t : \Sigma_{x:A}B(x)} P(t) \arrow[rr, "\term{ev-pair}"] \arrow[dr, "\term{ev-pt}_{(a,b)}"'] & & \Pi_{x:A} \Pi_{y : B(x)} P(x,y) \arrow[dl, "\ev_{(a,b)}"] \\ & P(a,b)
+\end{tikzcd}
+\]
+By $\Sigma$-induction, the top map has a section. It follows that the left map has a section if and only if the right map has a section. The left-hand section is the universal property called singleton induction that is satisfied if and only if the type $\Sigma_{x:A}B(x)$ is contractible, while the right-hand section is the universal property of an identity system. This proves the equivalence of  (ii) and (iii).
+\end{proof}
+
+\subsection*{Equality on \texorpdfstring{$\bN$}{N}}
+
+As our first application recall the observational equality type family $\Eq_\bN : \bN \to \bN \to \UU$ satisfying
+\[ \Eq_\bN(0_\bN,0_\bN) \doteq \1 \quad \Eq_\bN(\suc(n),0_\bN) \doteq \emptyset \quad \Eq_\bN(0,\suc(n)) \doteq \emptyset \quad \Eq_\bN(\suc(m), \suc(n)) \doteq \Eq_\bN(m,n).\] We previously showed that this type family is logically equivalent to the identity type family for the natural numbers, but we can do better. Using the reflexivity term $\term{refl-Eq}_\bN : \prod_{n :\bN} \Eq_{\bN}(n,n)$ we have a canonical map $(m=n) \to \Eq_\bN(m,n)$ defined by path induction.
+
+\begin{thm} For all $m,n : \bN$ the canonical map
+\[ (m=n) \to \Eq_\bN(m,n)\] is an equivalence.
+\end{thm}
+\begin{proof}
+It suffices to show for each $m : \bN$ that the type \[ \Sigma_{n : \bN} \Eq_\bN(m,n)\] is contractible. We take $(m,\term{refl-Eq}_\bN(m))$ as the center of contraction.
+
+The contracting homotopy 
+\[ \gamma(m) : \Pi_{n :\bN} \Pi_{e :\Eq_\bN(m,n)} (m,\term{refl-Eq}_\bN(m)) = (n,e)\]
+is defined by induction on $m,n : \bN$ from the base case $\gamma(0,0, \star) \coloneq \refl$. If either $m$ or $n$ is 0 and the other is a successor we can define this using ex-falso. 
+
+In the inductive step we seek an identification $\gamma(m+1,n+1,e) : (m+1, \term{refl-Eq}_\bN(m+1)) = (n+1,e)$. To define this we use the map
+\[ \lambda(n,e).(n+1,e) : \Sigma_{n:\bN}\Eq_\bN(m,n) \to \Sigma_{n : \bN}\Eq_\bN(m+1,n).\]
+Since this map carries $(m,\term{refl-Eq}_\bN(m))$ to $(m+1,\term{refl-Eq}_\bN(m+1))$ we can apply the map to the identification $(m,n,e)$ to get the identification we seek.
+\end{proof}
+
+\subsection*{Embeddings}
+
+Our next application will show that equivalences are embeddings, defined as follows:
+
+\begin{defn} An \textbf{embedding} is a map $f \colon A \to B$ that satisfies the property that 
+\[ \ap_f : (x=y) \to (f(x)=f(y))\]
+is an equivalence for every $x,y :A$.
+\end{defn}
+
+Write 
+\[ \is{emb}(f) \coloneq \Pi_{x,y:A} \is{equiv}(\ap_f : (x=y) \to (f(x)=f(y))).\]
+
+\begin{thm} Equivalences are embeddings.
+\end{thm}
+\begin{proof}
+Suppose $e : A \simeq B$ is an equivalence and $x:A$. We wish to show that 
+\[ \ap_e : (x=y) \to (e(x)=e(y))\] is an equivalence for every $y :A$. For this it suffices to show that $\Sigma_{y:A}e(x) =e(y)$ is contractible. We have an equivalence
+\[ \Sigma_{y:A}e(x)=e(y) \simeq \Sigma_{y:A} e(y) = e(x)\]
+and the latter type is the fiber $\fib_e(e(x))$. Since $e$ is an equivalence this fiber is contractible so the result follows.
+\end{proof}
+
+\subsection*{Disjointness of coproducts}
+
+For a third application, we characterize the identity types of coproducts.
+
+\begin{thm} Let $A$ and $B$ be types. Then for any $a,a' :A$ and $b,b': B$ there are equivalences
+\begin{align*} (\inl(a) = \inl(a')) &\simeq (a = a')  \\ (\inl(a) = \inr(b)) &\simeq \emptyset \\ (\inr(b) = \inl(a)) &\simeq \emptyset \\ (\inr(b) = \inr(b')) &\simeq (b = b')
+\end{align*}
+\end{thm}
+
+We follow our usual strategy first defining a type family
+\[ \type{Eq-+}_{A,B} : (A+B) \to (A+B) \to \UU\] 
+by induction by
+\begin{align*} \type{Eq-+}_{A,B}(\inl(a),\inl(a')) &\simeq (a = a')  \\ \type{Eq-+}_{A,B}(\inl(a),\inr(b)) &\simeq \emptyset \\ \type{Eq-+}_{A,B}(\inr(b),\inr(a)) &\simeq \emptyset \\ \type{Eq-+}_{A,B} (\inr(b), \inr(b')) &\simeq (b = b')
+\end{align*}
+
+Again by induction there is a term $\term{Eq-+-refl} : \Pi_{z:A+B} \type{Eq-+}_{A,B}(z,z)$ defined by $\refl$ in both cases. Thus there is a map
+\[ \term{Eq-+-eq}: \Pi_{s,t:A+B} (s=t) \to \type{Eq-+}_{A,B}(s,t)\]
+defined by path induction. 
+
+\begin{prop} For any $s : A +B$ the total space
+\[ \Sigma_{t:A+B}\type{Eq-+}_{A,B}(s,t)\]
+is contractible.
+\end{prop}
+\begin{proof}
+By induction on $s$ we have to consider two cases, of which we prove just one: that 
+\[ \Sigma_{t:A+B}\type{Eq-+}_{A,B}(\inl(a),t)\]
+is contractible. From distributivity of dependent pairs of coproducts we have
+\[ \Sigma_{t:A+B}\type{Eq-+}_{A,B}(\inl(a),t) \simeq \Sigma_{x:A} \type{Eq-+}_{A,B}(\inl(a),\inl(x)) + \Sigma_{b:B} \type{Eq-+}_{A,B}(\inl(a),\inr(b)) \simeq \Sigma_{x:A} (a = \inl(x)) + \Sigma_{b:B} \emptyset\]
+\[ \simeq  \Sigma_{x:A} (a = \inl(x)) + \emptyset \simeq  \Sigma_{x:A} (a = \inl(x)).  \]
+This last type is contractible so the first type is as claimed.
+\end{proof}
+
+This establishes the desired family of equivalences of types.
+
+\subsection*{The structure identity principle}
+
+The notion of identity system $B : A \to \UU$ and $b : B(a)$ over a type $A$ and term $a:A$ can be extended to a notion of dependent identity system. A \textbf{dependent identity system} over $(B,b)$ is given by a type family $C : A \to \UU$ together with 
+\[ D : \Pi_{x:A} B(x) \to C(x) \to \UU\] and a term $c : C(a)$ so that $z \mapsto D(a,b,z)$ is an identity system at $c$. We leave the details to \cite[\S11.6]{Rijke}.
+
 \section*{October 13: Propositions, sets, and general truncation levels}
 \section*{October 18: Function extensionality}
 \section*{October 20: Propositional truncation}
