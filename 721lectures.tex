@@ -228,6 +228,7 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\id}{\term{id}}
 
 \newcommand{\bN}{{\mathbb{N}}}
+\newcommand{\bT}{{\mathbb{T}}}
 \newcommand{\suc}{\term{succ}_{\bN}}
 
 \newcommand{\ind}{\term{ind}}
@@ -264,6 +265,9 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\isequiv}{\type{is-equiv}}
 
 \newcommand{\fib}{\type{fib}}
+
+\newcommand{\Prop}{\type{Prop}_{\UU}}
+\renewcommand{\iff}{\leftrightarrow}
 
 \begin{document}
 
@@ -1871,6 +1875,226 @@ The notion of identity system $B : A \to \UU$ and $b : B(a)$ over a type $A$ and
 \[ D : \Pi_{x:A} B(x) \to C(x) \to \UU\] and a term $c : C(a)$ so that $z \mapsto D(a,b,z)$ is an identity system at $c$. We leave the details to \cite[\S11.6]{Rijke}.
 
 \section*{October 13: Propositions, sets, and general truncation levels}
+
+We now formally study propositions in homotopy type theory.
+
+\subsection*{Propositions}
+
+\begin{defn} A type $A$ is a \textbf{proposition} if all of its identity types are contractible: i.e., if it comes with a term of type
+\[ \is{prop}(A) \coloneq \Pi_{x,y:A} \is{contr}(x=y).\]
+\end{defn}
+
+Given a universe $\UU$ we define $\Prop$ to be the type of all small propositions:
+\[ \Prop \coloneq \Sigma_{X: \UU}\isprop(X).\]
+
+\begin{ex} We have shown that identity types of contractible types are contractible. Thus contractible types are propositions.
+\end{ex}
+
+\begin{ex} The empty type is also a proposition, for ex-falso inhabits
+\[ \Pi_{x,y: \emptyset} \iscontr(x=y).\]
+\end{ex}
+
+There are many equivalent ways to assert that a type is a proposition.
+
+\begin{prop} For a type $A$, the following are logically equivalent:
+\begin{enumerate}
+\item $A$ is a proposition.
+\item Any two terms of type $A$ can be identified: i.e., there is a dependent function in the type
+\[ \Pi_{x,y:A} x=y.\]
+\item The type $A$ is contractible as soon as it is inhabited: i.e., there is a term of type $A \to \iscontr(A)$.
+\item The map $\term{const}_\star : A \to \1$ is an embedding. 
+\end{enumerate}
+\end{prop}
+\begin{proof}
+(i) clearly implies (ii), by using the center of contraction. Assuming (ii) we have $p : \Pi_{x,y:A} x= y$. Note for any $x$ that $p(x) : \Pi_{y :A} x=y$ is a contracting homotopy onto $x$. Thus, we have a function
+\[ \lambda x. (x,p(x)) : A \to \iscontr(A).\]
+
+Next assume (iii) and consider a function $c : A\to \iscontr(A)$. To prove 
+\[ \Pi_{x,y :A} \isequiv (\ap_{\term{const}_\star} : (x=y) \to (\star = \star))\] it suffices to prove
+\[ A \to \left(\Pi_{x,y :A} \isequiv (\ap_{\term{const}_\star} : (x=y) \to (\star = \star))\right)\]
+because then we can use this function $f$ applied to one of the two terms $x,y : A$ to get the data we want. But now our new goal allows us to assume we have a term $a:A$ and so it follows from our assumption that $A$ is contractible. Thus $\term{const}_\star : A \to \1$ is an equivalence and in particular an embedding. This proves (iv).
+
+Finally, $\term{const}_\star : A \to \1$ is an embedding, then the types $(x=y)$ and $(\star=\star)$ are equivalent. The latter type is contractible so the former must be as well. This proves that (iv) implies (i).
+\end{proof}
+
+A useful feature of propositions is that logical equivalences become equivalences:
+
+\begin{prop} For propositions $P$ and $Q$
+\[ (P \simeq Q) \iff (P \iff Q).\]
+\end{prop}
+\begin{proof}
+Clearly we have $(P \simeq Q) \to (P \iff Q)$ so the content is in the converse. Given $f : P \to Q$ and $g : Q \to P$ we obtain homotopies $f \circ g \sim \id$ and $g \circ f \sim \id$ by the fact that any two elements in $P$ and $Q$ can be identified. Thus, $f$ and $g$ are equivalence inverses.
+\end{proof}
+
+\subsection*{Subtypes}
+
+Now that we know about propositions we can say that a type family $P \colon A \to \UU$ is a predicate if for each $a :A$, $P(a)$ is a proposition. In other words, predicates are type families $P \colon A \to \Prop$. Other terminology is commonly in use in this situation.
+
+\begin{defn} A type family $B$ over $A$ is a \textbf{subtype} of $A$ if for each $x:A$, $B(x)$ is a proposition. In this situation we say that $B(x)$ is a \textbf{property} of $x:A$.
+\end{defn}
+
+We'll show that for subtypes $B$ over $A$ the map $\pr_1 \colon \Sigma_{x:A} B(x) \to A$ is an embedding. It follows, then, that $(x,y) = (x',y')$ if and only if $x=_Ax'$. To prove this first observe:
+
+\begin{lem} Suppose $e : A\simeq B$. Then 
+\[ \isprop{A} \iff \isprop{B}.\]
+\end{lem}
+
+\begin{proof}
+Since $e$ is an equivalence, $e$ is an embedding, meaning that $\ap_e : (x=_Ay) \to (e(x)=_B e(y))$ is an equivalence. Now if $B$ is contractible then $(e(x)=_Be(y))$ is contractible which then implies that $(x=_Ay)$ is contractible. Thus $\isprop(B) \to \isprop(A)$. The converse is proven similarly using the inverse equivalence to $e$.
+\end{proof}
+
+\begin{thm} For $f : A \to B$ the following are logically equivalent:
+\begin{enumerate}
+\item $f$ is an embedding.
+\item $\fib_f(b)$ is a proposition for all $b : B$
+\end{enumerate}
+\end{thm}
+\begin{proof}
+By the fundamental theorem of identity types, $f$ is an embedding if and only if $\Sigma_{x:A}f(x)=_B f(y)$ is contractible for each $y :A$. Thus $f$ is an embedding iff $\fib_f(f(y))$ is contractible for each $y : A$. If $b:B$ and $p : f(y) = b$ then transport defines an equivalence
+\[ \fib_f(f(y)) \simeq \fib_f(b).\]
+Thus $f$ is an embedding iff $\fib_f(b)$ is contractible for each $b : B$ equipped with $p : f(y) = b$ for some $y:A$. This latter condition may be re-expressed as \[ \fib_f(b) \to \iscontr(\fib_f(b)),\]
+which is logically equivalent to the assertion that each $\fib_f(b)$ is a proposition.
+\end{proof}
+
+\begin{cor} For any family $B : A \to \UU$ the following are logically equivalent:
+\begin{enumerate}
+\item $\pr_1 \colon \Sigma_{x:A} B(x) \to A$ is an embedding.
+\item $B(x)$ is a proposition for each $x:A$.
+\end{enumerate}
+\end{cor}
+\begin{proof}
+Since $\fib_{\pr_1}(x) \simeq B(x)$ this follows immediately from the previous theorem.
+\end{proof}
+
+\subsection*{Sets}
+
+\begin{defn} A type $A$ is a \textbf{set} if its identity types are propositions:
+\[ \is{set}(A) \coloneq \Pi_{x,y:A} \isprop(x=y).\]
+\end{defn}
+
+\begin{ex} The type of natural numbers is a set, since we have $(m=n) \simeq \Eq_\bN(m,n)$ and, by induction, the latter types are propositions.
+\end{ex}
+
+\begin{thm} For a type $A$ the following are logically equivalent:
+\begin{enumerate}
+\item $A$ is a set.
+\item $A$ satisfies \textbf{axiom K}: that is, $A$ comes with a term in the type
+\[ \type{axiom-K}(A) \coloneq \Pi_{x:A} \Pi_{p : x =x} \refl_x = p.\]
+\end{enumerate}
+\end{thm}
+\begin{proof}
+If $A$ is a set then $x=x$ is a proposition so any two terms in it can be identified.
+
+Conversely, if axiom-K holds then for any $p,q : x =y$ we can identified $p \cdot q^{-1}$ and $\refl_x$ and it follows that $p=q$. This proves that $x=y$ is a proposition so $A$ must be a set.
+\end{proof}
+
+The following result can be used to prove that a type $A$ is a set.
+
+\begin{thm} Let $A$ be a type and suppose $R \colon A \to A \to \UU$ satisifes:
+\begin{enumerate}
+\item Each $R(x,y)$ is a proposition.
+\item $R$ is reflexive, witnessed by $\rho : \Pi_{x:A} R(x,x)$.
+\item There is a map $R(x,y) \to (x=y)$ for all $x,y:A$.
+\end{enumerate}
+Then any family of maps $\Pi_{x,y:A} (x=y) \to R(x,y)$ is a family of equivalences and $A$ must be a set.
+\end{thm}
+\begin{proof}
+By hypothesis we have terms $f : \Pi_{x,y:A} R(x,y) \to (x=y)$ and also $\term{path-ind}(\rho) : \Pi_{x,y} (x=y) \to R(x,y)$. Since each $R(x,y)$ is a proposition we have a homotopy $\term{path-ind}(\rho)(x,y) \circ f(x,y) \sim \id_{R(x,y)}$ proving that $R(x,y)$ is a retract of $x=y$. Thus, $\Sigma_{y:A} R(x,y)$ is a retract of $\Sigma_{y:A} x=y$. Since the latter type is contractible the former must be too. Thus any family of maps $\Pi_{y:A}(x=y) \to R(x,y)$ is a family of equivalences (since its totalization is a map between contractible types and thus an equivalence). 
+
+But now we know that the identity types of $A$ are propositions so $A$ must be a set.
+\end{proof}
+
+Recall a type $A$ has decidable equality  if the identity type $x=_Ay$ is decidable for every $x, y : A$, meaning
+\[ \Pi_{x,y:A} (x=y) + \neg (x=y).\]
+
+\begin{thm}[Hedberg] Any type with decidable equality is a set.
+\end{thm}
+\begin{proof} Let $d : \Pi_{x,y:A} (x=y) + \neg (x=y)$ be a witness to the fact that $A$ has decidable equality and let $\UU$ be a universe containing $A$.
+
+Define a type family $R'(x,y) : ((x=y) +\neg(x=y)) \to \UU$ by
+\[ R'(x,y, \inl(p)) \coloneq \1 \quad R'(x,y, \inr(p)) \coloneq \emptyset.\]
+Note that this is a family of propositions. Now define $R(x,y) \coloneq R'(x,y,d(x,y))$. This defines a family of propositions $R : A \to A \to \UU$. This is a reflexive binary relation so the apply the previous theorem to conclude that $A$ is a set we must only show that $R$ implies identity. 
+
+Since $R$ is defined to be an instance of $R'$ it suffices to construct a function for each $q : (x=y) + \neg(x=y)$ that proves $f(q) : R'(x,y,q) \to (x=y)$. We have this by
+\[ f(\inl(p,r)) \coloneq p \qquad f(\inr(p),r) \coloneq \term{ex-falso}(r).\]
+\end{proof}
+
+\subsection*{General truncation levels}
+
+So far we have defined:
+\begin{align*}
+\iscontr(A) &\coloneq \Sigma_{a:A} \Pi_{x:A} a=x\\
+\isprop(A) &\coloneq \Sigma_{x,y:A} \iscontr(x=y) \\
+\is{set}(A) &\coloneq \Sigma_{x,y:A} \isprop(x=y) 
+\end{align*}
+These define the first few layers of the hierarchy of truncation levels. This hierarchy starts at level -2 with the contractible types and continues at level -1 with the propositions. This makes level 0 the sets, which are typically thought of as ``0-dimensional.''
+
+Let $\bT$ be the inductive type with constructors $-2_\bT : \bT$ and $\term{succ}_\bT : \bT \to \bT$. The natural inclusion $i \colon \bN \to \bT$ is defined recursively by $i(0_\bN) \coloneq \term{succ}_\bT (\term{succ}_\bT (-2_\bT))$ and $i(\suc(n)) \coloneq \term{succ}_\bT (i(n))$. We abbreviate by writing $-2,-1,0,1,2,\ldots$ for the first few terms of $\bT$ when the context is clear.
+
+\begin{defn} Define $\is{trunc} : \bT \to \UU \to \UU$ recursively by
+\[ \is{trunc}_{-2}(A) \coloneq \iscontr(A) \qquad \is{trunc}_{k+1}(A) \coloneq \Pi_{x,y:A} \is{trunc}_k(x=_Ay).\]
+When $\is{trunc}_k(A)$ holds we say $A$ is \textbf{$k$-truncated} or is a \textbf{$k$-type}. You can prove, inductively, in $k : \bT$, that this is logically equivalent of the universe being used to define $\is{trunc}_k(A)$.
+\end{defn}
+
+
+
+For $k \geq 0$, we may also say that $A$ is a \textbf{proper $k$-type} if $\is{trunk}_k(A)$ holds but $\is{trunk}_{k-1}(A)$ does not.
+
+
+\begin{defn} A map $f \colon A \to B$ is \textbf{$k$-truncated} if its fibers are $k$-truncated.
+\end{defn}
+
+Given a universe $\UU$, we may also define a universe of $k$-truncated types by
+\[ \UU^k \coloneq \Sigma_{X:\UU} \is{trunc}_k(X).\]
+
+
+The truncation levels are successively contained in one another:
+
+\begin{prop} If $A$ is a $k$-type then $A$ is also a $k+1$-type.
+\end{prop}
+\begin{proof}
+We use induction on $k : \bT$. In the base case, we have shown already that contractible types are propositions. For the inductive step, note that if any $k$-type is a $k+1$-type then this applies to show that the identity types of a $k+1$-type, which are known to be $k$-types, are also $k+1$-types. This proves that any $k+1$-type is a $k+2$-type.
+\end{proof}
+
+In particular:
+
+\begin{cor} If $A$ is a $k$-type its identity types are also $k$-types.
+\end{cor}
+
+General truncation levels are stable under equivalence:
+
+\begin{prop} If $e : A \simeq B$ and $B$ is a $k$-type so is $A$.
+\end{prop}
+\begin{proof}
+We know this for contractible types, which is the base case. For the inductive step, $e: A \simeq B$ provides an equivalence $\ap_e :(x=y) \to (e(x)=e(y))$ for any $x,y:A$. If $B$ is a $k+1$-type its identity types are $k$-types so the inductive hypothesis implies that $(x=y)$ is also a $k$-type. This proves that $A$ is a $k+1$-type.
+\end{proof}
+
+A similar argument shows:
+
+\begin{cor} If $f \colon A \to B$ is an embedding and $B$ is a $k+1$-type, then so is $A$.
+\end{cor}
+
+Our final theorem generalizes the result that shows that a map is an embedding if and only if its fibers are propositions.
+\begin{thm} For $f \colon A \to B$ the following are logically equivalent:
+\begin{enumerate}
+\item $f$ is $(k+1)$-truncated.
+\item For each $x,y:A$, $\ap_f :(x=y) \to (f(x)=f(y))$ is $k$-truncated.
+\end{enumerate}
+\end{thm}
+\begin{proof}
+Both directions use the characterization of identity types of fibers:
+\[ ((x,p) =_{\fib_f(b)}(y,q) ) \simeq \Sigma_{\alpha: x=y} p = \ap_f(\alpha) \cdot q.\]
+
+The first statement is about identity types of fibers so consider $s,t : \fib_f(b)$.  We claim there is an equivalence \[ (s=t) \simeq \fib_{\ap_f}(\pr_2(s)\cdot \pr_2(t)^{-1}).\] By $\Sigma$-induction we can construct this for pairs $(x,p), (y,q) : \fib_f(b)$ for which we calculate
+\begin{align*} ((x,p)=(y,q)) &\simeq \Sigma_{\alpha : x= y} p = \ap_f(\alpha)\cdot q  \\ &\simeq \Sigma_{\alpha:x=y} \ap_f(\alpha)\cdot q = p \\ &\simeq \Sigma_{\alpha :x=y} \ap_f(\alpha) = p \cdot q^{-1} \\
+&\eqcolon \fib_{\ap_f}(p\cdot q{^{-1}}).
+\end{align*}
+It follows that if $\ap_f$ is $k$-truncated then so each identity type $(s=t)$ is equivalent to a $k$-truncated type and thus $f$ is $k+1$-truncated.
+
+For the converse, we have an equivalence between $\fib_{\ap_f}(p)$ and the identity type $(x,p) =(y,\refl_{f(y)})$ between terms in $\fib_f(f(y))$. So if $f$ is $(k+1)$-truncated these fibers are $k+1$-truncated and thus  their identity types are $k$-types. This proves that the fiber $\fib_{\ap_f}(p)$ is $k$-truncated.
+\end{proof}
+
+
 \section*{October 18: Function extensionality}
 \section*{October 20: Propositional truncation}
 \section*{October 25: The image of a map}
