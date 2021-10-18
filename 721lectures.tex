@@ -102,6 +102,7 @@ BoldItalicFont = *-BoldItalic
 \newtheorem*{defn}{defn}
 \newtheorem*{ntn}{Notation}
 \newtheorem*{post}{Postulate}
+\newtheorem*{ax}{Axiom}
 \newtheorem*{ex}{ex}
 \newtheorem*{nex}{non-ex}
 \newtheorem*{exc}{Exercise}
@@ -1874,7 +1875,7 @@ This establishes the desired family of equivalences of types.
 The notion of identity system $B : A \to \UU$ and $b : B(a)$ over a type $A$ and term $a:A$ can be extended to a notion of dependent identity system. A \textbf{dependent identity system} over $(B,b)$ is given by a type family $C : A \to \UU$ together with 
 \[ D : \Pi_{x:A} B(x) \to C(x) \to \UU\] and a term $c : C(a)$ so that $z \mapsto D(a,b,z)$ is an identity system at $c$. We leave the details to \cite[\S11.6]{Rijke}.
 
-\section*{October 13: Propositions, sets, and general truncation levels}
+\section*{October 13: Propositions and sets}
 
 We now formally study propositions in homotopy type theory.
 
@@ -2016,8 +2017,10 @@ Define a type family $R'(x,y) : ((x=y) +\neg(x=y)) \to \UU$ by
 Note that this is a family of propositions. Now define $R(x,y) \coloneq R'(x,y,d(x,y))$. This defines a family of propositions $R : A \to A \to \UU$. This is a reflexive binary relation so the apply the previous theorem to conclude that $A$ is a set we must only show that $R$ implies identity. 
 
 Since $R$ is defined to be an instance of $R'$ it suffices to construct a function for each $q : (x=y) + \neg(x=y)$ that proves $f(q) : R'(x,y,q) \to (x=y)$. We have this by
-\[ f(\inl(p,r)) \coloneq p \qquad f(\inr(p),r) \coloneq \term{ex-falso}(r).\]
+\[ f(\inl(p,r)) \coloneq p \qquad f(\inr(p),r) \coloneq \term{ex-falso}(r). \qedhere\]
 \end{proof}
+
+\section*{October 18: General Truncation Levels \& Function extensionality}
 
 \subsection*{General truncation levels}
 
@@ -2094,11 +2097,96 @@ It follows that if $\ap_f$ is $k$-truncated then so each identity type $(s=t)$ i
 For the converse, we have an equivalence between $\fib_{\ap_f}(p)$ and the identity type $(x,p) =(y,\refl_{f(y)})$ between terms in $\fib_f(f(y))$. So if $f$ is $(k+1)$-truncated these fibers are $k+1$-truncated and thus  their identity types are $k$-types. This proves that the fiber $\fib_{\ap_f}(p)$ is $k$-truncated.
 \end{proof}
 
+\subsection*{Function extensionality}
 
-\section*{October 18: Function extensionality}
-\section*{October 20: Propositional truncation}
-\section*{October 25: The image of a map}
-\section*{October 27: Finite types}
+The function extensionality principle characterizes the identity type of an arbitrary dependent function type, asserting that the type $f=g$ of identifications between dependent functions $f,g : \Pi_{x:A} B(x)$ is equivalent to the type of homotopies $f \sim g$. It has several equivalent forms:
+
+\begin{prop} For a type family $B : A \to \UU$ the following are logically equivalent:
+\begin{enumerate}
+\item The \textbf{function extensionality principle holds} for $f,g : \Pi_{x:A}B(x)$: the family of maps
+\[ \term{htpy-eq} : (f=g) \to (f \sim g)\]
+defined by sending $\refl$ to $\term{refl-htpy}$ is a family of equivalences.
+\item For any $f : \Pi_{x:A}B(x)$, the total space
+\[ \Sigma_{g : \Pi_{x:A}B(x)} f \sim g\]
+is contractible.
+\item The principle of \textbf{homotopy induction} holds: for any family of types $P$ depending on $f,g : \Pi_{x:A}B(x)$ and $H : f \sim g$ the evaluation function
+\[ \ev\colon \left( \Pi_{f,g : \Pi_{x:A}B(x)} \Pi_{H : f \sim g} P(f,g,H) \right) \to \Pi_{f : \Pi_{x:A}B(x)} P(f,f, \term{refl-htpy}_f)\]
+has a section.
+\end{enumerate}
+\end{prop}
+\begin{proof}
+This follows by applying the fundamental theorem of identity types to the type $\Pi_{x:A}B(x)$, term $f : \Pi_{x:A}B(x)$, and type family $g : \Pi_{x:A}B(x) \vdash f \sim g \univ$.
+\end{proof}
+
+A fourth equivalent condition is more surprising because it appears to express only a weak function extensionality principle.
+
+\begin{thm} For any universe $\UU$ the following are logically equivalent:
+\begin{enumerate}
+\item The \textbf{function extensionality principle} holds in $\UU$: for any type family $B$ over $A$ and dependent functions the map 
+\[ \term{htpy-eq} : (f=g) \to (f \sim g)\]
+is an equivalence.
+\item The \textbf{weak function extensionality principle} holds in $\UU$:  for any type family $B$ over $A$ one has
+\[ \left( \Pi_{x:A} \is{contr}(B(x)) \right) \to \is{contr}\left( \Pi_{x:A}B(x)\right).\]
+\end{enumerate}
+\end{thm}
+\begin{proof}
+Assume (i) and suppose each fiber $B(x)$ is contractible with center of contraction $c(x)$ and contracting homotopy $C_x : \Pi_{y : B(x)} c_x = y$. Define $c = \lambda x. c(x)$ to be the center of contraction of $\Pi_{x:A}B(x)$. For the contraction we require a term of type
+\[ \Pi_{f : \Pi_{x : A}B(x)} c =f.\] By function extensionality we have a map $(c \sim f) \to (c=f)$ so it suffices to construct a term of type $c \sim f \coloneq \Pi_{x:A} c(x)= f(x)$ and $\lambda x. C_x(f(x))$ is just such a term.
+
+For the converse, assume (ii). By the previous result it suffices to show that the type
+\[ \Sigma_{g : \Pi_{x:A}B(x)} f \sim g\]
+is contractible. Note we have a section-retraction pair:
+\[ \left(\Sigma_{g : \Pi_{x:A}B(x)} f \sim g \right) \xrightarrow{s} \left( \Pi_{x:A}\Sigma_{y:B(x)} f(x) = y\right) \xrightarrow{r} 
+\left(\Sigma_{g : \Pi_{x:A}B(x)} f \sim g \right) \]
+defined by
+\[ s \coloneq \lambda (g,H). \lambda x.(g(x),H(x)) \quad \text{and} \quad r \coloneq \lambda p. (\lambda x. \pr_1(p(x)), \lambda x. \pr_2(p(x))).\]
+The composite is homotopic to the identity function by the computation rules for $\Sigma$ and $\Pi$-types. Here the central type is a product of contractible types so must be contractible by (ii). Since retracts of contractible types are contractible, the claim follows.
+\end{proof}
+
+Henceforth, we will assume the function extensionality principle as an axiom:
+
+\begin{ax}[function extensionality] For any type family $B$ over $A$ and any pair of dependent functions $f,g : \Pi_{x:A}B(x)$ the map
+\[ \term{htpy-eq} : (f=g) \to (f \sim g)\]
+is an equivalence, with inverse $\term{eq-htpy}$.
+\end{ax}
+
+That is, we add the following rule to type theory:
+\[
+\inferrule{ \Gamma, x:A \vdash B(x)\univ \\ \Gamma \vdash f : \Pi_{x:A}B(x) \\ \Gamma \vdash g : \Pi_{x:A}B(x)}
+{ \Gamma \vdash \term{funext} : \is{equiv}(\term{htpy-eq}_{f,g})}
+\]
+
+There are myriad consequences of the function extensionality axiom. Firstly:
+
+\begin{thm} For any type family $B$ over $A$ one has
+\[ \left( \Pi_{x:A} \is{trunc}_k(B(x)) \right) \to \is{trunc}_k\left( \Pi_{x:A}B(x)\right).\]
+\end{thm}
+\begin{proof}
+The theorem states that $k$-types are closed under arbitrary dependent products. We prove this by induction on $k \geq -2$. The base case is the weak function extensionality principle.
+
+For the inductive step assume $k$-types are closed under products and consider a family $B$ of $(k+1)$-types. To show that $\Pi_{x:A}B(x)$ is $(k+1)$-truncated we must show that $f=g$ is $k$-truncated for every $f,g : \Pi_{x:A}$. By function extensionality this is equivalent to the type $f \sim g \coloneq \Pi_{x:A} f(x)=g(x)$ which is defined to be a dependent product of $k$-truncated types and thus is $k$-truncated by hypothesis. Since $k$-truncated types are closed under equivalences, the result follows.
+\end{proof}
+
+For a non-dependent family we conclude that: 
+\begin{cor} Suppose $B$ is a $k$-type. Then the type of functions $A \to B$ is a $k$-type for any type $A$.
+\end{cor}
+
+In particular, $\neg A$ is a proposition for any type $A$!
+
+\section*{October 20: Universal properties}
+
+\subsection*{Identity systems on \texorpdfstring{$\Pi$}{Pi}-types}
+
+\subsection*{Universal properties}
+
+\subsection*{The universal property of identity types}
+
+\subsection*{Composing with equivalences}
+
+\subsection*{The strong induction principle of \texorpdfstring{$\bN$}{the natural numbers}}
+
+\section*{October 25: Propositional truncation}
+\section*{October 27: The image of a map \& Finite types}
 \section*{November 1: The univalence axiom}
 \section*{November 3: Set quotients}
 \section*{November 8: Groups}
