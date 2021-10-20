@@ -1246,7 +1246,7 @@ The subtlety is that this really defines a \emph{split} notion of surjectivity. 
 Our next challenge is to define the quotient maps $[-]_{k} \colon \bN \to \type{Fin}_{k}$ that compute the remainder modulo $k$. Our strategy will be to define this function by induction on $n : \bN$. The idea is that the term $0_\bN : \bN$ should get sent to some $0$ while successors in $\bN$ should be sent to successors in $\type{Fin}_k$, taken in the cyclic order. We define these auxiliary structures first.
 
 \begin{defn} We define $\term{zero}_k : \type{Fin}_{k+1}$ recursively by
-\[ \term{zero}_0 \coloneq \star \quad \term{zero}_{k+1} \coloneq i(\term{zero})_k.\]
+\[ \term{zero}_0 \coloneq \star \quad \term{zero}_{k+1} \coloneq i(\term{zero}_k).\]
 
 We then define $\term{skip-zero}_k : \type{Fin}_k \to \type{Fin}_{k+1}$ recursively by
 \[ \term{skip-zero}_{k+1}(i(x)) \coloneq i(\term{skip-zero}_k(x)) \quad \term{skip-zero}_{k+1}(\star) \coloneq \star.\]
@@ -1336,7 +1336,7 @@ The traditional well-ordering principle is about subsets of $\bN$, or equivalent
   \end{defn}
 
   \begin{thm}[well-ordering principle]
-    Let $P$ be a decidable family oer $\bN$ with $d$ a witness that $P$ is decidable. Then there is a function
+    Let $P$ be a decidable family over $\bN$ with $d$ a witness that $P$ is decidable. Then there is a function
     \[ w(P,d) : \left( \Sigma_{n : \bN}P(n)\right) \to \left( \Sigma_{m : \bN}P(m) \times \type{is-lower-bound}_P(m)\right).\]
   \end{thm}
   In other words, if $P(n)$ is inhabited for some $n$ then there is a smallest $m : \bN$ so that $P(m)$ is inhabited.
@@ -2175,15 +2175,128 @@ In particular, $\neg A$ is a proposition for any type $A$!
 
 \section*{October 20: Universal properties}
 
-\subsection*{Identity systems on \texorpdfstring{$\Pi$}{Pi}-types}
+We can understand the function extensionality axiom as providing a characterization of the identity type of a $\Pi$-type: up to equivalence, for $f,g : \Pi_{x:A}B(x)$, the identity type $f=g$ is equivalent to the type of homotopies $f \sim g$.
+
+\subsection*{The type theoretic axiom of choice}
+
+ First, observe that $\Pi$-types distribute over $\Sigma$-types by the type theoretic axiom of choice.
+
+\begin{thm} For any family of types $x :A, y : B(x) \vdash C(x,y) \univ$ the map
+\[ \term{choice} : \left(\Pi_{x:A}\Sigma_{y:B(x)}C(x,y) \right) \to \left( \Sigma_{f: \Pi_{x:A}B(x)} \Pi_{x:A} C(x,f(x))\right)\]
+defined by 
+\[ \term{choice}(h) \coloneq (\lambda x. \pr_1(h(x)), \lambda x.\pr_2(h(x)))\]
+is an equivalence.
+\end{thm}
+
+Consequently, whenever we have types $A$ and $B$ and a type family $C$ over $B$ there is an equivalence
+\[ \left( A \to \Sigma_{y:B}C(y) \right) \simeq \left( \Sigma_{f:A \to B} \Pi_{x:A} C(f(x))\right)\]
+
+\begin{proof}
+Define the inverse map $\term{choice}^{-1}$ by
+\[ \term{choice}^{-1}(f,g) \coloneq \lambda x.(f(x).g(x)).\]
+For the first homotopy it suffices to define an identification $\term{choice}(\term{choice}^{-1}(f,g)) = (f,g)$. The left-hand side computes to
+\[ \term{choice}(\term{choice}^{-1}(f,g))  \doteq \term{choice}(\lambda x.(f(x).g(x))) \doteq (\lambda x.f(x),\lambda x.g(x))\]
+which is definitely equal to the right-hand side by the computation rules for function types.
+
+For the second homotopy, we require an identification $\term{choice}^{-1}(\term{choice}(h)) = h$. The left-hand side computes to
+\[ \term{choice}^{-1} (\lambda x. \pr_1(h(x)), \lambda x.\pr_2(h(x))) \doteq \lambda x.(\pr_1(h(x)), \pr_2(h(x))).\]
+We do not have a definitional equality relating $h(x)$ and $(\pr_1(h(x)), \pr_2(h(x)))$ but in our characterization of the identity type of $\Sigma$-types we do have an identification between them called $\term{eq-pair}(\refl,\refl)$. By function extensionality, the homotopy $\lambda x. \term{eq-pair}(\refl,\refl) : \term{choice}^{-1}(\term{choice}\sim h$ can be turned into an identification and thus a homotopy $\term{choice}^{-1} \circ \term{choice} \sim \id$.
+\end{proof}
 
 \subsection*{Universal properties}
 
+More generally, the function extensionality axiom allows us to prove universal properties, which characterize maps out of or into a given type, and characterize that type up to equivalence. Some examples follow.
+
+In our first example, we consider the maps out of $\Sigma$-types. The universal property states that the map
+\[ \term{ev-pair} : \left( \left( \Sigma_{x:A}B(x)\right) \to C \right) \to \left( \Pi_{x:A}B(x) \to C \right)\]
+given by $f \mapsto \lambda x.\lambda y. f(x,y)$ is an equivalence for any type $C$. But the analogous result is true for type familyes $C$ that depend on the type $\Sigma_{x:A}B(x)$ so we prove the result in that form.
+
+\begin{thm}[universal property of \texorpdfstring{$\Sigma$}{Sigma}-types]
+Let $B$ be a type family over $A$ and let $C$ be a type family over $\Sigma_{x:A}B(x)$. Then the map 
+\[ \term{ev-pair} : \left( \Sigma_{z: \Sigma_{x:A}B(x)} C(z) \right) \to \left( \Pi_{x:A}\Pi_{y:B(x)} C(x,y) \right)\]
+given by $f \mapsto \lambda x.\lambda y. f(x,y)$ is an equivalence
+\end{thm}
+\begin{proof}
+The inverse map is given by the induction principle for $\Sigma$-types:
+\[ \ind_\Sigma : \left( \Pi_{x:A}\Pi_{y:B(x)} C(x,y) \right) \to \left( \Sigma_{z: \Sigma_{x:A}B(x)} C(z) \right) .\]
+By the computation rule for $\Sigma$ types, we have the homotopy 
+\[ \term{refl-htpy} : \term{ev-pair} \circ\ind_\Sigma \sim \id,\]
+which shows that $\ind_\Sigma$ is a section of $\term{ev-pair}$.
+
+Function extensionality is used to construct the other homotopy. To define a homotopy $\ind_\Sigma \circ \term{ev-pair} \sim \id$ requires identifications $\ind_\Sigma(\lambda x. \lambda y. f(x,y)) = f$. By function extensionality it suffices to show that
+\[ \Pi_{z: \Sigma_{x:A}B(x)} \ind_\Sigma(\lambda x. \lambda y. f(x,y))(t) = f(t).\] By $\Sigma$-induction it suffices to prove this for pairs in which case req require identifications
+\[ \ind_\Sigma(\lambda x. \lambda y. f(x,y)(a,b) = f(a,b),\]
+but this holds definitionally by the computation rule for $\Sigma$ types.
+\end{proof}
+
+In the non-dependent case we have as a corollary:
+
+\begin{cor} For types $A$ and $B$ and $C$,
+\[ \term{ev-pair} : (A \times B \to C) \to (A \to B \to C)\]
+given by $f \mapsto \lambda a. \lambda b. f(a,b)$ is an equivalence.
+\end{cor}
+
 \subsection*{The universal property of identity types}
+
+The universal property for identity types can be understood as an (undirected) type theoretic version of the Yoneda lemma. In the most familiar case, when $B$ is a type family over $A$, it says that the map
+\[ \term{ev-refl} : \left( \Pi_{x:A}(a=x) \to B(x) \right) \to B(a)\]
+given by $f \mapsto f(a,\refl_a)$ is an equivalence. As before, though, it generalizes to a dependent version of the undirected Yoneda lemma, where the type family $B$ is allowed to depend on $x :A$ and $p: a =x$.
+
+\begin{thm} Consider a type $A$, a term $a :A$, and a type family $B(x,p)$ over $x:A$ and $p: a=x$. Then the map
+\[ \term{ev-refl} : \left( \Pi_{x:A}\Pi_{p:a=x} B(x,p) \right) \to B(a,\refl_a)\]
+defined by $f \mapsto f(a,\refl_a)$ is an equivalence.
+\end{thm}
+\begin{proof}
+The inverse map is
+\[ \pathind_a : B(a,\refl_a) \to \left( \Pi_{x:A}\Pi_{p:a=x} B(x,p) \right),\]
+which is a section by the computation rule of the path induction principle.
+
+For the other homotopy $\pathind_a \circ \term{ev-refl} \simeq \id$ let $f : \Pi_{x:A} \Pi_{p:a=x}B(x,p)$. To prove that 
+$\pathind_a(f(a,\refl_a)) = f$ we apply function extensionality twice so that it suffices to show that
+\[ \Pi_{x:A} \Pi_{p:a=x} \pathind_a(f(a,\refl_a),x,p) = f(x,p).\] This follows from path induction on $p$ since $\pathind_a(f(a,\refl_a),a,\refl_a) \doteq f(a,\refl_a)$ by the computation rule for path induction.
+\end{proof}
 
 \subsection*{Composing with equivalences}
 
+Another useful consequence is the fact that $f : A \to B$ is an equivalence if and only if precomposing with $f$ is an equivalence.
+
+\begin{thm} For any map $f \colon A \to B$ the following are logically equivalent:
+\begin{enumerate}
+\item $f$ is an equivalence
+\item For any type family $P$ over $B$ the map
+\[ \left( \Pi_{b:B} P(b) \right) \to \left( \Pi_{a:A} P(f(a))\right)\]
+given by $h \mapsto h \circ f$ is an equivalence.
+\item For any type $C$ the map
+\[ (B \to C) \to (A \to C)\]
+given by $g \mapsto g \circ f$ is an equivalence.
+\end{enumerate}
+\end{thm}
+\begin{proof}
+(ii) immediately implies (iii) by choosing a constant family. 
+
+Assuming (iii) we can take $C=A$ and use the fact that the fibers of the equivalence
+\[ - \circ f : (B \to A) \to (A \to A)\]
+are contractible to find a point $(h, H) : \fib_{-\circ f}(\id_A) \doteq \Sigma_{h:B \to A} h \circ f = \id_A$.
+To see that $h$ is also a section of $f$ we choose $C=B$ and use the fiber of the equivalence
+\[ -\circ f : (B \to B) \to (A \to B)\]
+over $f$. We have $(\id_B,\refl_f)$ in this fiber but also the point $(f \circ h, fH)$ where $fH$ is the name for the identification derived from the whiskered homotopy $f \cdot H : f \circ h \circ f \sim f$. Since the ifber is contractible, we must have an identification $f \circ h = \id_B$ as desired.
+
+Thus, it remains to prove that (i) implies (ii) which is the hard part. The first step is to promote the equivalence $f$ to a coherently invertible equivalence, involving $g : B \to A$, homopies $G$ and $H$, and a higher homotopy $K : G \cdot f \sim f \cdot H$. We leave the details to \cite[13.4.1]{Rijke}.
+\end{proof}
+
 \subsection*{The strong induction principle of \texorpdfstring{$\bN$}{the natural numbers}}
+
+A final application of function extensionality is to prove the strong induction principle for the natural numbers. We give the statement and leave the proof to \cite[\S13.5]{Rijke}. Function extensionality is needed to give the computation rules.
+
+\begin{thm} Consider a type family $P$ over $\bN$ with $p_0 : P(0)$ and
+\[ p_S : \Pi_{n: \bN} \left( \Pi_{m: \bN}(m \leq n) \to P(m)\right) \to P(n+1).\]
+Then there is a dependent function
+\[ \term{strong-ind}_\bN(p_0,p_S) : \Pi_{n : \bN}P(n) \]
+so that $\term{strong-ind}_\bN(p_0,p_S,0)  = 0$ and 
+\[ \term{strong-ind}_\bN(p_0,p_S, n+1) = p_S(n, \lambda m.\lambda p.\term{strong-ind}_\bN(p_0,p_s,m)).\]
+\end{thm}
+
+
 
 \section*{October 25: Propositional truncation}
 \section*{October 27: The image of a map \& Finite types}
