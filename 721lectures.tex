@@ -734,7 +734,7 @@ Of all the inductive types we've introduced, the final one is perhaps the most i
 Recall a \textbf{dependent function} $\lambda x . f(x) : \Pi_{x : A}B(x)$ is like an ordinary function except the output type is allowed to vary with the input term. Similarly, a \textbf{dependent pair} $(a,b) : \Sigma_{x : A}B(x)$ is like an ordinary (ordered) pair except the type of the second term $b : B(a)$ is allowed to vary with the first term $a :A$.
 
 \begin{defn} Consider a type family $x : A \vdash B(x) \univ$. The \textbf{dependent pair type} or $\Sigma$-\textbf{type} $\Sigma_{x :A}B(x)$ is the inductive type equipped with the function
-\[ \pair : \Pi_{x : A} \left(B(x) \to \Pi_{y : A}B(y)\right).\]
+\[ \pair : \Pi_{x : A} \left(B(x) \to \Sigma_{y : A}B(y)\right).\]
 The induction principle asserts that for any family of types $p : \Sigma_{x :A} B(x) \vdash P(p) \univ$ there is a function
 \[ \ind_\Sigma : \left( \Pi_{x :A} \Pi_{y : B}P(\pair(x,y) \right) \to \left( \Pi_{z : \Sigma_{x :A}B(x)}P(z) \right)
 \]
@@ -2029,8 +2029,8 @@ Since $R$ is defined to be an instance of $R'$ it suffices to construct a functi
 So far we have defined:
 \begin{align*}
 \iscontr(A) &\coloneq \Sigma_{a:A} \Pi_{x:A} a=x\\
-\isprop(A) &\coloneq \Sigma_{x,y:A} \iscontr(x=y) \\
-\is{set}(A) &\coloneq \Sigma_{x,y:A} \isprop(x=y) 
+\isprop(A) &\coloneq \Pi_{x,y:A} \iscontr(x=y) \\
+\is{set}(A) &\coloneq \Pi_{x,y:A} \isprop(x=y) 
 \end{align*}
 These define the first few layers of the hierarchy of truncation levels. This hierarchy starts at level -2 with the contractible types and continues at level -1 with the propositions. This makes level 0 the sets, which are typically thought of as ``0-dimensional.''
 
@@ -2302,9 +2302,13 @@ so that $\term{strong-ind}_\bN(p_0,p_S,0)  = 0$ and
 
 \section*{October 25: Propositional truncation}
 
-There is a distinction made in mathematics between \emph{properties} and extra \emph{structure}. For instance, given a function $f \colon A \to B$ and term $b : B$, an inhabitant of the type $\fib_f(b) \coloneq \Sigma_{a:A} f(a)=b$ does not merely witness the property that $b$ is in the image of $f$ but also provides the data of an explicit pre-image $a$ and identification $p : f(a) =b$.
+There is a distinction made in mathematics between \emph{properties} and extra \emph{structure}. For instance, we can ask whether a given function $f \colon A \to B$ is surjective or not. In type theory, this is the case just when 
+\[ \Pi_{b:B} \Sigma_{a:A} f(a)=b.\]
+But we've seen that there is an equivalence of types 
+\[ \left( \Pi_{b:B} \Sigma_{a:A} f(a)=b \right) \simeq \left( \Sigma_{s:A \to B} \Pi_{b:B} f(s(b))=b \right).\]
+In particular, the data provided by a term in this type provides an explicit section $s : B \to A$ which is additional structure.
 
-To correctly capture the mere property of being in the image, we need a way to assert the \emph{proposition} that a type is inhabited without providing the \emph{data} of a specific inhabitant. The proposition that a type $A$ is inhabited is called the \textbf{propositional truncation} of $A$.
+To correctly capture the mere property of being surjective, we need a way to assert the \emph{proposition} that a type is inhabited without providing the \emph{data} of a specific inhabitant. The proposition that a type $A$ is inhabited is called the \textbf{propositional truncation} of $A$.
 
 \subsection*{The universal property of propositional truncations}
 
@@ -2342,7 +2346,7 @@ Given (i) and (ii) the universal properties induce maps $P \to P'$ and $P' \to P
 
 Given (iii), we have an equivalence between $(P \to Q)$ and $(P' \to Q)$ and moreover the equivalence $P \leftrightarrow P'$ commutes with the maps from $A$, since by function extensionality any two terms in the types $A \to P$ and $A \to P'$ must be identifiable. But now by the 2-of-3 property for equivalences, if either of the two dashed maps below is an equivalence both are. 
 \[
-\begin{tikzcd} & (A \to Q) \arrow[dl, "- \circ f"'] \arrow[dr, "- \circ f'"] \\ (P \to Q) \arrow[rr, leftrightarrow, "\simeq"] & & (P' \to Q)
+\begin{tikzcd}  (P \to Q) \arrow[rr, leftrightarrow, "\simeq"] \arrow[dr, dashed, "- \circ f"']& & (P' \to Q) \arrow[dl, dashed, "- \circ f'"] \\ & (A \to Q) 
 \end{tikzcd}
 \] 
 Thus when (iii) holds (i) holds if and only if (ii) holds.
