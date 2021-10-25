@@ -270,6 +270,8 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\Prop}{\type{Prop}_{\UU}}
 \renewcommand{\iff}{\leftrightarrow}
 
+\newcommand{\mere}[1]{\|{#1}\|}
+
 \begin{document}
 
 \title{Math 721: Homotopy Type Theory}
@@ -2299,6 +2301,152 @@ so that $\term{strong-ind}_\bN(p_0,p_S,0)  = 0$ and
 
 
 \section*{October 25: Propositional truncation}
+
+There is a distinction made in mathematics between \emph{properties} and extra \emph{structure}. For instance, given a function $f \colon A \to B$ and term $b : B$, an inhabitant of the type $\fib_f(b) \coloneq \Sigma_{a:A} f(a)=b$ does not merely witness the property that $b$ is in the image of $f$ but also provides the data of an explicit pre-image $a$ and identification $p : f(a) =b$.
+
+To correctly capture the mere property of being in the image, we need a way to assert the \emph{proposition} that a type is inhabited without providing the \emph{data} of a specific inhabitant. The proposition that a type $A$ is inhabited is called the \textbf{propositional truncation} of $A$.
+
+\subsection*{The universal property of propositional truncations}
+
+The propositional truncation of a type $A$ is a type $\mere{A}$ equipped with a map $\eta \colon A \to \mere{A}$ with a universal property to be described. The map ensures that if $a :A$ then the proposition $\mere{A}$ that $A$ is inhabited holds.
+
+\begin{defn} Let $A$ be a type and let $f \colon A \to P$ be a map whose codomain is a proposition. We say that $f$ is a \textbf{propositional truncation} of $A$ if for every proposition $Q$ the map
+\[ - \circ f : (P \to Q) \to (A \to Q)\]
+is an equivalence.
+\end{defn}
+
+This definition describes the \textbf{universal property of the propositional truncation}. It can be reformulated as follows. Note the fiber of the map 
+\[ - \circ f : (P \to Q) \to (A \to Q)\]
+over $g : A \to Q$ is the type
+\[ \sum_{h : P \to Q} h \circ f = g.\]
+Thus, $f$ satisfies the universal property of the propositional truncation if and only if these fibers are contractible, meaning that for each map $g : A \to Q$ into a proposition there is a unique map $h : P \to Q$ for wich $h \circ f = g$, a circumstance we might summarize by saying that every map $g : A \to Q$ into a proposition \textbf{extends uniquely along} $f$ as indicated
+\[
+\begin{tikzcd} A \arrow[dr, "g"] \arrow[d, "f"'] \\ P \arrow[r, dashed, "\exists !"'] & Q
+\end{tikzcd}
+\]
+
+\begin{rmk} By (weak) function extensionality, the types $(P \to Q)$ and $(A \to Q)$ are propositions, since $Q$ is a proposition. Recall that equivalences between propositions are just logical equivalences. Thus, to prove that \[ - \circ f : (P \to Q) \to (A \to Q)\] is an equivalence, it suffices to construct a function 
+\[  (A \to Q) \to (P \to Q)\]
+for every proposition $Q$.
+\end{rmk}
+
+\begin{prop} Let $A$ be a type and consider two maps $f\colon A \to P$ and $f' \colon A \to P'$ into propositions. If any two of the following hold so does the third:
+\begin{enumerate}
+\item $f$ is a propositional truncation
+\item $f'$ is a propositional truncation
+\item There is a (unique) equivalence $P \simeq P'$, commuting with the maps from $A$.
+\end{enumerate}
+\end{prop}
+\begin{proof}
+Given (i) and (ii) the universal properties induce maps $P \to P'$ and $P' \to P$ under $A$ that are necessarily an inverse equivalence. This proves (iii). 
+
+Given (iii), we have an equivalence between $(P \to Q)$ and $(P' \to Q)$ and moreover the equivalence $P \leftrightarrow P'$ commutes with the maps from $A$, since by function extensionality any two terms in the types $A \to P$ and $A \to P'$ must be identifiable. But now by the 2-of-3 property for equivalences, if either of the two dashed maps below is an equivalence both are. 
+\[
+\begin{tikzcd} & (A \to Q) \arrow[dl, "- \circ f"'] \arrow[dr, "- \circ f'"] \\ (P \to Q) \arrow[rr, leftrightarrow, "\simeq"] & & (P' \to Q)
+\end{tikzcd}
+\] 
+Thus when (iii) holds (i) holds if and only if (ii) holds.
+\end{proof}
+
+It is tempting to think that a type is inhabited if and only if it is non-empty. That it, it is tempting to wonder whether the canonical map $\lambda x \to \ev_x : A \to \neg\neg A$ is a propositional truncation, since after all $\neg\neg A$ is always a proposition. One can verify that any map $A \to \neg\neg Q$ extends to a map $\neg\neg A \to \neg\neg Q$ proving that the map
+\[ (\neg\neg A \to \neg\neg Q) \to (A \to \neg\neg Q)\]
+is an equivalence. However, this universal property with respect to doubly negated propositions cannot be extended to general propositions. Indeed, propositional truncations are not guaranteed to exist in Martin L\"{o}f's dependent type theory; see ``Notions of anonymous existence in Martin-L\"{o}f type theory'' by Altenkirch, Coquand, Escard\'{o}, and Kraus for a discussion. However, if we add a new rule to the type theory, we can guarantee their existence.
+
+\subsection*{Propositional truncations as higher inductive types}
+
+The propositional truncation of a general type $A$ can be constructed as an instance of something called a \textbf{higher inductive type}. Higher inductive types are similar to ordinary inductive types but have an additional feature that constructors can be used to generate identifications. As in ordinary inductive types, there are \textbf{point constructors} which introduce new terms, but now these are supplemented by \textbf{path constructors} which introduce new identifications.
+
+In the case of the propositional truncation, for any type $A$, $\mere{A}$ is the type given by one point constructor $\eta \colon A \to \mere{A}$ and one path constructor $\alpha \colon \Pi_{x,y : \mere{A}} x= y$. It follows immediately from the existence of the term $\alpha$ that $\mere{A}$ is a proposition.
+
+The induction principle for the propositional truncation tells us how to construct terms $h : \Pi_{t : \mere{A}} Q(t)$ for any family of types (not only families of propositions). It says that for any family of types $Q$ over $\mere{A}$ if we have
+\[ f : \Pi_{a:A}Q(\eta(a))\] and if we can construct identifications $\tr_Q(\alpha(x,y),u)=v$ for all $x,y : \mere{A}$ and all $u : Q(x)$ and $v : Q(y)$ then we obtain a dependent function $h : \Pi_{t : \mere{A}}Q(t)$ equipped with a homotopy $h \circ \eta \sim f$. This homotopy should be thought of as a homotopical version of the computation rule for ordinary inductive types.
+
+\begin{rmk} Although the induction principle for propositional truncations does not a priori require that the type family is a family of propositions, once the second required term
+\[ \beta : \Pi_{x,y : \mere{A}} \Pi_{u : Q(x)} \Pi_{v : Q(y)} \tr_Q(\alpha(x,y),u)=v\] exists it follows that $Q$ is a family of propositions. Recall that transporting along a path defines an equivalence and in particular an embedding. Thus
+\[ (\tr_Q(\alpha(x,y),u) = \tr_Q(\alpha(x,y),w)) \simeq (u=w)\] for any $u,w : Q(x)$. Taking $v  =  \tr_Q(\alpha(x,y),w))$, we see that $\beta$ defines a term in the left-hand type so it follows that any $u,w : Q(x)$ are identifiable. Thus $Q(x)$ must be a proposition.
+\end{rmk}
+
+Since the induction principle of the propositional truncation is only applicable in families of propositions there are no interesting computation rules: there was no need to mention the homotopy $h \circ \eta \sim f$. After all any identification in a proposition just holds!
+
+
+\begin{thm} The map $\eta \colon A \to \mere{A}$ satisfies the universal property of propositional truncation.
+\end{thm}
+\begin{proof}
+It suffices to construct a map
+\[ (A \to Q) \to (\mere{A} \to Q)\]
+for any proposition $Q$, which we do by the induction principle of propositional truncation. To construct a term in $\mere{A} \to Q$ we need a term $f : A \to Q$ and also have to prove that $\tr_{Q}(\alpha(x,y), u)=v$ holds for any $u, v :Q$ and any $x,y : \mere{A}$. But $Q$ is a proposition so this is automatic. Thus the map that sends $f : A \to Q$ to the induced function $\mere{A} \to Q$ defines the required function $(A \to Q) \to (\mere{A} \to Q)$.
+\end{proof}
+
+Next we show that $\mere{-}$ acts functorially on functions.
+
+\begin{prop} For any pair of types $A$ and $B$ there is a map
+\[ \mere{-} \colon (A \to B) \to (\mere{A} \to \mere{B})\]
+satisfying $\mere{\id} \sim \id$ and $\mere{g \circ f} \sim \mere{g} \circ \mere{f}$.
+\end{prop}
+\begin{proof}
+For any $f : A \to B$, $\mere{f}$ may be defined to be the unique extension
+\[
+\begin{tikzcd} A \arrow[r, "f"] \arrow[d, "\eta"'] & B \arrow[d, "\eta"] \\ \mere{A} \arrow[r, dashed, "\mere{f}"'] & \mere{B}
+\end{tikzcd}
+\]
+Note by definition that $\id_{\mere{A}}$ and $\mere{g}\circ\mere{f}$ are similarly extensions of $\id_A$ and $g \circ f$ along $\eta$, and thus must agree up to homotopy with $\mere{\id_A}$ and $\mere{g \circ f}$ by uniqueness.
+\end{proof}
+
+\subsection*{Logic in type theory}
+
+Propositional truncations can be used to extend the interpretation of logic in type theory via the Curry-Howard correspondence. This refines our previous discussion by replacing structures with properties.
+
+\begin{defn} Given two propositions $P$ and $Q$ we define their \textbf{disjunction} to be
+\[ P \vee Q \coloneq \mere{P + Q}.\]
+\end{defn}
+
+\begin{defn} Given a family of propositions $P$ over a type $A$, define
+\[ \exists_{x :A} P(x) \coloneq \mere{\Sigma_{x:A}P(x)}.\]
+\end{defn}
+
+One can verify the expected logical equivalences involving these notions. For instance:
+
+\begin{prop} For any family of propositions $P$ over $A$ there is a dependent function
+\[ \epsilon : \Pi_{a:A} \left( P(a) \to \exists_{x:A}P(x) \right).\]
+Furthermore, for any proposition $Q$ we have
+\[ \left( (\exists_{x:A}P(x)) \to Q \right) \leftrightarrow \left( \Pi_{x:A}P(x) \to Q \right).\]
+\end{prop}
+\begin{proof}
+Define $\epsilon(a,p) \coloneq \eta(a,p)$. Now consider the following composition of maps
+\[ \left( (\exists_{x:A}P(x)) \to Q \right) \to \left( (\Sigma_{x:A} P(x)) \to Q\right) \to \left( \Pi_{x:A}P(x) \to Q \right).\]
+The first map is an equivalence by the uinversal property of the propositional truncation while the second is an equivalence by the universal property of $\Sigma$-types.
+\end{proof}
+
+
+\subsection*{Mapping from propositional truncations into sets}
+
+In general it is tricky to map out of propositional truncations into general types but some tricks may help. To define a map $\mere{A} \to X$ one could search for a type family $P$ over $X$ so that $\Sigma_{x:X}P(x)$ is a proposition. Then the universal property of propositional truncation can be used to define a map $\mere{A} \to \Sigma_{x:X}P(x)$ and compositing with $\pr_1$ then defines  map to $X$.
+
+When $X$ is a set there is another strategy. The propositional truncation $\mere{A}$ can be thought of as a quotient of the type $A$ by the equivalence relation that identifies any two terms in $A$ together. We will prove that to extend a map $f : A \to X$ into a set to a map $\mere{A} \to X$ it suffices to define identifications $f(x) =f(y)$ for all $x,y : A$.
+
+\begin{defn} A map $f \colon A \to B$ is \textbf{weakly constant} if it comes with a term in the type
+\[ \Pi_{x,y:A} f(x) = f(y).\]
+\end{defn}
+
+If $B$ has a term $b$, then weakly constant maps are homotopic to constant maps $\term{const}_b$ but in general there is no requirement for $B$ to have any terms.
+
+\begin{lem} Consider a commutative triangle where $B$ is an arbitrary type
+\[
+\begin{tikzcd} A \arrow[dr, "f"] \arrow[d, "\eta"'] \\ \mere{A} \arrow[r, "g"'] & B
+\end{tikzcd}
+\]
+then $g$ is weakly constant.
+\end{lem}
+
+Kraus observed that any weakly constant map $f : A \to B$ into a set $B$ extends uniquely to a map $\mere{A} \to B$. Thus to define a map $\mere{A} \to B$ into a set it suffices to define $f : A \to B$ and show that it is weakly constant. 
+
+\begin{thm}[Kraus]  For any type $A$ and set $B$ the map
+\[  (\mere{A} \to B) \to \Sigma_{f:A \to B} \Pi_{x,y:A} f(x) = f(y)\]
+given by $g \mapsto (g \circ \eta, \lambda x .\lambda y. \ap(\alpha(x,y)))$ is an equivalence.
+\end{thm}
+
+For proof see \cite[\S 14.4]{Rijke}.
+
 \section*{October 27: The image of a map \& Finite types}
 \section*{November 1: The univalence axiom}
 \section*{November 3: Set quotients}
