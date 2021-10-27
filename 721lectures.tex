@@ -150,8 +150,6 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\Aut}{\mathrm{Aut}}
 \newcommand{\Sym}{\mathrm{Sym}}
 
-\newcommand{\ev}{\mathrm{ev}}
-\newcommand{\im}{\mathrm{im}}
 \newcommand{\coim}{\mathrm{coim}}
 \newcommand{\To}{\Rightarrow}
 \newcommand{\coker}{\mathrm{coker}}
@@ -271,6 +269,9 @@ BoldItalicFont = *-BoldItalic
 \renewcommand{\iff}{\leftrightarrow}
 
 \newcommand{\mere}[1]{\|{#1}\|}
+\newcommand{\im}[1]{\type{im}(#1)}
+\newcommand{\ev}{\term{ev}}
+
 
 \begin{document}
 
@@ -2451,7 +2452,179 @@ given by $g \mapsto (g \circ \eta, \lambda x .\lambda y. \ap(\alpha(x,y)))$ is a
 
 For proof see \cite[\S 14.4]{Rijke}.
 
-\section*{October 27: The image of a map \& Finite types}
+\section*{October 27: The image of a map}
+
+Propositional truncation can be used to define the \textbf{image} of a map $f \colon A \to X$, which can be thought of as the smallest subtype of $X$ that contains all of the values of $f$. More precisely, we'll define a commutative triangle
+\[
+\begin{tikzcd} A \arrow[rr, "f"] \arrow[dr, "q"'] & & X \\ & \im{f} \arrow[ur, "i", hook]
+\end{tikzcd}
+\]
+in which $i$ is an embedding.
+
+\subsection*{The image of a map}
+
+\begin{defn} Let $f \colon A \to X$ and $g  \colon B \to X$ be maps. A \textbf{morphism} from $f$ to $g$ over $X$ is a map $h \colon A \to B$ together with a homotopy $H \colon f \sim g \circ h$ witnessing commutativity of the following triangle
+\[
+\begin{tikzcd} A \arrow[rr, "h"] \arrow[dr, "f"'] & & B \arrow[dl, "g"] \\ & X
+\end{tikzcd}
+\]
+Thus we define the type
+\[ \hom_X(f,g) \coloneq \Sigma_{h:A \to B} f \sim g \circ h.\]
+Composition of morphisms over $X$ is defined by
+\[ (k,K) \circ (h,H) \coloneq (k \circ h, H \cdot (K \cdot h)).\]
+\end{defn}
+
+
+\begin{lem} For any $f \colon A \to X$ and any $m : B \to X$ the type, $\hom_X(f,m)$ is a proposition.
+\end{lem} 
+\begin{proof}
+We have an equivalence
+\[ \hom_X(f,m) \coloneq  \Sigma_{h:A \to B} f \sim m \circ h \coloneq \Sigma_{h:A \to B} \Pi_{a :A}  f(a) = m(h(a)) \simeq \Pi_{a:A} \Sigma_{b :B} f(a) = m(b) \simeq  \Pi_{a:A} \fib_m(f(a)).\]
+Since $m$ is an embedding its fibers are propositions. By weak function extensionality, it follows that $\hom_X(f,m)$ is a proposition.
+\end{proof}
+
+
+\begin{prop}
+Consider a commutative triangle 
+\[
+\begin{tikzcd} A \arrow[rr, "q"] \arrow[dr, "f"'] & & I \arrow[dl, "i"] \\ & X
+\end{tikzcd}
+\]
+with $H : f \sim i \circ q$. 
+We say that $i$ satisfies the \textbf{universal property of the image of} $f$ if either of the following logically equivalent conditions hold:
+\begin{enumerate}
+\item The precomposition function 
+\[ - \circ (q,H) : \hom_X(i,m) \to \hom_X(f,m)\]
+is an equivalence for any embedding $m \colon B \hookrightarrow X$.
+\item For every embedding $m : B \to X$ there is a map
+\[ \hom_X(f,m) \to \hom_X(i,m).\]
+\end{enumerate}
+\end{prop}
+\begin{proof}
+Since $\hom_X(i,m)$ and $\hom_X(f,m)$ are propositions any map between them is an equivalence if and only if there is exists any map in the other direction.
+\end{proof}
+
+Propositional truncation can be used to construct the image of a map:
+
+\begin{defn} For any map $f \colon A \to X$ we define the \textbf{image} of $f$ to be the type
+\[ \im{f} \coloneq \Sigma_{x:X} \mere{\fib_f(x)}\]
+The \textbf{image inclusion} $i_f \colon \im{f} \to X$ is the first projection $\pr_1$. The map $q_f \colon A \to \im{f}$ is given by
+\[ q_f(a) \coloneq (f(a), \eta(a,\refl_{f(a)})).\] The homotopy $I_f : f \sim i_f \circ q_f$ is given by $I_f(a) \coloneq \refl_{f(a)}$.
+\end{defn}
+
+We now verify that this construction has the required properties.
+
+\begin{lem} The image inclusion $i_f \colon \im{f} \to X$ is an embedding.
+\end{lem}
+\begin{proof}
+The fiber of $\pr_1 \colon \Sigma_{x:X} \mere{\fib_f(x)} \to X$ is equivalent to $\mere{\fib_f(x)}$, which is a proposition. Thus $i_f \coloneq \pr_1$ is an embedding.
+\end{proof}
+
+Theorem \cite[15.1.7]{Rijke} verifies the following:
+
+\begin{thm} For any $f \colon A \to X$ the image inclusion $i_f \colon \im{f} \to X$ satisfies the universal property.
+\end{thm}
+
+\subsection*{Surjective maps}
+
+As mentioned above, our previous notion of surjectivity of a map $f \colon A \to B$ is more properly ``split surjectivity'' as 
+\[ \left( \Pi_{b:B} \Sigma_{a:A} f(a) =b \right) \simeq \left( \Sigma_{s : A \to B} \Pi_{a:A} f(s(a)) = b\right) \eqcolon  \left( \Sigma_{s: A \to B} f \circ s \sim \id_B \right).\]
+The traditional notion is more closely analogous to:
+
+\begin{defn} A map $f \colon A \to B$ is \textbf{surjective} if there is a term in the type
+\[ \is{surj}(f) \coloneq \Pi_{b:B} \mere{\fib_f(b)}.\]
+\end{defn}
+
+Note that having a section is stronger than surjectivity because we have a map $\fib_f(b) \to \mere{\fib_f(b)}$ but don't typically have a map in the reverse direction.
+
+Surjective maps also have a universal property recorded by the following theorem. See \cite{Rijke} for a proof:
+
+\begin{prop} For a map $f \colon A \to B$, the following are logically equivalent:
+\begin{enumerate}
+\item $f \colon A \to B$ is surjective.
+\item For any family $P$ of propositions over $B$, 
+\[ -\circ f : \left( \Pi_{b:B} P(b) \right) \to \left( \Pi_{a:A} P(f(a)) \right)\]
+is an equivalence.
+\end{enumerate}
+\end{prop}
+%\begin{proof}
+%Suppose that $f$ is surjective and consider the square
+%\[
+%\begin{tikzcd}
+%\Pi_{b:B} P(b) \arrow[r, "-\circ f"] \arrow[d, "{h \mapsto \lambda b. \term{const}_{h(b)}}"'] & \Pi_{a:A} P(f(a)) \\\Pi_{b:B} \mere{\fib_f(b)} \to P(b) \arrow[r, "h \mapsto h(-)\circ \eta"'] & \Pi_{b:B} \fib_f(b) \to P(b) \arrow[u, "{h \mapsto \lambda a . h(f(a), (a, \refl))}"']
+%\end{tikzcd}
+%\]
+%\end{proof}
+
+
+It follows that:
+
+\begin{cor} For any $f \colon A \to P$ into a proposition, the following are logically equivalent:
+\begin{enumerate}
+\item $f \colon A \to P$ is a propositional truncation of $A$.
+\item $f \colon A \to P$ is surjective.
+\end{enumerate}
+\end{cor}
+\begin{proof}
+The second equivalent condition above is the universal property of propositional truncation, except without the hypothesis that $B$ itself is a proposition.
+\end{proof}
+
+We now see that the map $q$ in the image factorization is surjective:
+
+\begin{thm} Consider a commutative triangle
+\[
+\begin{tikzcd} A \arrow[rr, "f"] \arrow[dr, "q"'] & & X \\ & B \arrow[ur, "m"']
+\end{tikzcd}
+\]
+in which $m$ is an embedding. Then $m$ is the image inclusion of $f$ if and only if $q$ is surjective.
+\end{thm}
+\begin{proof}
+First suppose $m$ is the image inclusion of $f$. In that case the function
+\[
+\begin{tikzcd} \left( \Sigma_{b:B} \mere{\fib_q(b)} \right) \arrow[r, "\pr_1"] & B \arrow[r, "m"] & X
+\end{tikzcd}
+\]
+is an embedding as a composite of embeddings. By the universal property of $m$ there is a unique map 
+\[
+\begin{tikzcd} B \arrow[dr, "m"'] \arrow[rr, dashed, "h"] & & \left( \Sigma_{b:B} \mere{\fib_q(b)} \right)  \arrow[dl, "m \circ \pr_1"]
+\\ & X
+\end{tikzcd}
+\]
+making the triangle commute. Thus $m \circ (\pr_1 \circ h) \sim m$ but also $m \circ \id  \sim m$. By the uniqueness in the universal property of $m$, it follows that $\pr_1 \circ h \sim\id$. Thus $h$ is a section of the projection map. In particular, this defines a dependent function in
+\[  \Pi_{b:B} \mere{\fib_q(b)}\]
+proving that $q$ is surjective.
+
+Conversely, if $q$ is surjective, we can prove that $m$ is the image of $f$ by constructing an equivalence
+\[ \hom_X(f,m') \to \hom_x(m,m')\]
+for any embedding $m' \colon B' \to X$. Using the equivalence noted above, we calculate
+\[ \hom_X(m,m') \simeq \Pi_{b:B} \fib_{m'}(m(b)) \simeq \Pi_{a:A} \fib_{m'}(m(q(a))) \simeq \Pi_{a:A} \fib_{m'}(f(a)) \simeq \hom_X(f,m'),\] where the second equivalence uses the hypothesis that $q$ is surjective and the third equivalence follows from the homotopy $f \sim m \circ q$.
+\end{proof}
+
+\begin{cor} Every map factors uniquely as a surjective map followed by an embedding.
+\end{cor}
+\begin{proof}
+If $f \colon A \to X$ admits two such factorizations $I : f \sim  i\circ q$ and $I': f \sim i' \circ q'$ then both embeddings $i$ and $i'$ have the universal property of the image of $f$. It follows that there is an equivalence $(e,H) : \hom_X(i,i')$ and moreover $(e,H) \circ (q,I) = (q',I')$
+\end{proof}
+
+\section*{Cantor's diagonalization argument}
+
+\begin{defn} For any type $X$ and universe $\UU$ define the $\UU$-power set of $X$ to be 
+\[ P_{\UU}(X) \coloneq X \to \type{Prop}_{\UU}\]
+using the universe of propositions in $\UU$.
+\end{defn}
+
+\begin{thm} For any type $X$ and universe $\UU$ there is no surjective function $f \colon X \to P_{\UU}(X)$.
+\end{thm}
+\begin{proof}
+We're asked to prove a negation so we may consider a function $f \colon X \to (X \to \type{Prop}_{\UU})$ and suppose that $f$ is surjective. Following Cantor's diagonalization argument, define the subset $P \colon X \to \type{Prop}_{\UU}$ by
+\[ P(x) \coloneq \neg(f(x,x)).\]
+Since $f$ is assumed to be surjective and our goal is to reach a contradiction, it suffices to show that
+\[ \mere{\Sigma_{x:X} f(x)=P} \to \emptyset.\]
+Since $\emptyset$ is a proposition, by the universal property of propositional truncation it is equivalent to show that
+\[ \left( {\Sigma_{x:X} f(x)=P}  \right) \to \emptyset.\]
+So we consider $x:X$ and an identification $f(x)=P$. From the identification it follows that the propositions $f(x,y)$ and $P(y)$ are logically equivalent for all $y : Y$. In particular $f(x,x)$ is logically equivalent to $P(x)$ but since $P(x) \coloneq \neg f(x,x)$ we have a logical equivalence between $f(x,x)$ and $\neg(f(x,x))$. This gives our desired contradiction.
+\end{proof}
+
 \section*{November 1: The univalence axiom}
 \section*{November 3: Set quotients}
 \section*{November 8: Groups}
