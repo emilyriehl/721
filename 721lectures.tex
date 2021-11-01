@@ -1043,7 +1043,7 @@ for all $X : \UU$ and $P \colon \sT(X) \to \UU$.
 \item $\UU$ is closed under identity types in the sense that it comes equipped with a function
 \[ \check{\Id} : \Pi_{X : \UU} \sT(X) \to \sT(X) \to \UU\]
 satisfying
-\[ \sT(\Id(X,x,y)) \doteq (x = y)\]
+\[ \sT(\check{\Id}(X,x,y)) \doteq (x = y)\]
 for all $X: \UU$ and $x,y : \sT(X)$.
 \end{enumerate}
 \end{defn} 
@@ -2039,7 +2039,7 @@ Let $\bT$ be the inductive type with constructors $-2_\bT : \bT$ and $\term{succ
 
 \begin{defn} Define $\is{trunc} : \bT \to \UU \to \UU$ recursively by
 \[ \is{trunc}_{-2}(A) \coloneq \iscontr(A) \qquad \is{trunc}_{k+1}(A) \coloneq \Pi_{x,y:A} \is{trunc}_k(x=_Ay).\]
-When $\is{trunc}_k(A)$ holds we say $A$ is \textbf{$k$-truncated} or is a \textbf{$k$-type}. You can prove, inductively, in $k : \bT$, that this is logically equivalent of the universe being used to define $\is{trunc}_k(A)$.
+When $\is{trunc}_k(A)$ holds we say $A$ is \textbf{$k$-truncated} or is a \textbf{$k$-type}. You can prove, inductively in $k : \bT$, that this is logically independent of the universe being used to define $\is{trunc}_k(A)$.
 \end{defn}
 
 
@@ -2606,7 +2606,7 @@ for any embedding $m' \colon B' \to X$. Using the equivalence noted above, we ca
 If $f \colon A \to X$ admits two such factorizations $I : f \sim  i\circ q$ and $I': f \sim i' \circ q'$ then both embeddings $i$ and $i'$ have the universal property of the image of $f$. It follows that there is an equivalence $(e,H) : \hom_X(i,i')$ and moreover $(e,H) \circ (q,I) = (q',I')$
 \end{proof}
 
-\section*{Cantor's diagonalization argument}
+\subsection*{Cantor's diagonalization argument}
 
 \begin{defn} For any type $X$ and universe $\UU$ define the $\UU$-power set of $X$ to be 
 \[ P_{\UU}(X) \coloneq X \to \type{Prop}_{\UU}\]
@@ -2626,6 +2626,183 @@ So we consider $x:X$ and an identification $f(x)=P$. From the identification it 
 \end{proof}
 
 \section*{November 1: The univalence axiom}
+
+The univalence axiom characterizes the identity type of a universe, asserting that identification between types is equivalent to equivalence between types.  We shall see that there are several equivalent ways to state the univalence axiom arising from the fundamental theorem of identity types.
+
+\subsection*{Equivalent forms of the univalence axiom}
+
+The univalence axiom asserts that the identity type family $A =_\UU B$ is equivalent to the family of equivalences $A \simeq B$. Immediately from our universal property of identity type families, we have three equivalent forms of this result:
+
+\begin{thm} For a universe $\UU$ the following are equivalent:
+\begin{enumerate}
+\item $\UU$ is \textbf{univalent}: for any $A, B : \UU$, the map
+\[ \term{equiv-eq} : (A = B) \to (A \simeq B)\]
+defined by $\term{equiv-eq}(\refl) \coloneq \id$ is an equivalence.
+\item The type
+\[ \Sigma_{B: \UU}A \simeq B\]
+is contractible for each $A : \UU$.
+\item $\UU$ satisfies the principle of \textbf{equivalence induction}: for any $A : \UU$, and type family $P(X,e)$ indexed by $X : \UU$ and $e : A \simeq X$, the evaluation map
+\[ \left( \Pi_{X: \UU} \Pi_{e: A \times X} P(X,e) \right) \to P(A,\id)\]
+given by $f \mapsto f(A,\id)$ has a seciton.
+\end{enumerate}
+\end{thm}
+
+Henceforth, we will assume:
+\begin{ax}[univalence]
+All postulated universes are univalent. We write $\term{eq-equiv} : (A \simeq B) \to (A=B)$ for the inverse of $\term{equiv-eq}$.
+\end{ax}
+
+Our first consequence of univalence is \textbf{propositional extensionality}, which proves that logically equivalent propositions can be identified. To prove this, we first demonstrate that univalence also characterizes the identity type of any subuniverse.
+
+\begin{prop} Let $\UU$ be a univalent universe and let $P$ be family of propositions over $\UU$. Then the family of maps
+\[ \term{equiv-eq} : (A =B ) \to (\pr_1(A) \simeq \pr_1(B))\]
+indexed by $A,B : \Sigma_{X:\UU} P(X)$ given by $\term{equiv-eq}(\refl) \coloneq \id$ is an equivalence.
+\end{prop}
+\begin{proof}
+We've seen that for any family of propositions, the projection map $\pr_1$ is an embedding. Therefore we see that the asserted map is the composite of the equivalences:
+\[
+\begin{tikzcd} A =_{\Sigma_{X:\UU} P(X)} B \arrow[r, "\ap_{\pr_1}"] & (\pr_1(A) =_\UU \pr_1(B)) \arrow[r, "\term{equiv-eq}"] & (\pr_1(A) \simeq \pr_1(B)).
+\end{tikzcd}\qedhere
+\]
+\end{proof}
+
+\begin{ntn} Given $A : \Sigma_{X:\UU} P(X)$ it's common to above notation and write $A$ for $\pr_1(A)$. A similar convention makes sense for terms in any subtype $z : \Sigma_{x:A} P(x)$ where $P$ is a family of propositions over $A$. Technically speaking the terms in $\Sigma_{x:A} P(x)$ should be regarded as pairs $(x :A, y : P(x))$ but since $y$ is a term in a proposition no data is lost by forgetting exactly what term is declared beyond simply remembering that $P(x)$ is true for the particular term $x:A$.
+\end{ntn}
+
+Important examples of subuniverses include the universe $\type{Prop}_\UU$ or universes $\UU^{\leq k}$ of types at any truncation level.
+
+\begin{thm} Propositions satisfy \textbf{proposition extensionality}: for any propositions $P$ and $Q$ the canonical map
+\[ \term{iff-eq} :(P=Q) \to (P \leftrightarrows Q)\]
+defined by $\term{iff-eq}(\refl)=(\id,\id)$ is an equivalence. Moreover, the type of propositions is a set.
+\end{thm}
+\begin{proof}
+By function extensionality
+\[ \isprop{X} \coloneq \Pi_{x,y : X} x=y\]
+is a proposition, so the previous result applies to show that the natural map $(P =Q) \to (P \simeq Q)$ is an equivalence. We've previously defined a logical equivalence $(P \simeq Q) \leftrightarrows (P \leftrightarrows Q)$ which we can now upgrade to an equivalence since by function extensionality both types are propositions.\footnote{In general, $A \simeq B$ is a $k$-type if both $A$ and $B$ are $k$-types.} Thus 
+\[ (P=Q) \simeq (P \simeq Q) \simeq (P \leftrightarrows Q).\]
+\end{proof}
+
+\begin{cor} The type of decidable propositions in any universe is equivalent to $\bool$.
+\end{cor}
+\begin{proof}
+Since $\Sigma$ distributes over coproducts we have
+\[ \Sigma_{P : \Prop} \is{decidable}(P) \coloneq \Sigma_{P: \Prop} P +\neg P \simeq \left( \Sigma_{P: \Prop} P \right) + \left( \Sigma_{Q : \Prop} \neg Q\right).\] We claim that both components are contractible. For the former, we use $(\1,\star)$ as the center of contraction, while for the latter we use $(\emptyset, \id)$. For the contractions, it suffices to show that $\1=P$ for any proposition $P$ with $p : P$ and that $\emptyset = Q$ for any proposition $Q$ with $q: \neg Q$. Both identifications follow easily from propositional extensionality.
+\end{proof}
+
+\subsection*{Univalence implies function extensionality}
+
+We've added two big axioms to Martin-L\"{o}f's dependent type theory: univalence and function extensionality. We'll see now that the latter follows from the former using a lemma.
+
+\begin{lem} For any equivalence $e : X \simeq Y$ in a univalent universe $\UU$ and type $A$, the map
+\[ e \circ - : (A \to X) \to (A \to Y)\]
+is an equivalence.
+\end{lem}
+\begin{proof}
+Since $\UU$ is univalent it satisfies equivalence induction. Consider the type family $P(X,e) \coloneq \isequiv(e \circ -)$. To prove this, it suffices to show that $\id\circ - \colon (A \to X) \to (A \to X)$ is an equivalence. But this map is just the identity map so it follows.
+\end{proof}
+
+We'll also use a lemma that we've cited already that does not require univalence, which we now pause to prove:
+
+\begin{lem} For any type family $B$ over $A$ the fiber of the map $\pr_1 \colon \Sigma_{x:A} B(x) \to A$ over $a :A$ is equivalent to $B(a)$.
+\end{lem}
+\begin{proof}
+The comparison maps are defined by
+\[
+\begin{tikzcd}[row sep=tiny] B(a) \arrow[r, "s"] & \Sigma_{z: \Sigma_{x:A}B(x)} \pr_1(z)=a \arrow[r, "r"] & B(a) \\ b \arrow[r, maps to] & ((a,b),\refl_a) \\
+& ((x,y),p) \arrow[r, maps to] & \tr_B(p,y)
+\end{tikzcd}
+\]
+Note $r(s(b)) \doteq \tr_B(\refl_a,b)) \doteq b$ so $\refl$ provides a homotopy $r \circ s \sim \id_{B(a)}$. 
+
+We calculate that
+\[ s(r((x,y),p)) \doteq s(\tr_B(p,y)) \doteq ((a, \tr_B(p,y)), \refl_a)\] so for the other homotopy we require a path from $((x,y),p)$ to $((a, \tr_B(p,y)), \refl_a)$ for all $a$, $x$, $y$, and $p$. By path induction on $p$ it suffices to define this in the case where $a$ is $x$ and $p$ is $\refl_x$, in which case the reflexivity path will do.
+\end{proof}
+
+
+\begin{thm} For any universe $\UU$, univalence implies function extensionality.
+\end{thm}
+\begin{proof} It suffices to show that univalence implies weak function extensionality, so consider a family $B \colon A \to \UU$ of contractible types. It follows that $\pr_1 \colon \Sigma_{x:A} B(x) \to A$ is an equivalence. We'd like to show that $\Pi_{x:A} B(x)$ is contractible.
+
+By the lemma we know that
+\[ \pr_1 \circ - \colon (A \to \Sigma_{x:A}B(x)) \to (A \to A)\]
+is an equivalence, so in particular the fiber at $\id_A$ must be contractible. We'll show that $\Pi_{x:A} B(x)$ is a retract of this fiber
+\[ \Sigma_{f: A \to  \Sigma_{x:A}B(x)} \pr_1 \circ f = \id_A.\]
+Note that terms in  $\Pi_{x:A} B(x)$ are sections of the type family, while terms in $\Sigma_{f: A \to  \Sigma_{x:A}B(x)} \pr_1 \circ f = \id_A$ are sections up to homotopy.
+
+The section is defined by
+\[ i(f) \coloneq (\lambda x, (x,f(x)), \refl_\id).\]
+
+For the retraction consider $h : A \to \Sigma_{x:A}B(x)$ with $p : \pr_1 \circ h = \id$. We then have $\term{htpy-eq}(p) : \pr_1 \circ h \simeq \id$ and $\pr_2(h(x)) :B(\pr_1(h(x)))$. We define
+\[ r((h,p),x) \coloneq \tr_B (\term{htpy-eq}(p,x), \pr_2(h(x))).\]
+
+It remains to construct a homotopy $H : r \circ i \simeq \id$ but in this case we may compute
+\[ r(i(f)) \doteq r(\lambda x, (x,f(x)), \refl_\id) \doteq \tr_B(\term{htpy-eq}(\refl,x),\pr_2(x,f(x))) \doteq \tr_B(\refl,f(x)) \doteq f(x).\]
+Thus we may define $H(f) \doteq \refl$.
+\end{proof}
+
+\subsection*{Maps and families of types}
+
+An important consequence of univalence is the following:
+
+\begin{thm} For any type $A$ and any univalent universe $\UU$ containing $A$ the map
+\[ \left( \Sigma_{X:\UU} X \to A \right) \to (A \to \UU)\]
+given by $(X,f) \mapsto \fib_f$ is an equivalence.
+\end{thm}
+\begin{proof}
+The map in the converse direction is 
+\[ B \mapsto \left( \Sigma_{x:A}B(x),\pr_1\right).\]
+
+To see that this map is a section, we must prove that $\fib_{\pr_1} = B$ for any $B \colon A \to \UU$. By function extensionality and the univalence axiom, this is equivalent to showing that
+\[ \Pi_{x:A} \fib_{\pr_1}(x) \simeq B(x), \] which is the result of the lemma in the previous section that does not require univalence.
+
+We must also verify that \[(X,f) = \left( \Sigma_{a:A} \fib_f(a), \pr_1\right).\]
+For this, first observe that the identity type $(X,f) = (Y,g)$ in the type $\Sigma_{X: \UU} X \to A$ is equivalent to the type of pairs $(e,f)$ given by $e : X \simeq Y$ and a homotopy $f \sim g \circ e$. This follows from the universal property of identity types using the fact that the type
+\[ \Sigma_{Y : \UU} \Sigma_{g \colon Y \to A} \Sigma_{e : X \simeq Y} f \sim g \circ e\]
+is contractible by a result we skipped called the ``structure identity principle.'' Using this result it suffices to construct an equivalence $e \colon X \simeq \Sigma_{a:A} \fib_f(a)$ and homotopy $f \sim \pr_1 \circ e$. Intuitively, this follows from the observation that
+\[ \Sigma_{a:A} \fib_f(a) \coloneq \Sigma_{a:A} \Sigma_{x:X} f(x) =a \simeq \Sigma_{x:X}\Sigma_{a:A} f(x) =a \simeq \Sigma_{x:X} \1 \simeq X.\]
+The full details are left to the exercises.
+\end{proof}
+
+We can extend this result as follows. For any family of types $P$ indexed by $\UU$ write 
+\[ \UU_P \coloneq \Sigma_{X:\UU} P(X).\] If $P$ is a family of propositions this is a subuniverse of $\UU$ but we can consider this construction more generally. 
+
+
+\begin{thm} 
+For any type $A$, any univalent universe $\UU$ containing $A$, and any family of types $P$ indexed by $\UU$, the map
+\[ \left( \Sigma_{X:\UU} \Sigma_{f : X \to A} \Pi_{a:A} P(\fib_f(a)) \right) \to (A \to \UU_P)\]
+given by $(X,f,p) \mapsto \lambda a (\fib_f(a)p(a))$ is an equivalence.
+\end{thm}
+\begin{proof}
+The map is homotopic to the composite of equivalences
+\[ \Sigma_{X:\UU} \Sigma_{f : X \to A} \Pi_{a:A} P(\fib_f(a)) \simeq \Sigma_{(X,f) : \Sigma_{X:\UU}X \to A} \Pi_{a:A} P(\fib_f(a)) \simeq \Sigma_{B: A \to \UU} \Pi_{a:A}P(B(a)) \simeq A \to \Sigma_{X:\UU} P(X). \qedhere\]
+\end{proof}
+
+As a special case, we have an equivalence between families of propositions and embeddings.
+
+\begin{cor} For any type $A$ and any univalent universe $\UU$ containing $A$ the map
+\[ \left( \Sigma_{X:\UU} X \hookrightarrow A \right) \to (A \to \Prop)\]
+given by $(X,f) \mapsto \fib_f$ is an equivalence.
+\end{cor}
+
+\ifmine
+\subsection*{Classical mathematics with the univalence axiom}
+
+The univalence axiom \emph{is} consistent with the axiom of choice provided that care is taken to make choice about sets.
+
+\begin{thm} If $\UU$ is a univalent universe, then there is no function
+\[ \Pi_{A: \UU} \mere{A} \to A.\]
+\end{thm}
+\begin{proof}
+If we had such a term $f$ we could restrict to the type of 2-element types to obtain a function
+\[ \Pi_{A: \UU_2} \mere{A} \to A.\]
+Since every 2-element type $A$ is inhabited there is a term of type $\mere{A}$.
+
+\end{proof}
+
+
+\subsection*{The binomial types}
+\fi
+
 \section*{November 3: Set quotients}
 \section*{November 8: Groups}
 \section*{November 10: Algebra}
