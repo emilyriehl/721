@@ -113,25 +113,28 @@ data 𝟙 : UU lzero where
 -- P : 𝟙 → UU i, ev-star P is an equivalence
 -- dependent-universal-property-unit : {i : Level}(P : 𝟙 → UU i) → is-equiv (ev-star P)
 
--- The next series of exercises will show that for a type family B over A and a : A the strict fiber B a is equivalent to the homotopy fiber of pr1 : Σ A B → A
+-- Challenge Exercise: define the (homotopy) fiber "fib f b" for f : A → B and b : B
+-- Hint: write "fib {blah = blah} f y = ?" to bring "blah" into scope
+-- fib : {i j : Level}{A : UU i}{B : UU j} → (A → B) → B → UU (i ⊔ j)
 
--- Challenge Exercise: define the homotopy fiber "fib f y" for f : X → Y and y : Y
--- Hint: write "fib {blah = blah} f y = ?" to bring "blah" into scope 
--- fib : {i j : Level}{X : UU i}{Y : UU j} → (X → Y) → Y → UU (i ⊔ j)
+-- The next series of exercises will show that for a type family B over
+-- A and a : A the strict fiber B a is equivalent to the homotopy fiber of pr1 : Σ A B → A
+-- Rather than writing "{i j : Level}{A : UU i}{B : A → UU j}{a : A} →" at the start of each type declaration
+-- we're packaging this information into an unnamed module (hence the underscore). Note the indentation in what follows.
+module _ {i j : Level}{A : UU i}{B : A → UU j}{a : A} where
 
--- Challenge Exercise: for any type family B over A and any a : A define a map B a → fib pr1 a
--- htpy-fib-strict-fib : {i j : Level}{A : UU i}{B : A → UU j} {a : A} → B a → fib {i ⊔ j}{i}{Σ A B}{A} pr1 a
-
--- Challenge Exercise: for any type family B over A and any a : A define a map fib pr1 a → B a
--- strict-fib-htpy-fib : {i j : Level}{A : UU i}{B : A → UU j}{a : A} → fib {i ⊔ j}{i}{Σ A B}{A} pr1 a → B a
-
--- Challenge Exercise: prove these maps are inverses up to homotopy
--- Optional Exercise: come up with better names for these homotopies
--- retract-htpy : {i j : Level}{A : UU i}{B : A → UU j}{a : A} → (strict-fib-htpy-fib {i}{j}{A}{B} ∘  htpy-fib-strict-fib) ∼ id (B a)
-
--- other-htpy : {i j : Level}{A : UU i}{B : A → UU j}{a : A} → (htpy-fib-strict-fib ∘ strict-fib-htpy-fib) ∼ id (fib {i ⊔ j}{i}{Σ A B}{A} pr1 a)
-
--- Challenge Exercise: prove the lemma we keep using in class
--- Warning: I had to bring a lot of the implicit variables into scope in calling the functions
--- the-lemma-we-keep-using : {i j : Level}{A : UU i}{B : A → UU j}{a : A} → (B a) ≃ (fib {i ⊔ j}{i}{Σ A B}{A} pr1 a)
--- the-lemma-we-keep-using {i = i}{j = j}{A = A}{B = B} = ?
+    -- Challenge Exercise: for any type family B over A and any a : A define a map B a → fib pr1 a
+    -- htpy-fib-strict-fib : B a → fib {i ⊔ j}{i}{Σ A B}{A} pr1 a
+    
+    -- Challenge Exercise: for any type family B over A and any a : A define a map fib pr1 a → B a
+    -- strict-fib-htpy-fib : fib {i ⊔ j}{i}{Σ A B}{A} pr1 a → B a
+    
+    -- Challenge Exercise: prove these maps are inverses up to homotopy
+    -- Optional Exercise: come up with better names for these homotopies
+    -- retract-htpy : (strict-fib-htpy-fib ∘ htpy-fib-strict-fib) ∼ id (B a)
+    
+    -- other-htpy : (htpy-fib-strict-fib ∘ strict-fib-htpy-fib) ∼ id (fib {i ⊔ j}{i}{Σ A B}{A} pr1 a)
+    
+    -- Challenge Exercise: prove the lemma we keep using:
+    -- the-lemma-we-keep-using : (B a) ≃ (fib {i ⊔ j}{i}{Σ A B}{A} pr1 a)
+    
