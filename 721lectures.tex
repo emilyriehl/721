@@ -126,11 +126,6 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\cat}[1]{\textup{\textsf{#1}}}% for categories
 \newcommand{\fun}[1]{\textup{#1}}%for functors
 
-%commonly used categories
-\newcommand{\Ch}{\cat{Ch}}
-\newcommand{\Set}{\cat{Set}}
-\newcommand{\sSet}{\cat{sSet}}
-\newcommand{\Top}{\cat{Top}}
 
 %math operators
 \DeclareMathOperator{\dom}{\mathrm{dom}}
@@ -266,12 +261,14 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\fib}{\type{fib}}
 
 \newcommand{\Prop}{\type{Prop}_{\UU}}
+\newcommand{\Set}{\type{Set}_{\UU}}
 \renewcommand{\iff}{\leftrightarrow}
 
 \newcommand{\mere}[1]{\|{#1}\|}
 \newcommand{\im}[1]{\type{im}(#1)}
 \newcommand{\ev}{\term{ev}}
 
+\newcommand{\Fin}{\type{Fin}}
 
 \begin{document}
 
@@ -1697,7 +1694,7 @@ Given $f \colon A \to B$ together with
 we wish to show that $\fib_f(b)$ is contractible for any $b : B$. We take $(g(b), G(b)) : \fib_f(b)$ as the center of contraction. 
 
 For the contracting homotopy it suffices to define a term in the equivalent type
-\[ \prod_{a :A} \prod_{p : f(a) = b} \type{Eq-fib}_f((g(b),G(B)), (a,p).\]
+\[ \prod_{a :A} \prod_{p : f(a) = b} \type{Eq-fib}_f((g(b),G(b)), (a,p).\]
 By path induction on $p$ it suffices to define a term in the type
 \[ \prod_{a :A} \type{Eq-fib}_f((g(f(a)),G(f(a))),(a, \refl_{f(a)})).\]
 By the definition of $\type{Eq-fib}_f$ this means that we need, for each $a:A$, a path $H(a) : g(f(a))=a$ and a further identification
@@ -2784,29 +2781,108 @@ As a special case, we have an equivalence between families of propositions and e
 given by $(X,f) \mapsto \fib_f$ is an equivalence.
 \end{cor}
 
-\ifmine
+\section*{November 3: Classical mathematics with the univalence axiom}
+
+The univalence axiom asserts that identifications $A =_{\UU} B$ in the universe of types are equivalent to equivalences $A \simeq B$ between types. This interpretation is incompatible with an interpretation of type theory in which types are interpreted by sets and identity types are interpreted by the equality relation on those sets. In particular, if $\UU$ is interpreted by a set then for any $A : \UU$ the set intepreting $A =_\UU A$ has exactly one element (the reflexivity term). But 
+\[ A \simeq A \coloneq \Sigma_{f : A \to A} \Pi_{a :A} \iscontr{\left(\Sigma_{x:A} f(x) = a \right)}\]
+is the set of bijective functions $f \colon A \to A$. In particular, if the set interpreting $A$ has more than one element $A = A$ and $A \simeq A$ cannot be equivalent.
+
+That said, the univalent foundation system \emph{is} consistent with classical mathematics: provided one allows the existence of types, such as $\UU$, which are not mere sets. We'll now explore this compatibility in more detail.
+
 \subsection*{Classical mathematics with the univalence axiom}
 
 The univalence axiom \emph{is} consistent with the axiom of choice provided that care is taken to make choice about sets.
+
+To reason about this concretely, consider the type
+\[ \FF_2 \coloneq \Sigma_{X: \UU} \mere{ \Fin_2 \simeq X}\]
+of \textbf{2-element types}. Here $\Fin_2 \coloneq \1 + \1$ is the standard 2-element type. We write $i(\star)$ for $\inl(\star) : \Fin_2$ and $\star$ for $\inr(\star) : \Fin_2$.
+
+\begin{prop} The canonical family of maps
+\[ \ev_\star : (\Fin_2 \simeq X) \to X\]
+is a family of equivalences. Consequently, the type
+\[ \Sigma_{X: \FF_2} X \]
+of pointed 2-element types is contractible.
+\end{prop}
+\begin{proof}
+By the univalence axiom, the type
+\[ \Sigma_{X: \FF_2} \Fin_2 \simeq X\]
+is contractible. To see that $\Sigma_{X : \FF_2} X$ is contractible, it suffices to show the maps $\ev_\star : (\Fin_2\simeq X) \to X$ define a family of equivalences, since then they induce an equivalence between the $\Sigma$-types. 
+
+Since $X : \FF_2$ we have an assumption of the form $\mere{\Fin_2 \simeq X}$. Since our goal is to prove a proposition, namely
+\[ \isequiv{ (\ev_\star :  (\Fin_2 \simeq X) \to X)}\]
+we may assume we have a term $\alpha : \Fin_2 \simeq X$. Now we can proceed by equivalence induction on $\alpha$, meaning it suffices to assume $X$ is $\Fin_2$ and $\alpha$ is the identity equivalence, in which case our goal is to show that
+\[ \ev_\star : (\Fin_2 \simeq \Fin_2) \to \Fin_2\]
+is an equivalence. In this case we can define an inverse equivalence $g : \Fin_2 \to (\Fin_2 \simeq \Fin_2)$ by $g(\star) \coloneq \id$ and $g(i(\star)) \coloneq \term{succ}_2$ (the non-identity equivalence). It is straightforward to verify that these maps are inverse equivalences.
+\end{proof}
+
+Consequently:
+
+\begin{cor} There is no dependent function
+\[ \Pi_{X: \FF_2} X\]
+that chooses an element of every 2-element set.
+\end{cor}
+\begin{proof} By the previous proposition we have an equivalence
+\[ \left( \Pi_{X: \FF_2} \Fin_2 = X \right) \simeq \left( \Pi_{X: \FF_2} X \right).\]
+Note the left-hand side is the type of contracting homotopies for $\FF_2$ using $\Fin_2 : \FF_2$ as the center of contraction. So it suffices to show that $\FF_2$ is not contractible (which can only be the case if this type has no terms). In the previous proposition, we proved that $(\Fin_2 \simeq \Fin_2) \simeq \Fin_2$. Thus, by univalence, the identity type $\Fin_2 = \Fin_2$ of the term $\Fin_2 : \FF_2$ is not contractible. Thus $\FF_2$ must not be contractible.
+\end{proof}
+
+As a corollary, we can conclude more generally that there is not way to construct a term of an arbitrary inhabited type.
 
 \begin{thm} If $\UU$ is a univalent universe, then there is no function
 \[ \Pi_{A: \UU} \mere{A} \to A.\]
 \end{thm}
 \begin{proof}
 If we had such a term $f$ we could restrict to the type of 2-element types to obtain a function
-\[ \Pi_{A: \UU_2} \mere{A} \to A.\]
-Since every 2-element type $A$ is inhabited there is a term of type $\mere{A}$.
+\[ \Pi_{A: \FF_2} \mere{A} \to A.\]
+Since every 2-element type $A$ is inhabited there is a term of type $\mere{A}$. To see this, assume $\mere{\Fin_2 \simeq A}$. To produce a term of type $\mere{A}$ it suffices to assume that $e: \Fin_2 \simeq A$. Now $e(\star) : A$ and $\eta(e(\star)) : \mere{A}$.
 
+ Thus, by evaluating at this term $\eta(e(\star)) : \mere{A}$, we obtain a function
+\[ \Pi_{A: \FF_2} A\]
+which we've just shown is impossible.
 \end{proof}
 
+The statement 
+\[ \Pi_{A: \UU} \mere{A} \to A\]
+is called the \textbf{principle of global choice}. We've just shown that this principle is incompatible with the univalence axiom: in other words, we cannot obtain a term of type $A$ from the assumption $\mere{A}$ that $A$ is inhabited. What goes wrong? If we did have such a function $\term{global-choice} : \Pi_{A: \UU} \mere{A} \to A$ it would necessarily be invariant under identifications in $\UU$: $\apd_{\term{global-choice}}$ is a dependent function that takes a path $p : A = B$ to an identification between the transport of the function $\term{global-choice} : \mere{A} \to A$ along $p$ and the function $\term{global-choice} : \mere{B}  \to B$. 
 
-\subsection*{The binomial types}
-\fi
+By univalence, anything that respects identification between types (which is to say, every construction in homotopy type theory) must also be invariant under equivalences between types. But no choices of an element of $A$ can be invariant under all automorphisms of $A$ (unless $A$ is contractible). For instance, when $A \coloneq \Fin_2$, there is no fixed point of the equivalence $\term{succ}_2 : \Fin_2 \simeq \Fin_2$.
 
-\section*{November 3: Set quotients}
-\section*{November 8: Groups}
-\section*{November 10: Algebra}
-\section*{November 15: The real numbers}
+
+In a sense the principle of global choice is taking the wrong point of view on the traditional axiom of choice, which is really an axiom about \emph{sets}. The inconsistency of the global choice function is tied to the inconsistency in defining any sections of the type family $\lambda X.X : \FF_2 \to \UU$ of inhabited types. Here the fibers of this type family, the 2-element types $X$, are sets, but the base type $\FF_2$ is not a set but rather a 1-type. The axiom of choice is more properly an assertion that only applies to type families $B \colon A \to \UU$ in which both the base type $A$ and the fibers $B(x)$ are sets.
+
+\begin{defn} The \textbf{axiom of choice} asserts that for any family $B$ of inhabited sets indexed by a set $A$ the type of sections of $B$ is also inhabited:
+\[ \term{AC}_\UU \coloneq \Pi_{A: \Set}\Pi_{B : A \to \Set} \left( \Pi_{x:A} \mere{B(x)}\right) \to \mere{ \Pi_{x:A} B(x)}.\]
+\end{defn}
+
+The consistency of this axiom with univalence is established by Voevodsky's model of homotopy type theory in the category of simplicial sets (when the sets are taken to be classical sets). This version of the axiom of choice asserts essentially that every surjective function between sets has a section.
+
+Similar care has to be taken with the type theoretic formulation of the law of the excluded middle. Recall for a type $X$, 
+\[ \is{decidable}(X) \coloneq X + \neg X.\]
+With univalence, it is inconsistent to assume that every type is decidable:
+
+\begin{thm} There is no dependent function
+\[ \Pi_{X: \UU} \is{decidable}(X).\]
+\end{thm}
+\begin{proof}
+If such a function existed, it would restrict to a dependent function
+\[ d : \Pi_{X : \FF_2} \is{decidable}(X).\]
+Since each 2-element type is inhabited $\neg (X) \to \emptyset$, so $\is{decidable}(X) \to X$. Thus from $d$ we would obtain a dependent function in $\Pi_{X: \FF_2} X$, which we've seen does not exist.
+\end{proof}
+
+The remedy is similar to the discussion above. We've argued that the axiom of choice is really an axiom about \emph{sets}. Similarly, the law of excluded middle is really an axiom about \emph{propositions}, and it is consistent with univalence to assume that every proposition is decidable.
+
+\begin{defn} The \textbf{law of excluded middle} asserts that every proposition is decidable
+\[ \term{LEM}_\UU : \Pi_{P :\Prop} \is{decidable}(P).\]
+\end{defn}
+
+Again, the consistency of this axiom with univalence is established by Voevodsky's model of homotopy type theory in the category of simplicial sets, in which case the propositions are the subobjects of the one-point simplicial set. 
+
+We will not assume either $\term{AC}_\UU$ or $\term{LEM}_\UU$ going forward but nevertheless it is reassuring to know that these assumptions are consistent.
+
+
+\section*{November 8: Set quotients in univalent mathematics}
+\section*{November 10: Groups in univalent mathematics}
+\section*{November 15: The real numbers in univalent mathematics}
 
 
 \part{Synthetic Homotopy Theory}
