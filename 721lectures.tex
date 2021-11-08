@@ -2879,9 +2879,199 @@ Again, the consistency of this axiom with univalence is established by Voevodsky
 
 We will not assume either $\term{AC}_\UU$ or $\term{LEM}_\UU$ going forward but nevertheless it is reassuring to know that these assumptions are consistent.
 
+\section*{November 8: Groups in univalent mathematics}
 
-\section*{November 8: Set quotients in univalent mathematics}
-\section*{November 10: Groups in univalent mathematics}
+ In order to demonstrate a typical way to use the univalence axiom, we tour the theory of groups in univalent mathematics. By something called the \emph{structure identity principle}, we will see that univalence implies that isomorphic groups can be \emph{identified}. 
+ 
+ \subsection*{The type of all groups}
+ 
+We introduce the group axioms in stages. Recall a type $A$ is a set if
+\[ \Pi_{x,y:A} \Pi_{p,q: x=y} \iscontr{p=q}.\]
+
+\begin{defn} A \textbf{semi-group} consists of a set $G$ equipped with a term of type \type{has-associative-mul}$(G)$, which is the type of pairs $(\mu_G,\term{assoc}_G)$ comprised of
+\[ \mu_G : G \to G \to G\] anda  homotopy
+\[ \term{assoc}_G : \Pi_{x,y,z:G} \mu_G(\mu_G(x,y),z) = \mu_G(x,\mu_G(y,z)).\]
+\end{defn}
+
+We write
+\[ \type{Semi-Group} \coloneq \Sigma_{G: \Set}\Sigma_{\mu_G :G \to G \to G} \Pi_{x,y,z:G} \mu_G(\mu_G(x,y),z) = \mu_G(x,\mu_G(y,z)).\]
+
+\begin{defn} A semi-group $G$ is a \textbf{unital semi-group} or a \textbf{monoid} if it comes equipped with a \textbf{unit} $e_G : G$ satisfying left and right unit laws:
+\[ \term{left-unit}_G : \Pi_{y:G} \mu_G(e_G,y) = y  \qquad \term{right-unit}_G :\Pi_{x:G} \mu_G(x,e_G) = x.\]
+\end{defn}
+
+We write
+\[ \is{unital}(G) \coloneq  \Sigma_{e_G: G} \left( \Pi_{y:G} \mu_G(e_G,y) = y  \right) \times \left( \Pi_{x:G} \mu_G(x,e_G) = x \right).\]
+
+In classical mathematics, the unit of a semi-group is unique once it exists. In univalent mathematics, this is expressed by the following result:
+
+\begin{lem} For a semi-group $G$, the type $\is{unital}(G)$ is a proposition.
+\end{lem}
+
+In other words, being unital is a \emph{property} of semi-groups rather than \emph{structure} on semi-groups.
+
+\begin{proof}
+Since a semi-group $G$ is a set, the types of the left and right unit laws are propositions. Therefore it suffices to show that any two terms $e,e' : G$ satisfying the left and right unit laws can be identified. This is easy using the right-unit law for $e'$ and the left-unit law for $e$:
+\[ \inv(\term{right-unit}_G(e)) \cdot \term{left-unit}_G(e') : e = \mu_G(e,e') = e'. \qedhere\]
+\end{proof}
+
+\begin{defn} Let $G$ be a unital semi-group. We say $G$ \textbf{has inverses} if it comes with an operation $x \mapsto x^{-1} : G \to G$ satisfying the left and right inverse laws:
+\[ \term{left-inv}_G : \Pi_{x:G} \mu_G(x^{-1},x) = e_G \qquad \term{right-inv}_G : \Pi_{x:G} \mu_G(x,x^{-1}) = e_G.\]
+\end{defn}
+
+We write
+\[ \is{group}(G) \coloneq \Sigma_{e_G: \is{unital}(G)} \Sigma_{x \mapsto x^{-1} :G \to G} \left(\Pi_{x:G} \mu_G(x^{-1},x) = e_G\right) \times \left( \Pi_{x:G} \mu_G(x,x^{-1}) = e_G \right).\]
+
+\begin{lem} For any semi-group $G$, the type $\is{group}(G)$ is a proposition.
+\end{lem}
+\begin{proof}
+We have seen already that $\is{unital}(G)$ is a proposition so it suffices to show that \[
+\Sigma_{x \mapsto x^{-1} :G \to G} \left(\Pi_{x:G} \mu_G(x^{-1},x) = e\right) \times \left( \Pi_{x:G} \mu_G(x,x^{-1}) = e \right)\]
+is a proposition for any $e : \is{unital}(G)$. Since semi-groups are sets, the types of the inverse laws are propositions, so it suffices to show that any two operations satisfying the inverse laws are homotopic. To that end consider $x \mapsto x^{-1}$ and $x \mapsto \bar{x}^{-1}$. Then we have
+\[ x^{-1} = \mu_G(e, x^{-1}) = \mu_G(\mu_G(\bar{x}^{-1},x),x^{-1}) = \mu_G(\bar{x}^{-1},\mu_G(x,x^{-1}) = \mu_G(\bar{x}^{-1}, e) = \bar{x}^{-1}. \qedhere\]
+\end{proof}
+
+\begin{defn} A \textbf{group} is a unital semi-group with inverses. We write 
+\[\type{Group} \coloneq \Sigma_{G: \Set}\Sigma_{\mu_G :G \to G \to G} \Sigma_{\term{assoc}_G : \Pi_{x,y,z:G} \mu_G(\mu_G(x,y),z) = \mu_G(x,\mu_G(y,z))} \is{group}(G).\]
+ for the type of all groups in $\UU$.
+\end{defn}
+
+Recall a groupoid is a ``group with many objects.'' This suggests that one-object groupoids give examples of groups:
+
+\begin{ex} An important example of groups consist of \textbf{loop spaces} $x=_Xx$ for any 1-type $X$ and any $x:X$. We write $\Omega(X,x)$ for the loop space. Since $X$ is a $-1$ type $\Omega(X,x) \coloneq x=_Xx$ is a set. Then we have
+\[ \refl_x : \Omega(X,x) \qquad \inv : \Omega(X,x) \to \Omega(X,x) \qquad \concat : \Omega(X,x) \to \Omega(X,x) \to \Omega(X,x)\]
+satisfying all of the required laws, as special cases of the groupoid laws for identity types.
+\end{ex}
+
+\begin{ex} The type of integers $\bZ \coloneq \bN + (\1 + \bN)$ can be given the structure of a group with addition as the group operation. The proof that $\bZ$ is a set is similar to the proof that $\bN$ is a set. The group laws were shown in the exercises.
+\end{ex}
+
+\begin{ex}
+A final example is given by an \textbf{automorphism group} of a set. Given a set $X$ define
+\[ \type{Aut}(X) \coloneq (X \simeq X).\]
+The group operation is composition of equivalences and the unit is the identity function. While composition os functions is strictly associative and strictly unital, composition of equivalences only satisfies the group laws up to identification because this also requires a composite of the equivalence data.
+
+As an important special case we define the \textbf{symmetric groups}
+\[ S_n \coloneq \type{Aut}(\Fin_n).\]
+\end{ex}
+
+\subsection*{Group homomorphisms}
+
+\begin{defn} Let $G$ and $H$ be semi-groups. A \textbf{homomorphism} of semi-groups is a pair $(f,\mu_f)$ comprised of a function $f \colon G \to H$ between their underlying types and a term
+\[ \mu_f : \Pi_{x,y:G} f(\mu_G(x,y)) = \mu_H(f(x),f(y))\]
+witnessing that $f$ preserves the binary operations. We write
+\[ \type{hom}(G,H) \coloneq \Sigma_{f:G \to H} \Pi_{x,y:G}  f(\mu_G(x,y)) = \mu_H(f(x),f(y))\]
+for the type of all semi-group homomorphisms.
+\end{defn}
+
+Since it is a property for a function to preserve the multiplication of a semi-group, it follows that the identity type between two terms $f,f' :\type{hom}(G,H)$ is equivalent to the type of homotopies between their underlying functions. In particular $\type{hom}(G,H)$ is a set. 
+
+\begin{ex} The \textbf{identity homomorphism} on a semi-group $G$ is given by $\id: G \to G$ and \[\lambda x.\lambda y. \refl_{\mu_G(x,y)} : \Pi_{x,y:G} \mu_G(x,y) = \mu_G(x,y).\]
+\end{ex}
+
+\begin{rmk} If $f \colon G \to H$ and $g \colon H \to K$ are semi-group homomorphisms, their composite $g \circ f \colon G \to K$ is also a semi-group homomorphism using the composite identification
+\[ g(f(\mu_G(x,y)) = g(\mu_H(f(x),f(y)) = \mu_K(g(f(x)), g(f(y))).\]
+
+The following coherence laws can be verified
+\[ \id \circ f = f \qquad g \circ \id = g \qquad (h \circ g) \circ f = h \circ (g \circ f),\]
+using the fact that identity types of semi-group homomorphisms are equivalent to the identity types between the underlying functions.
+\end{rmk}
+
+\begin{defn} Let $G$ and $H$ be groups. A \textbf{homomorphism} of groups from $G$ to $H$ is defined to be a semi-group homomorphism between their underlying semi-groups. We will write
+\[ \type{hom}(G,H)\]
+for the type of all group homomorphisms.
+\end{defn}
+
+Why this definition? On the one hand, you might remember that the classical definition of group homomorphism only requires compatibility with multiplication: the preservation of units and inverses comes for free. If you recall the proof of this, you'll be lead to define, for instance, a composite identification:
+\[ e_H = \mu_H(f(e_G), f(e_G)^{-1}) = \mu_H(f(\mu_G(e_G,e_G)), f(e_G)^{-1}) = \mu_H(\mu_H(f(e_G),f(e_G)), f(e_G)^{-1}) \] \[ = \mu_H(f(e_G), \mu_H(f(e_G),f(e_G)^{-1}) = \mu_H(f(e_G), e_H) = f(e_G).\]
+Since the identity types in a set are propositions, there is no data defined by an explicit identification beyond its mere existence. 
+\subsection*{Isomorphic groups are equal}
+
+\begin{defn}A  homomorphism of semi-groups $h : \type{hom}(G,H)$ is said to be an \textbf{isomorphism} if it comes with a term of type $\is{iso}(h)$ consisting of triples $(h^{-1},p,q)$ given by $h^{-1} : \type{hom}(H,G)$ and
+\[ p : h^{-1} \circ h = \id_G \qquad \text{and} \qquad q : h \circ h^{-1} = \id_H\]
+witnessing that $h^{-1}$ satisfies the inverse laws.
+\end{defn}
+
+Write \[G \cong H \coloneq \Sigma_{h: \type{hom}(G,H)} \Sigma_{k: \type{hom}(H,G)} (k \circ h = \id_G) \times (h \circ k = \id_H).\]
+
+If $h$ is an isomorphism its inverse is unique. In other words, being an isomorphism is a property:
+
+\begin{lem} For any semi-group homomorphism $h : \type{hom}(G,H)$, the type $\is{iso}(h)$ is a proposition. Thus, for any two semi-groups $G \cong H$ is a set.
+\end{lem}
+\begin{proof}
+Suppose $k, k' : \type{hom}(H,G)$ are two inverses of $h$. Since the type of semi-group homomorphisms is a set, we have that $h \circ k = \id$ and $k \circ h = \id$ are propositions, and similarly for $k'$, so it suffices to check that $k = k'$. We've observed that this identity type is equivalent to the type of homotopies $k \sim k'$ and we can construct one by the usual argument: applying $k$ to the inverse of the coherence $h \circ k' = \id$ at $y : H$ and concatenating with the coherence $k \circ h = \id$ at $k'(y) : G$ yields:
+\[ k(y) = k(h(k'(y))) = k'(y).\]
+\end{proof}
+
+\begin{lem} A semi-group homomorphism $h : \type{hom}(G,H)$ is an isomorphism if and only if its underlying map is an equivalence. Consequently there is an equivalence
+\[ (G \cong H ) \simeq \Sigma_{e: G \simeq H} \Pi_{x,y: G} e(\mu_G(x,y)) = \mu_H(e(x),e(y)).\]
+\end{lem}
+\begin{proof}
+If $h : \type{hom}(G,H)$ is an isomorphism, then the inverse semi-group homomorphism also provides an inverse to the underlying map of $h$. Thus $h$ must be an equivalence.
+
+For the converse, suppose $h : \type{hom}(G,H)$ is a semi-group homomorphism whose underlying map $h : G \to H$ is an equivalence, with equivalence inverse $k : H \to G$. Then for all $x,y : G$
+\[ h( \mu_G(k(x), k(y))) = \mu_H (h(k(x)), h(k(y))) = \mu_H(x,y) = hk(\mu_H(x,y)).\]
+Since $h$ is an equivalence it follows that $\mu_G(k(x),k(y)) = k(\mu_H(x,y))$ so $k$ is a semi-group homomorphism. The homotopies of the equivalence provide the homotopies of the group isomorphism.
+\end{proof}
+
+\begin{defn} Let $G$ and $H$ be semi-groups. We define the map
+\[
+\term{iso-eq} : (G=H) \to (G \cong H)\]
+by path induction taking $\refl_G$ to $\id_G$. 
+\end{defn}
+
+\begin{thm} The map 
+\[
+\term{iso-eq} : (G=H) \to (G \cong H)\]
+is an equivalence for any two semi-groups $G$ and $H$.
+\end{thm}
+\begin{proof}
+By the fundamental theory of identity types, it suffices to show that 
+\[ \Sigma_{G' : \type{Semi-Group}} G \cong G'\]
+is contractible. This is equivalent to the type
+\[ \Sigma_{G' : \type{Semi-Group}} \Sigma_{e: G \simeq G'} \Pi_{x,y: G} e(\mu_G(x,y)) = \mu_{G'}(e(x),e(y)).\]
+Since
+\[ \type{Semi-Group} \coloneq \Sigma_{G: \Set} \type{has-associative-mul}(G),\]
+it suffices to show that the type 
+$\Sigma_{G' : \Set} G \simeq G'$
+is contractible, which follows by the univalence axiom univalence axiom, and uses $(G,\id_G)$ as the center of contraction, and then show that the type
+\[ \Sigma_{\mu' : \type{has-associative-mul}(G)} \Pi_{x,y: G} \mu_G(x,y) = \mu_{G'}(x,y)\] is contractible. This holds by function extensionality, with $(\mu_G, \refl)$ as the center of contraction.
+\end{proof}
+
+\begin{cor} The type $\type{Semi-Group}$ is a 1-type.
+\end{cor}
+\begin{proof}
+For any sets $X$ and $Y$ it is straightforward to show that $X \simeq Y$ is a set.
+\end{proof}
+
+The results for groups follow similarly though the types $G =_{\type{Semi-Group}} H$ and $G =_{\type{Group}} H$ are not equal. 
+
+\begin{defn} Let $G$ and $H$ be groups. We define the map
+\[
+\term{iso-eq} : (G=H) \to (G \cong H)\]
+by path induction taking $\refl_G$ to $\id_G$. 
+\end{defn}
+
+\begin{thm} The map 
+\[
+\term{iso-eq} : (G=H) \to (G \cong H)\]
+is an equivalence for any two groups $G$ and $H$.
+\end{thm}
+\begin{proof}
+Let $G$ and $H$ be group and write $UG$ and $UH$ for their underlying semi-groups. Then we have a commutative triangle
+\[
+\begin{tikzcd} (G = H) \arrow[rr, "{\ap_{\pr_1}}"] \arrow[dr, "\term{iso-eq}"'] & & (UG = UH) \arrow[dl, "\term{iso-eq}"] \\ & (G \simeq H)
+\end{tikzcd}
+\]
+Since being a group is a property of semi-groups, the projection map $\pr_1 : \type{Group} \to \type{Semi-Group}$ is an embedding. Thus the top map is an equivalence, as is the right map by the previous theorem. The result follows.
+\end{proof}
+
+\begin{cor} The type of groups is a 1-type.
+\end{cor}
+
+These results follow a general pattern. The \textbf{Structure Identity Principle} states that any property of set-level structures (e.g., posets, groups, rings, fields) definable in Univalent Foundations is invariant under isomorphism. More specifically, identifications of structures coincide with isomorphisms. There is some subtlety in the correct formulation of this result which we illustrate next time by considering categories in univalent mathematics.
+
+\section*{November 10: Categories in univalent mathematics}
 \section*{November 15: The real numbers in univalent mathematics}
 
 
