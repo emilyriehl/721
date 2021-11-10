@@ -3003,7 +3003,7 @@ Suppose $k, k' : \type{hom}(H,G)$ are two inverses of $h$. Since the type of sem
 \[ k(y) = k(h(k'(y))) = k'(y).\]
 \end{proof}
 
-\begin{lem} A semi-group homomorphism $h : \type{hom}(G,H)$ is an isomorphism if and only if its underlying map is an equivalence. Consequently there is an equivalence
+\begin{lem} A semi-group homomorphism $h : \type{hom}(G,H)$ is an isomorphism if and only if its underlying map is an equivalence. Consequently there is an equivalence 
 \[ (G \cong H ) \simeq \Sigma_{e: G \simeq H} \Pi_{x,y: G} e(\mu_G(x,y)) = \mu_H(e(x),e(y)).\]
 \end{lem}
 \begin{proof}
@@ -3032,16 +3032,18 @@ is contractible. This is equivalent to the type
 \[ \Sigma_{G' : \type{Semi-Group}} \Sigma_{e: G \simeq G'} \Pi_{x,y: G} e(\mu_G(x,y)) = \mu_{G'}(e(x),e(y)).\]
 Since
 \[ \type{Semi-Group} \coloneq \Sigma_{G: \Set} \type{has-associative-mul}(G),\]
-it suffices to show that the type 
+we have
+\[ \left( \Sigma_{G' : \type{Semi-Group}} \Sigma_{e: G \simeq G'} \Pi_{x,y: G} e(\mu_G(x,y)) = \mu_{G'}(e(x),e(y)) \right) \] \[\simeq \left( \Sigma_{G' : \Set} \Sigma_{e : G \simeq G'} \Sigma_{ \mu_{G'} : \type{has-associative-mul}(G')}\Pi_{x,y: G} e(\mu_G(x,y)) = \mu_{G'}(e(x),e(y)) \right). \]
+Thus, it suffices to show that the type 
 $\Sigma_{G' : \Set} G \simeq G'$
-is contractible, which follows by the univalence axiom univalence axiom, and uses $(G,\id_G)$ as the center of contraction, and then show that the type
+is contractible, which follows by the univalence axiom, and uses $(G,\id_G)$ as the center of contraction, and then show that the type
 \[ \Sigma_{\mu' : \type{has-associative-mul}(G)} \Pi_{x,y: G} \mu_G(x,y) = \mu_{G'}(x,y)\] is contractible. This holds by function extensionality, with $(\mu_G, \refl)$ as the center of contraction.
 \end{proof}
 
 \begin{cor} The type $\type{Semi-Group}$ is a 1-type.
 \end{cor}
 \begin{proof}
-For any sets $X$ and $Y$ it is straightforward to show that $X \simeq Y$ is a set.
+We've just shown that $(G=H) \simeq (G \cong H)$ for semi-groups $G$ and $H$. It's straightforward to see, using the fact that $G$ and $H$ are sets, that $G \cong H$ is a set.
 \end{proof}
 
 The results for groups follow similarly though the types $G =_{\type{Semi-Group}} H$ and $G =_{\type{Group}} H$ are not equal. 
@@ -3072,6 +3074,200 @@ Since being a group is a property of semi-groups, the projection map $\pr_1 : \t
 These results follow a general pattern. The \textbf{Structure Identity Principle} states that any property of set-level structures (e.g., posets, groups, rings, fields) definable in Univalent Foundations is invariant under isomorphism. More specifically, identifications of structures coincide with isomorphisms. There is some subtlety in the correct formulation of this result which we illustrate next time by considering categories in univalent mathematics.
 
 \section*{November 10: Categories in univalent mathematics}
+
+Traditional group theory fits very comfortably into the set-theoretical foundations of mathematics but category theory is less comfortable there. A key problem is that most of category theory is invariant under weaker notions of ``sameness'' than equality, such as isomorphism in ac category of equivalence of categories, in a way that set theory fails to capture. But this is the same sort of problem that the univalence axiom solves for types. Thus, in univalent foundations, it makes sense to consider a notion of ``category'' in which equality of objects is identified with isomorphism in a similar way. 
+
+We'll actually introduce two definitions, which following \cite{book-hott} are called \emph{precategories} and \emph{categories}, the latter of which might be thought of as the ``univalent'' categories. 
+
+An illustration of the difference between precategories and categories comes from the behavior of equivalences between such notions. In classical mathematics the statement that ``every fully faithful and essentially surjective functor is an equivalence of categories'' is equivalent to the axiom of choice. For precategories, there is no consistent axiom of choice, which can make it true. For categories, it is provable without any axiom of choice. We won't have time to prove this here but see \cite[\S 9.4]{book-hott}, which also explores a third notion of \emph{strict categories}.
+
+
+\subsection*{Precategories and categories}
+
+\begin{defn} A \textbf{precategory} $A$ consists of:
+\begin{itemize}
+\item A type $A_0$ of objects. We write $a : A$ to mean $a : A_0$.
+\item For each $a, b : A$, a set $\hom_A(a,b)$ of \textbf{arrows} or \textbf{morphisms}
+\item For each $a :A$ a morphism $1_a : \hom_A(a,a)$.
+\item For each $a,b,c : A$ a function
+\[ \hom_A(b,c) \to \hom_A(a,b) \to \hom_A(a,c)\] denoted by $g \mapsto f \mapsto g \circ f$.
+\item For each $a, b :A$ and $f : \hom_A(a,b)$ proofs that $f = 1_b \circ f$ and $f = f \circ 1_a$.
+\item For each $a,b,c,d : A$ and $f : \hom_A(a,b)$, $g : \hom_A(b,c)$ and $h : \hom_A(c,d)$ a proof that $h \circ (g \circ f) = (h \circ g) \circ f$.
+\end{itemize}
+\end{defn}
+
+The problem with precategories is there are a priori two distinct notions of sameness for terms $a,b :A$, one given by the identity type and the other given by the categorical notion of isomorphism:
+
+\begin{defn} A term $f : \hom_A(a,b)$ is an \textbf{isomorphism} if there is a term of type
+\[ \is{iso}(f) \coloneq \Sigma_{g: \hom_A(b,a)} (g \circ f= 1_a) \times (f \circ g = 1_b).\]
+\end{defn}
+
+For instance, $1_a$ is an isomorphism with $1_a$ and the unit coherences defining the required term of $\is{iso}(f)$.
+
+\begin{lem} For any $f : \hom_A(a,b)$, the type $\is{iso}(f)$ is a proposition. Thus the type
+\[ a \cong b \coloneq \Sigma_{f: \hom_A(a,b)} \is{iso}(f)\] 
+is a set.
+\end{lem}
+\begin{proof}
+Given $(g,\eta,\epsilon), (g', \eta',\epsilon') : \is{iso}(f)$ we must construct an identification between them. Since hom-sets are sets, their identity types are propositions and it suffices to construct an identification $g = g'$. For this we have
+\[ g' = 1_a \circ g' = (g \circ f) \circ g' = g \circ (f \circ g') = g.\]
+
+Thus $\is{iso} : \hom_A(a,b) \to \Prop$ is a family of propositions, so $\pr_1 : a \cong b \to \hom_A(a,b)$ is an embedding. Since $\hom_A(a,b)$ is a set, $a \cong b$ must be as well.
+\end{proof}
+
+When $f$ is an isomorphism, $\is{iso}(f)$ is contractible. In particular, we may write $f^{-1} : \hom_A(b,a)$ for its uniquely determined inverse morphism.
+
+\begin{defn} If $A$ is a precategory and $a,b :A$ there is a map
+\[ \term{iso-id} : (a=b) \to (a \cong b)\] defined by path induction by $\refl_a \mapsto \id_a$.
+\end{defn}
+
+A category is a precategory with a unified notion of equivalence.
+
+\begin{defn} A \textbf{category} is a precategory so that for all $a,b$ the map $\term{iso-id} : (a=b) \to (a \cong b)$ is an equivalence.
+\end{defn}
+
+\begin{cor} In any category, the type of objects is a 1-type.
+\end{cor}
+\begin{proof}
+Since $a \cong b$ is a set, $a=b$ is a set, making $A$ into a 1-type.
+\end{proof}
+
+\begin{ex} The type $\Set$ is a category with $\hom(A,B) \coloneq A \to B$ in any universe large enough to contain $\Set$. Here we have $(A \cong B) \simeq (A \simeq B) \simeq (A = B)$ by the univalence axiom.
+\end{ex}
+
+\begin{ex} The types $\type{SemiGroup}$ and $\type{Group}$ are also categories in sufficiently large universes with the hom-sets given by the types of (semi-)group homomorphisms.
+\end{ex}
+
+\begin{ex} If $X$ is any 1-type, there is a category with $X$ as its type of objects and $\hom(x,y) \coloneq (x=y)$. In this category every morphism is an isomorphism, so $X$ might be called a \textbf{groupoid}. 
+\end{ex}
+
+\begin{ex} A precategory $A$ in which each set $\hom_A(a,b)$ is a proposition is called a \textbf{preorder}. Equivalently, this data is given by a type $A_0$ equipped with a proposition-valued relation $\leq$ that is reflexive $(a \leq a)$ and transitive $(b\leq c) \to (a \leq b) \to (a \leq c)$.
+
+A unique morphism $f : \hom_A(a,b) \simeq a \leq b$ is an isomorphism just when $b \leq a$. Thus $a \cong b$ is the proposition $(a \leq b) \times (b \leq a)$. Thus, we see that a preorder is category just when $a=b$ is a proposition and the relation $\leq$ is anti-symmetric: $(a \leq b) \times (b \leq a) \to (a=b)$.
+\end{ex}
+
+\begin{ex} If $A$ is a category then $A_0$ is a set if and only if $a \cong b$ is a proposition. In particular, every automorphism in $a \cong a$ must be an identity. In fact, it's typically understood to mean that every \emph{isomorphism} in $a \cong b$ is an identity, meaning it corresponds to $\id_a : a \cong a$ under the transport equivalence $(a \cong a) \simeq (a \cong b)$ induced by the corresponding path in $a =b$. This is a strong condition on a category that goes by the name of \textbf{gaunt}.
+\end{ex}
+
+\ifmine
+Since gaunt categories are relatively special we typically restrict the notion of strict category as follows:
+
+\begin{defn} A \textbf{strict category} is a precategory whose type of objects is a set.
+\end{defn}
+
+Note that strict categories are not necessarily categories!
+\fi
+
+\subsection*{Functors and natural transformations}
+
+\begin{defn} For precategories $A$ and $B$ a \textbf{functor} $F \colon A \to B$ consists of
+\begin{itemize}
+\item A function $F_0 : A_0 \to B_0$ generally also denoted by $F$.
+\item For each $a,b :A$, a function $F_{a,b} : \hom_A(a,b) \to \hom_B(Fa,Fb)$.
+\item Proofs, for each $a :A$, that $F(1_a) = 1_{Fa}$.
+\item Proofs, for each $a,b, c:A$, $f: \hom_A(a,b)$ and $g: \hom_A(b,c)$ that $F(g \circ f) = Fg \circ Ff$.
+\end{itemize}
+\end{defn}
+
+%Note that functors $F \colon A \to B$ and $G \colon B \to C$ can be composed by composing the functions $F_0$ and $G_0$ and $F_{a,b}$ and $G_{Fa,Fb}$.
+
+\begin{defn} For functors $F,G: A \to B$ between precategories a \textbf{natural transformation} $\gamma \colon F \to G$ consists of
+\begin{itemize}
+\item A dependent function $\gamma : \Pi_{a:A} \hom_B(Fa,Ga)$ defining the components of the natural transformation.
+\item For each $a,b :A$ and $f: \hom_A(a,b)$, a proof that $Gf \circ \gamma_a = \gamma_b \circ Ff$, the naturality axiom.
+\end{itemize}
+\end{defn}
+
+\begin{defn} For precategories $A$ and $B$ there is a pre-category $B^A$ defined by taking $(B^A)_0$ to be the type of functors $A \to B$ and $\hom_{B^A}(F,G)$ to be the type of natural transformations from $F$ to $G$. Note that since the hom types in precategories are sets, two natural transformations $\gamma, \gamma' : F \to G$ are equal just when their components are equal. In particular, by function extensionality, the type of natural transformations is a set.
+
+The identity element $1_F$ is the natural transformation whose components $(1_F)_a \coloneq 1_{Fa}$ are identities. Similarly, composition of natural transformations is componentwise.
+\end{defn}
+
+The traditional categorical proof shows:
+
+\begin{lem} A natural transformation $\gamma \colon F \to G$ is an isomorphism if and only if each of its components are isomorphisms. \qed
+\end{lem}
+
+Using this, we may show
+
+\begin{thm} If $A$ is a precategory and $B$ is a category then $B^A$ is a category.
+\end{thm}
+\begin{proof}
+For functors $F, G : A \to B$ we must show that $\term{iso-id} : (F =G) \to (F \cong G)$ is an equivalence. To define its inverse suppose $\gamma : F \cong G$. By the lemma this means we have an isomorphism $\gamma_a : \hom_B(Fa,Ga)$ for every $a :A$. Since $B$ is a category, we have identities $\term{id-iso}(\gamma_a) : Fa =_B Ga$. By function extensionality this proves that $\bar{\gamma} : F_0 =_{A_0 \to B_0} G_0$. 
+
+Our next task is to show that $F_{a,b} : \hom_A(a,b) \to \hom_B(Fa,Fb)$ equals $G_{a,b} : \hom_A(a,b) \to \hom_B(Ga,Gb)$ after transporting the former along $\bar{\gamma}$. In fact this is all that remains to show since the final axioms of a functor are propositions. By a lemma below, for $f : \hom_A(a,b)$ the transport of $Ff : \hom_B(Fa,Fb)$ along $\bar{\gamma}$ is equal to the composite $\gamma_b \circ Ff \circ \gamma_a^{-1} : \hom_B(Ga,Gb)$. By naturality and $\is{iso}(\gamma_a)$, we have
+\[ \gamma_b \circ Ff \circ \gamma_a^{-1} = Gf \circ \gamma_a \circ \gamma_a^{-1} = Gf\] as required.
+
+This defines a function $(F \cong G) \to (F=G)$. A further argument is needed to prove that this function is an inverse equivalence to $\term{iso-id} : (F=G) \to (F \cong G)$. See \cite[9.2.5]{book-hott}.
+\end{proof}
+
+\begin{lem} For a precategory $A$, $f : \hom_A(a,b)$ and $p : a = a'$ and $q : b = b'$
+\[ \tr_{\hom}((p,q),f) = \term{iso-id}(q) \circ f \circ \term{iso-id}(p)^{-1}.\]
+\end{lem}
+\begin{proof} By path induction, we may assume $p$ is $\refl_a$ and $q$ is $\refl_b$ in which case the transport of $f$ is just $f$. We have $\term{iso-id}(\refl) = \id$ and $f = \id_b \circ f \circ \id_a^{-1}$ so the result follows.
+\end{proof}
+
+\subsection*{Equivalence of categories}
+ 
+We now study the various ways in which a functor $F \colon A \to B$ can define an equivalence of categories. As with the question of when a function defines an equivalence of types, there is some subtlety in formulating a \emph{proposition} $\is{equiv}(F)$. One solution is to use the concept of an adjunction.
+
+\begin{defn} A functor $F \colon A \to B$ between precategories is a \textbf{left adjoint} when there exists:
+\begin{itemize}
+\item a functor $G \colon B \to A$,
+\item a natural transformation $\eta \colon 1_A \to G \circ F$.
+\item a natural transformation $\epsilon \colon F \circ G \to 1_B$.
+\item proofs that $G\epsilon \cdot \eta G = \id_G$ and $\epsilon F \cdot F\eta = \id_F$.
+\end{itemize}
+\end{defn}
+
+This definition uses various concepts we have not defined: identity functors, composition of functors, whiskering of functors and natural transformations, and identity natural transformations.
+
+Importantly:
+
+\begin{lem} If $F \colon A \to B$ is a functor and $A$ is a category then $\is{left-adjoint}(F)$ is a proposition.
+\end{lem}
+\begin{proof}
+Given two terms $(G,\eta,\epsilon), (G',\eta',\epsilon') : \is{left-adjoint}(F)$ the standard category theoretic argument constructs a unique natural isomorphism $\gamma : G \to G'$ commuting with the natural transformations. If $A$ is a category then $A^B$ is a category so $\term{id-iso} : G \cong G' \to G = G'$ converts $\gamma$ into an identity so that the transport of $\eta$ and $\epsilon$ along this path is identifiable with $\eta'$ and $\epsilon'$.
+\end{proof}
+
+\begin{defn} A functor $F \colon A \to B$ defines an \textbf{equivalence} of precategories if $F$ is a left adjoint in which $\eta$ and $\epsilon$ are isomorphisms.
+\end{defn}
+
+We write $A \simeq B \coloneq \Sigma_{F: A \to B} \is{equiv}(F)$, with the sum over functors between precategories, for the type of equivalences from $A$ to $B$. We state the following results and refer to \cite{book-hott} for their proofs.
+
+\begin{lem} For precategories $A$ and $B$ and a functor $F \colon A \to B$ the following types are equivalent:
+\begin{enumerate}
+\item $\is{equiv}(F)$ asserting that $F$ is an equivalence of precategories.
+\item The type
+\[ \left( \Pi_{a,a': A} \is{equiv}(F_{a,a'}) \right) \times \left( \Pi_{b:B} \Sigma_{a:A} Fa \cong b \right)\]
+ asserting that $F$ is \textbf{fully faithful}, meaning each $F_{a,a'} : \hom_A(a,a') \to \hom_B(Fa,Fa')$ is an equivalence, and \textbf{split essentially surjective}, meaning $\Pi_{b:B} \Sigma_{a:A} Fa \cong b$.
+\end{enumerate}
+\end{lem}
+
+If $A$ is a category and $F$ is fully faithful then for any $b : B$ the type $\Sigma_{a:A} Fa \cong b$ is a proposition: if given $(a,f),(a',f') : \Sigma_{a:A} Fa \cong b$ then $f'^{-1} \circ f \colon Fa \cong Fa'$ is an isomorphism. Since $F$ is fully faithful then $a \cong a'$ and since $A$ is a category $a=a'$ and one can verify that transport along this path identifies $f$ with $f'$. In particular, in this context the notion of split essentially surjective could be replaced by the notion of essentially surjective, meaning $\Pi_{b:B} \|\Sigma_{a:A} Fa \cong b\|$, without change.
+
+\begin{defn} A functor $F \colon A \to B$ is an \textbf{isomorphism} of precategories if $F$ is fully faithful and $F_0 : A_0 \to B_0$ is an equivalence of types.
+\end{defn}
+
+We write $A \cong B$ for the type of isomorphisms between precategories.
+
+\begin{lem} For categories $A$ and $B$, a functor $F \colon A \to B$ is an equivalence if and only if it is an isomorphism of categories.
+\end{lem}
+
+By univalence: 
+\begin{lem} If $A$ and $B$ are precategories then the function 
+\[ \term{iso-id} : (A=B) \to (A \cong B)\]
+defined by induction by $\refl_A \mapsto 1_A$ is an equivalence.
+\end{lem}
+
+Thus:
+
+\begin{thm} If $A$ and $B$ are categories, then the function 
+\[ \term{equiv-id} : (A=B) \to (A \simeq B)\]
+defined by induction by $\refl_A\mapsto 1_A$ is an equivalence.
+\end{thm}
+
+
 \section*{November 15: The real numbers in univalent mathematics}
 
 
@@ -3083,9 +3279,12 @@ These results follow a general pattern. The \textbf{Structure Identity Principle
 \section*{December 6: Classifying types of groups}
 
 \bibliographystyle{alpha}
-\begin{thebibliography}{R}
+\begin{thebibliography}{UF}
+
 
 \bibitem[R]{Rijke} Egbert Rijke, \emph{Introduction to Homotopy Type Theory}, available from \url{https://hott.zulipchat.com}
+
+\bibitem[UF]{book-hott} \emph{Homotopy Type Theory: Univalent Foundations of Mathematics}, the Univalent Foundations Program, Institute for Advanced Study, available from \url{https://homotopytypetheory.org/book/}
 
 \end{thebibliography}
 
