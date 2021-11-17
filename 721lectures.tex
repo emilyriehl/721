@@ -3533,9 +3533,13 @@ This holds for completely general reasons. For any $f : A \to B$ and $p : a=_A a
   \end{proof}
 
   \begin{rmk}
-    Note that $\neg(\lloop = \refl_\base)$. Because if so then for any type $X$ and any loop $p : x = x$ we would get a function $f : \Sone \to X$ so that
-    \[ p = \ap_f(\lloop) = \ap_f(\refl_\base) = \refl_x,\]
-    which is ``axiom K'' and implies that $X$ is a set. Since not all types are sets, we can't have $\lloop = \refl_\base$.
+    Note that $\neg(\lloop = \refl_\base)$. Because if so then for any type $X$ and any loop $p : x = x$ we would get a function $f : \Sone \to X$ together with paths $\alpha : f(\base) = x$ and $\beta : \tr_{x \mapsto x = x}(\alpha, \ap_f(\lloop)) = p$. By composing paths we have
+    \[ p = \tr(\alpha,\ap_f(\lloop)) = \tr(\alpha,\ap_f(\refl_\base)) = \tr(\alpha,\refl_{f(\base)}) = \refl_x.\]
+    This proves that
+    \[
+    (\lloop = \refl_\base ) \to \left(\Pi_{X: \UU}\Pi_{x : X}\Pi_{p : x = x} p = \refl_x  \right).
+    \]
+   The conclusion of this implication is ``axiom K,'' which is equivalent to the assertion that $X$ is a set. Since not all types are sets, we can't have $\lloop = \refl_\base$.
   \end{rmk}
   
 
