@@ -1,0 +1,227 @@
+% !TEX program = lualatex
+\documentclass{amsart}
+\usepackage[hidelinks]{hyperref}  
+\usepackage{tensor}    
+\usepackage{comment} 
+\usepackage{enumitem}      
+\usepackage{moreenum}
+\usepackage{graphicx}   
+\usepackage{ifthen}  
+\usepackage[svgnames]{xcolor}  
+ \usepackage{fullpage}
+ \hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+} 
+ 
+% Font packages  
+\usepackage[no-math]{fontspec} 
+\usepackage{realscripts}
+
+% Unicode mathematics fonts
+\usepackage{unicode-math}
+\setmathfont{Asana Math}[Alternate = 2]
+
+% Font imports, for some reason this has to be after 
+% the unicode-math stuff.
+
+\setmainfont{CormorantGaramond}[
+Numbers = Lining,  
+Ligatures = NoCommon,
+Kerning = On,
+UprightFont = *-Medium,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setsansfont{texgyreheros}[
+Scale=0.9129,
+Ligatures = NoCommon,
+UprightFont = *-Regular,
+ItalicFont = *-Italic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+\setmonofont{SourceCodePro}[
+Scale=0.8333,
+UprightFont = *-Regular,
+ItalicFont = *-MediumItalic,
+BoldFont = *-Bold,
+BoldItalicFont = *-BoldItalic
+]
+
+% AMS Packages
+\usepackage{amsmath}
+\usepackage{amsxtra}
+\usepackage{amsthm}
+
+% We use TikZ for diagrams
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{makebox}%to try and fix the spacing in some diagrams with wildly divergent node sizes
+
+\renewcommand{\theenumi}{\roman{enumi}} %roman numerals in enumerate
+
+% Adjust list environments.
+
+\setlist{}
+\setenumerate{leftmargin=*,labelindent=0\parindent}
+\setitemize{leftmargin=\parindent}%,labelindent=0.5\parindent}
+%\setdescription{leftmargin=1em}
+
+\newcommand{\todo}[1]
+{ {\bfseries \color{blue} #1 }}
+
+
+
+\newcommand{\lecture}[1]{\centerline{\fbox{\textbf{#1}}}}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
+\newtheorem{nex}[thm]{Non-Example}
+\newtheorem{exc}[thm]{Exercise}
+\newtheorem{exexc}[thm]{Example/Exercise}
+\newtheorem{ntn}[thm]{Notation}
+\newtheorem{asm}[thm]{Assumptions}
+\theoremstyle{remark}
+\newtheorem{rmk}[thm]{Remark}
+\newtheorem{dig}[thm]{Digression}
+
+\makeatletter
+\let\c@equation\c@thm
+\makeatother
+\numberwithin{equation}{section}
+
+\title{Math 721: Homotopy Type Theory}
+\author{Emily Riehl}
+
+\newcommand{\term}[1]{{\textup{\texttt{#1}}}}
+\newcommand{\type}[1]{{\textup{#1}}}
+
+\begin{document}
+
+\date{Fall 2021}
+
+
+\address{Dept.~of Mathematics\\Johns Hopkins Univ.\\ 3400 N.~Charles Street \\ Baltimore, MD 21218}
+\email{eriehl@jhu.edu}
+
+
+\maketitle
+
+
+\section*{Final project description}
+
+In addition to the \texttt{agda} problem sets, each student will be expected to do an independent final project, due Monday, December 19th. The final project should be some sort of expository presentation of a topic in homotopy type theory that we did not have time to explore in class. This could be in a variety of formats including:
+\begin{itemize}
+\item an expository paper, with a target length of 2-5 pages;
+\item an expository talk, with a target length of 10-20 minutes, which could either be a chalk talk or a video lecture, and could be pitched to a variety of target audiences (not necessarily me);
+\item a formalized proof with extensive comments for the reader;
+\item or something else (please discuss with me).
+\end{itemize}
+
+\section*{Final project ideas}
+
+The following is a non-exhaustive list of final project ideas. Feel free to modify these in any way that seems suitable, and of course you may elect to do something else entirely.
+
+\subsection*{Revisit a topic we didn't spend enough time on during the semester} There were many topics we alluded to in class but did not give nearly enough attention to. These include modular arithmetic, elementary number theory, finite types and counting,  set quotients and equivalence classes, etc. You could also revisit a theorem that we did discuss in some detail---for instance the fundamental theorem of identity types---recall its statement (and proof if you like) and describe several applications found in \cite{Rijke} or another source.
+
+\subsection*{Propositions in HoTT} Function extensionality can be used to prove that various types are propositions. Describe as many examples as you feel like and sketch their proofs.
+
+\subsection*{Find something cool in the HoTT book} Find anything in \cite{book-hott} that we didn't discuss in class (or didn't discuss in depth) and explain it in your own words. For instance, there is a lot more to category theory and to the real numbers than we had time to cover.
+
+\subsection*{The structure identity principle}
+
+Describe some form of the \emph{structure identity principle}, for instance \cite[\S 9.8]{book-hott}. See tslil or David for some suggestions on how to make this not too hard.
+
+\subsection*{Zoo of equivalences} Show some non-singleton subset of the following propositions definable for a map $f \colon A \to B$ are equivalent (and say what it means for $f$ to be an equivalence):
+\begin{itemize}
+\item bi-invertible
+\item contractible fibers
+\item half-adjoint equivalence
+\item embedding and (merely) surjective
+\item $f$ split surjective and $\texttt{ap}_f$ is split surjective
+\end{itemize}
+
+The first four are discussed in \cite{book-hott}. For the fifth see \cite{RSS}.
+
+\subsection*{Splitting of idempotents}
+
+A similar exploration of homotopy coherence can be found in the discussion of \emph{idempotents} and their \emph{splittings}; see \cite{idempotents}.
+
+\subsection*{Yoneda lemma for identity types}
+
+Prove the Yoneda lemma for identity types in the form found in  \cite{book-hott}: for any type $A$, term $a : A$, and type family $F : A \to \mathcal{U}$ show that
+\[ \term{ev}_{\term{refl}} : \type{Nat}(a=\_, F) \to Fa\]
+is an equivalence where
+\[ \type{Nat}(a=\_, F) \coloneq \Pi_{b:A} (a=b) \to Fa.\]
+
+
+
+\subsection*{Fundamental theorem of higher groups}
+
+Prove that a pointed map $f : (A,a) \to (B,b)$ between a pointed, 0-connected types is an equivalence if and only if the map $\Omega f$ is. See David for references.
+
+%Here a 
+%\begin{itemize}
+%\item pointed type is a type $A$ with a term $a :A$
+%\item map of pointed types is a map $f : A \to B$ with an identification $q : f(a) =b$,
+%\item pointed type $A$ is \emph{0-connected} if $\Pi_{x: A} \| a = x\|$, and
+%\item the map $\Omega f$ is $\term{ap}(f) : (a =_A a) \to (f(a) =_B f(a))$ conjugated by the identification $q$ to define a map $\Omega f : (a=_A a) \to (b=_B b)$
+%\end{itemize}
+
+\subsection*{Univalence implies function extensionality}
+
+Write up a proof that univalence impliex function extensionality. For instance, you might enjoy the proof found here \url{https://git.sr.ht/~tslil/univalence-to-funext}
+
+\subsection*{Pick your favorite topic in synthetic homotopy theory}
+
+There are numerous classical theorems in algebraic topology that have been proven in homotopy type theory. Pick your favorite and give an overview of its proof.
+
+\subsection*{Externalize the circle}
+
+Describe the construction of the circle in the $\infty$-category of spaces and explain its (dependent) universal property in this setting.
+
+\subsection*{Explore the (higher) categorical semantics}
+
+Give a high level overview of the higher categorical semantics of homotopy type theory, for instance in the $\infty$-category of spaces presented as Kan complexes \cite{KLV}.
+
+\subsection*{Play the HoTT game} There is a new HoTT game available here \url{https://thehottgameguide.readthedocs.io/en/latest/index.html} with the following description:
+\begin{quote}
+The Homotopy Type Theory (HoTT) Game is a project written by mathematicians for mathematicians interested in HoTT and no experience in proof verification, with the aim of introducing cubical agda as a tool for trying out mathematics in HoTT.
+\end{quote}
+Play the game and then write a short note that describes what is going on. How does cubical agda compare with the standard agda library? What are some advantages and disadvantages of each system?
+
+\bibliographystyle{alpha}
+\begin{thebibliography}{RSS}
+
+\bibitem[KL]{KLV} Chris Kapulkin, Peter LeFanu Lumsdaine,  \emph{The Simplicial Model of Univalent Foundations (after Voevodsky)}, \url{https://arxiv.org/abs/1211.2851}
+
+\bibitem[S]{idempotents} Mike Shulman, \emph{Idempotents in intentional type theory}, Logical Methods in Computer Science
+Vol. 12(3:9)2016, pp. 1--24, \url{https://arxiv.org/abs/1507.03634}
+
+\bibitem[R]{Rijke} Egbert Rijke, \emph{Introduction to Homotopy Type Theory}, available from \url{https://hott.zulipchat.com}
+
+\bibitem[RSS]{RSS} Egbert Rijke, Michael Shulman, Bas Spitters, \emph{Modalities in homotopy type theory}, \url{https://arxiv.org/abs/1706.07526}
+
+\bibitem[UF]{book-hott} \emph{Homotopy Type Theory: Univalent Foundations of Mathematics}, the Univalent Foundations Program, Institute for Advanced Study, available from \url{https://homotopytypetheory.org/book/}
+
+
+\end{thebibliography}
+
+ \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End:
