@@ -243,6 +243,9 @@ BoldItalicFont = *-BoldItalic
 \newcommand{\tr}{\term{tr}}
 \newcommand{\apd}{\term{apd}}
 
+\newcommand{\const}{\term{const}}
+\newcommand{\glue}{\term{glue}}
+
 \newcommand{\UU}{{\mathcal{U}}}
 \newcommand{\sT}{\mathcal{T}}
 \newcommand{\Id}{\textup{\text{Id}}}
@@ -265,12 +268,14 @@ BoldItalicFont = *-BoldItalic
 \renewcommand{\iff}{\leftrightarrow}
 
 \newcommand{\mere}[1]{\|{#1}\|}
+\newcommand{\set}[1]{\|{#1}\|_0}
 \newcommand{\im}[1]{\type{im}(#1)}
 \newcommand{\ev}{\term{ev}}
 
 \newcommand{\Fin}{\type{Fin}}
 
 \newcommand{\Sone}{\mathbf{S}^1}
+\newcommand{\Sn}[1]{\mathbf{S}^{#1}}
 \newcommand{\base}{\term{base}}
 \newcommand{\lloop}{\term{loop}}
 
@@ -3772,6 +3777,198 @@ We have shown that $\lloop \neq \refl_\base$. Thus the circle is not a 0-type. T
 
 
 \section*{December 1: Homotopy groups of types}
+
+There are many results from classical homotopy theory that have been proven in homotopy type theory. In the last week of the course, we'll survey a handful of these.
+
+\subsection*{Pointed types}
+
+A \textbf{pointed type} is a pair $(A,a)$ consisting of a type $A$ and a term $a : A$. The type of all points types in a universe $\UU$ is the type
+\[ \UU_* \coloneq \Sigma_{X : \UU} X.\]
+
+\begin{defn}
+A \textbf{pointed map} from $(A,a)$ to $(B,b)$ is a pair $(f,p)$ where $f \colon A \to B$ and $p : f(a) = b$. We write
+\[ A \to_* B \coloneq \Sigma_{f :A \to B} f(a)=b\]
+for the type of all pointed maps from $(A,a)$ to $(B,b)$ leaving the basepoints implicit.
+\end{defn}
+
+We next define a function $\Omega \colon \UU_* \to \UU_*$ that takes a pointed type to its loop space.
+
+\begin{defn} For a pointed type $(A,a)$ define
+\[ \Omega(A,a) \coloneq ((a=a),\refl_a).\]
+The type $\Omega(A,a)$ is called the \textbf{loop space} of the pointed type.
+\end{defn}
+
+Since $\Omega$ is an function from a type to itself it can be composed with itself. Iterating $\Omega$ defines the \textbf{iterated loop space} of a pointed type.
+
+\begin{defn} Given a pointed type $(A,a)$ and natural number $n$ we define the $n$th loop space $\Omega^n(A,a)$ by induction on $n : \NN$ by
+\[  \Omega^0(A,a) \coloneq (A,a) \qquad \Omega^{n+1}(A,a) \coloneq \Omega(\Omega^n(A,a)).\]
+\end{defn}
+
+\begin{ex} The circle $\Sone$ defines a pointed type with $\base : \Sone$ as its basepoint. Last time we proved that the identity type family $t : \Sone \vdash \base = t$ is equivalent to the type family $E : \Sone \to \UU$ that we defined by $\Sone$-induction from the type $\ZZ$ and the equivalence $\term{succ}_\ZZ : \ZZ \simeq \ZZ$. In particular, $(\base = \base) \simeq E(\base) \simeq \ZZ$ via an equivalence that carried $\refl_\base$ to $0$ and $\lloop$ to $1$. Thus we have calculated the loop space
+\[ \Omega(\Sone,\base) \simeq (\ZZ,0).\]
+Since $\ZZ$ is a set, the type $(0=0)$ is a proposition. Since $\refl_0 : 0=0$ we know that the type $(0=0)$ is contractible.\footnote{Recall one logically equivalent way to say that a type $A$ is a proposition is $A \to \iscontr{A}$.} Thus we calculate
+\[ \Omega^2(\Sone,\base) \simeq \Omega(\ZZ,0) \simeq (\1, \star).\]
+Since the identity types of contractible types are contractible we in fact have that $\Omega^n(\Sone,\base) \simeq (\1,\star)$ for all $n \geq 2$.
+\end{ex}
+
+The loop space operation $\Omega$ is \emph{functorial} in the sense that any pointed map $f : X \to_* Y$ gives rise to a pointed map $\Omega f : \Omega X \to_* \Omega Y$ defined to be the composite
+\[
+\begin{tikzcd} x=_Xx \arrow[r, "\ap_f"] & f(x) =_Y f(x) \arrow[r, "p^{-1} \cdot - \cdot p"] & y =_Y y
+\end{tikzcd}
+\]
+where $p : f(x) = y$ is part of the data that comes with the pointed function $f$. Given another pointed map $g : Y \to_* Z$ there is a homotopy witnessing that the triangle of pointed maps of pointed types commutes:
+\[
+\begin{tikzcd}&\Omega Y \arrow[dr, "\Omega g"] \\ \Omega X \arrow[ur, "\Omega f"] \arrow[rr, "\Omega(g \circ f)"'] & & \Omega Z
+\end{tikzcd}
+\]
+
+\subsection*{The suspension}
+
+The loop space construction is closely related to the construction of the \textbf{suspension} of a type. To define this, we first need to define homotopy pushouts in type theory.
+
+The idea of a pushout is it is a way to glue together two types $A$ and $B$ along a mediating type $S$ via maps $f \colon S \to A$ and $g \colon S \to B$. In other words we start with a diagram of the form
+\[ \begin{tikzcd} A & S \arrow[l, "f"'] \arrow[r, "g"] & B
+\end{tikzcd}
+\]
+called a \textbf{span}.
+
+\begin{defn} A \textbf{cocone} under a span $(S,f,g)$ is given by a type $X$, a pair of functions $i : A \to X$ and $j : B \to X$ and a homotopy $H : i \circ f \sim j \circ g$ witnessing that the square
+\[
+\begin{tikzcd} S \arrow[d, "f"'] \arrow[r, "g"] & B \arrow[d, "j"] \\ A \arrow[r, "i"'] & X
+\end{tikzcd}
+\]
+commutes.
+\end{defn}
+
+We write $\type{cocone}_SX$ for the type of cocones under the span $(S,f,g)$ with nadir $X$. Given a cocone $(i,j,H)$ with nadir $X$ and a map $h : X \to Y$ there is a cocone with nadir $Y$ defined by $(h \circ i, h \circ j, h \cdot H)$. 
+
+\begin{defn} A commuting square
+\[
+\begin{tikzcd} S \arrow[d, "f"'] \arrow[r, "g"] & B \arrow[d, "j"] \\ A \arrow[r, "i"'] & X
+\end{tikzcd}
+\]
+witnessed by $H : i \circ f \sim j \circ g$ is a (\textbf{homotopy}) \textbf{pushout square} if the map
+\[ 
+\begin{tikzcd}[row sep=tiny] (X \to Y) \arrow[r] & \type{cocone}_S(Y) \\ h \arrow[r, maps to] & (h \circ i, h \circ j, h \cdot H)
+\end{tikzcd}
+\]
+is an equivalence for any type $Y$.
+\end{defn}
+
+Pushouts are not guaranteed to exist in plain vanilla homotopy type theory but can be constructed as higher inductive types: given a span $f \colon S \to A$ and $g \colon S \to B$ the pushout $A \cup_S B$ can be built as the higher inductive type with constructors
+\begin{itemize}
+\item $\inl : A \to A \cup_S B$
+\item $\inr : B \to A \cup_S B$
+\item $\glue : \Pi_{x :S} \inl(f(x)) = \inr(g(x))$
+\end{itemize}
+
+
+
+\begin{defn} Let $X$ be a type. A \textbf{suspension} of $X$ is a type $\Sigma X$ equipped with a \textbf{north pole} $N : \Sigma X$, a \textbf{south pole} $S : \Sigma X$, and a meridian $\term{merid} : X \to (N = S)$ so that the commuting square
+\[
+\begin{tikzcd} X \arrow[r, "\const_\star"] \arrow[d, "\const_\star"'] & \1 \arrow[d, "\const_S"] \\ \1 \arrow[r, "\const_N"'] & \Sigma X
+\end{tikzcd}
+\]
+is a pushout square.
+\end{defn}
+
+\begin{defn} For any $n : \NN$ we define the $n$-\textbf{sphere} by induction on $n$ by
+\[ \Sn{0} \coloneq \bool \qquad \Sn{n+1} \coloneq \Sigma \Sn{n}.\]
+ \end{defn}
+ 
+ You can even start one dimension lower by defining $\Sn{-1} \coloneq \emptyset$ and observing that $\Sigma\Sn{-1} \simeq \bool$.
+
+\begin{rmk} It is interesting to compare the definition of the 1-sphere as $\Sigma\Sn{0}$ with the definition of $\Sone$ as a higher inductive type generated by $\base : \Sone$ and $\lloop : \base = \base$. The former defines a higher inductive type with constructors:
+\begin{itemize}
+ \item $N : \Sigma\Sn{0}$
+ \item $S : \Sigma\Sn{0}$
+ \item $\glue_\top : N = S$
+ \item $\glue_\bot : N = S$
+ \end{itemize}
+From these definitions, its easy to define a map $\Sone \to \Sigma\Sn{0}$ by $\base\mapsto N$ and $\lloop \mapsto \glue_\top \ast \glue_\bot^{-1}$. A map $\Sigma\Sn{0} \to \Sone$ in the other direction is given by $N, S \mapsto \base$, $\glue_\top \mapsto \lloop$, $\glue_\bot \mapsto \refl$. A proof by induction \cite[6.5.1]{book-hott} shows that these functions are quasi-inverses.
+ \end{rmk}
+
+For any type $X$, we regard the suspension $\Sigma X$ as a pointed type with $N : \Sigma X$ as its basepoint. For a pointed type $(A,a)$ we define $\Sigma (A,a) = (\Sigma A, N)$ so that suspension defines a function $\Sigma \colon \UU_* \to \UU_*$ similarly to $\Omega : \UU_* \to \UU_*$. Again, suspension is \emph{functorial} in maps of pointed types, though in this case the data of the basepoints isn't really needed. Given a map $f \colon A \to B$ we can define a map $\Sigma f : \Sigma A \to_* \Sigma B$ of pointed types by appealing to the universal property of pushouts. To define the underlying map $\Sigma f : \Sigma A \to \Sigma B$ we use the equivalence
+$(\Sigma A \to \Sigma B) \simeq \type{cocone}_A \Sigma B$ and instead construct a cocone
+\[
+\begin{tikzcd} A \arrow[r, "\const_\star"] \arrow[d, "\const_\star"'] & \1 \arrow[d, "\const_S"] \\ \1 \arrow[r, "\const_N"'] & \Sigma B
+\end{tikzcd}
+\]
+under the span that defines the suspension of $A$. Here we take the north and south pole of $\Sigma B$ for the required maps $\1 \to \Sigma B$. It remains only to define a homotopy in the type
+\[ \Pi_{x:A} N = S.\] For this we whisker the homotopy $\term{merid} : B \to (N = S)$ that comes from the suspension of $B$ and restrict along the map $f \colon A \to B$. The homotopies of the equivalence turn this function $\Sigma f : \Sigma A \to \Sigma B$ into a pointed map by providing a term of type $\Sigma f(N) = N$. Again $\Sigma \colon \UU_* \to \UU_*$ is functorial.
+
+The constructions $\Sigma$ and $\Omega$ are \textbf{adjoint functors} on pointed types in the following sense.
+
+\begin{thm} For any pointed types $(A,a)$ and $(B,b)$ there is an equivalence
+\[ (\Sigma A \to_* B) \simeq (A \to_* \Omega B).\]
+\end{thm}
+\begin{proof}
+We describe the maps between pointed mapping spaces and save the proof of the equivalence to the literature.
+
+Given $f : \Sigma A \to_* B$ with $p : f(N) = b$ define a map $g : A \to_* \Omega B$ by defining $g(x)$ to be the composite loop
+\[
+\begin{tikzcd} b \arrow[r, equals, "p^{-1}"] & f(N) \arrow[r, equals, "\ap_f(\term{merid}(x))"] & f(S) \arrow[r, equals, "\ap_f(\term{merid}(a))^{-1}"] & f(N) \arrow[r, "p", equals] & b
+\end{tikzcd}
+\]
+To show that $g$ is a pointed map we must identify the path $g(a)$
+\[
+\begin{tikzcd} b \arrow[r, equals, "p^{-1}"] & f(N) \arrow[r, equals, "\ap_f(\term{merid}(a))"] & f(S) \arrow[r, equals, "\ap_f(\term{merid}(a))^{-1}"] & f(N) \arrow[r, "p", equals] & b
+\end{tikzcd}
+\]
+with $\refl_b$, which we can do by composing the unit and inverse laws for paths.
+
+Conversely, given $g : A \to \Omega B$ we use the recursion that comes with the construction of the suspension as a higher inductive type to define $f : \Sigma A \to B$. We must choose terms $f(N) \coloneq b$ and $f(S) \coloneq b$ and then for each $a :A$ define a path $\ap_f(\term{merid}(a)) \coloneq g(a) : b = b$.
+\end{proof}
+
+\subsection*{Set truncation}
+
+There are various ways one can define the \textbf{set truncation} $\set{A}$ of a type $A$, which is a type with a map $|-|_0 \colon A \to \set{A}$ which is universal among maps from $A$ to a set. One strategy is to define the quotient of the type $A$ by the equivalence relation $I_{-1} : A \to A \to \Prop$ defined by $I_{-1}(x,y) \coloneq \mere{ x= y}$. See \cite[27.3]{Rijke}.
+
+Another approach is to define $\set{A}$ as a higher inductive type, as follows:
+
+\begin{defn} For any type $A$ define $\set{A}$ to be the higher inductive type with constructors:
+\begin{itemize}
+\item $|-|_0 : A \to \set{A}$ and
+\item $\term{set-quotient} : \Pi_{x,y: \set{A}} \Pi_{p,q: x=y} p =q$
+\end{itemize}
+\end{defn}
+
+See \cite[6.9]{book-hott} for more.
+
+
+\subsection*{Homotopy groups of types}
+
+\begin{defn} Let $(X,x)$ be a pointed type and $n : \NN$ be a natural number with $n \geq 1$. The $n$-th \textbf{homotopy group} of a type $X$ with basepoint $x$ is defined to be the type
+\[
+\pi_n(X,x) \coloneq \set{ \Omega^n(X,x)}
+\]
+equipped with the group operations inherited from the path operations on $\Omega^n(X,x)$.
+\end{defn}
+
+It is common to write $\pi_nX$, dropping reference to the base point. For $n \doteq 0$ define $\pi_0X \coloneq \set{X}$, which is a set but not a group in general.
+
+\begin{ex} From the equivalence $\Omega^1\Sone \simeq \ZZ$ we see that $\pi_1\Sone \simeq \ZZ$ and indeed $\pi_1\Sone$'s group structure is given by addition on $\ZZ$. Since $\Omega^n\Sone \simeq \1$ for $n > 1$ we have $\pi_n\Sone$ is the trivial group for $n \geq 2$, which is common to denote by $0$ (since the higher homotopy groups are always abelian). It follows by $\Sone$ induction that $\set{\Sone}$ is contractible, so $\pi_0\Sone \simeq \1$ as well.
+\end{ex}
+
+\subsection*{the Eckmann-Hilton argument}
+
+An important theorem about the higher homotopy groups is the following.
+
+\begin{thm} For any pointed type $(X,x)$ and for $n : \NN$ with $n \geq 2$, $\pi_n(X,x)$ is an abelian group.
+\end{thm}
+
+The proof involves a famous argument called the \emph{Eckmann-Hilton} argument about paths between loops on a common basepoint, which follows from the interchange law:
+
+\begin{lem}[interchange law] Consider a diagram of paths and paths between paths of the form
+\[
+\begin{tikzcd}
+x \arrow[r, bend left=60, equals] \arrow[r, equals, "{\Downarrow r}", "{\Downarrow r'}"'] \arrow[r, bend right=60, equals] & y \arrow[r, bend left=60, equals] \arrow[r, equals, "{\Downarrow s}", "{\Downarrow s'}"'] \arrow[r, bend right=60, equals] & z
+\end{tikzcd}
+\]
+Then there is an identification between the horizontal composite of the vertical composites and the vertical composite of the horizontal composites.
+\end{lem}
+
+
 \section*{December 6: Classifying types of groups}
 
 \bibliographystyle{alpha}
