@@ -3968,8 +3968,139 @@ x \arrow[r, bend left=60, equals] \arrow[r, equals, "{\Downarrow r}", "{\Downarr
 Then there is an identification between the horizontal composite of the vertical composites and the vertical composite of the horizontal composites.
 \end{lem}
 
+To make sense of the statement we need a few definitions.
+
+\begin{defn} Given a type $A$, terms $x,y : A$, paths $p, p', p'' : x = y$ and paths between paths $r : p = p'$ and $r' : p' = p''$ that concatenation defines a term $r \cdot r' : p = p''$ that we refer to as the \textbf{vertical concatenation} of $r$ and $s$.
+\[
+\begin{tikzcd}
+x \arrow[r, bend left=60, equals] \arrow[r, equals, "{\Downarrow r}", "{\Downarrow r'}"'] \arrow[r, bend right=60, equals] & y 
+\end{tikzcd}
+\]
+\end{defn}
+
+As the terminology suggests, there is another operation.
+
+\begin{defn} Given a type $A$, terms $x,y,z: A$, paths $p, p' : x = y$ and $q, q' : y = z$, and paths between paths $r : p = p'$ and $s : q = q'$ as in the diagram
+\[
+\begin{tikzcd}
+x \arrow[r, bend left=60, equals] \arrow[r, phantom, "{\Downarrow r}"] \arrow[r, bend right=60, equals] & y \arrow[r, bend left=60, equals] \arrow[r, phantom, "{\Downarrow s}"] \arrow[r, bend right=60, equals] & z
+\end{tikzcd}
+\]
+there is a \textbf{horizontal concatenation} $r \cdot_h s : p \cdot q = p' \cdot q'$ defined as follows. By induction on $r$ it suffices to define $\refl_p \cdot_h s : p \cdot q = p \cdot q'$. Now by induction on $p$ it suffices to define $\refl_{\refl_y} \cdot_h s : \refl_y \cdot q = \refl_y \cdot q'$. Since $\refl_y \cdot q \doteq q$ and $\refl_y \cdot q' \doteq q'$ we take $\refl_{\refl_y} \cdot_h s \coloneq s$.
+\end{defn}
+
+It can easily be verified that horizontal concatenation, like vertical concatenation, satisfies left and right unit laws.
+
+We now prove the interchange law.
+
+\begin{proof}
+Our aim is to construct an identification
+\[ (r \cdot r') \cdot_h (s \cdot s') = (r \cdot_h s) \cdot (r' \cdot_h s').\]
+By path induction on $r$ and $r'$, followed by path induction on $p$ it suffices to show that
+\[ (\refl_{\refl_y} \cdot \refl_{\refl_y}) \cdot_h (s \cdot s') = (\refl_{\refl_y} \cdot_h s) \cdot (\refl_{\refl_y} \cdot_h s').\]
+By the computation rules this reduces to
+\[ s \cdot s' = s \cdot s'\]
+which holds by reflexivity.
+\end{proof}
+
+This allows us to hold that for $n \geq 2$, the $n$th homotopy group is abelian.
+
+\begin{proof}[Proof of Theorem]
+Our goal is to show that
+\[ \Pi_{r,s: \pi_nX} r \cdot s = s \cdot r.\]
+Since this type is a set by the universal property of the set truncation we may lift $r,s : \pi_nX = \|\Omega^n (X,x)\|_0$ to terms $r,s : \Omega^n(X,x)$. For $n \geq 2$ we write $(Z,z) \coloneq \Omega^{n-2}(X,x)$ or $(Z,z) \coloneq (X,x)$ in the case $n=2$ so that we now have $r,s \in \Omega^2(Z,z)$, i.e., $r,s : \refl_z = \refl_z$.
+ Using the unit laws and the interchange law we have
+\begin{align*} r \cdot s &= (r \cdot_h \refl_z ) \cdot (\refl_z \cdot_h s) \\
+&= (r \cdot \refl_z) \cdot_h (\refl_z \cdot s) \\
+& = r \cdot_h s \\
+&= (\refl_z \cdot_h s) \cdot (r \cdot_h \refl_z) \\
+& = s \cdot r. \qedhere
+\end{align*}
+\end{proof}
 
 \section*{December 6: Classifying types of groups}
+
+\subsection*{Group actions}
+
+\begin{defn} 
+Let $G$ be a group. A $G$-\textbf{set} consists of a set $X$ equipped with a group homomorphism $\phi \colon G \to \Aut(X)$, where 
+\[\Aut(X) \coloneq (X \simeq X) \coloneq \Sigma_{f : X \to X} \isequiv{f}.\]
+We write $gx \coloneq \phi(g,x)$ for $g : G$ and $x : X$.
+\end{defn}
+
+\begin{rmk} The hypothesis that $\phi$ is a group homomorphism implies that for each $g, h : G$ and $x : X$, $(g\cdot h)x = g (h x)$. Since group homomorphisms also preserve identity elements, we also get an identification $1 x = x$.
+\end{rmk}
+
+\begin{ex} The underlying set of a group $G$ is a $G$-set with $\phi : G \to \Aut(G)$ given by group multiplication $g x \coloneq g \cdot x$. This $G$-set is called the \textbf{universal $G$-bundle} and may be denoted by $G$ for short.
+\end{ex}
+
+Note this isn't the only way a group can act on itself. For any $g : G$, the conjugation map $x \mapsto g \cdot x \cdot g^{-1}$ defines an automorphism of $G$ and thus a homomorphism $\kappa \colon G \to \Aut(G)$.
+
+\subsection*{The classifying type of a group}
+
+\begin{defn} Consider a group $G$ and let $X$ be a pointed 1-type. We say that $X$ is the \textbf{classifying type} of $G$ if $X$ is connected and comes equipped with a group isomorphism $G \cong \Omega X$.
+\end{defn}
+
+It is common to write $BG$ for the classifying type so that the group isomorphism has the form $G \cong \Omega BG$. We shall soon discover that classifying types always exist and are unique, though neither of these facts are apparent from the definition given above.
+
+\begin{ex} For any set $A$ the type
+\[ \Sigma_{X : \Set} \mere{A = X}\]
+is the classifying type of the automorphism group $\Aut(A)$, with the pair $(A, \|\refl\|)$ serving as the basepoint. A self identification $(A, \|\refl\|) = (A, \|\refl\|)$ is equivalently a self identification $A=A$ or an equivalence $A \simeq A$, and thus 
+\[ \Omega \left(\Sigma_{X : \Set} \mere{A = X} \right) \simeq \Aut(A).\]
+\end{ex}
+
+A closely related concept is of the Eilenberg-MacLane space $K(G,1)$.
+
+\begin{defn} Consider a group $G$ and a pointed 1-type $X$ that comes equipped with a group homomorphism $\phi \colon G \to \Omega X$. We say that $X$ satisfies the universal property of the Eilenberg-MacLane space $K(G,1)$ if the map
+\[
+\begin{tikzcd}[row sep=tiny] (X \to_* Y) \arrow[r] & \type{hom}(G,\Omega Y) \\
+f \arrow[r, maps to] & \Omega (f) \circ \phi
+\end{tikzcd}
+\]
+is an equivalence for every pointed 1-type $Y$.
+\end{defn}
+
+Note there is a pointed equivalence between any two pointed 1-types that satisfy the universal property of a $K(G,1)$ so we just write $K(G,1)$ for this pointed 1-type.
+
+The Eilenberg-MacLane space $K(G,1)$ can also be understood as a homotopy type whose 1st homotopy group is $G$ and whose homotopy groups are trivial otherwise. Similarly, for any abelian group $A$, $K(A,n)$ is an $n$-type with $\pi_nK(A,n) \cong A$ and all other homotopy groups are trivial.
+
+\begin{defn} The type $K(G,1)$ may be defined as a higher inductive type as follows with the following constructors:
+\begin{itemize}
+\item $\base : K(G,1)$, for the basepoint
+\item $\lloop : G \to (\base = \base)$ for the generators of the fundamental group
+\item $\term{loop-id} : \lloop(e) = \id$
+\item $\term{loop-comp} : \Pi_{x,y :G} \lloop (x \cdot y) =\lloop(x) \cdot \lloop(y)$
+\end{itemize}
+together with a final constructor that forces $K(G,1)$ to be a 1-type.
+\end{defn}
+
+An encode-decode method proof can be used to show:
+
+\begin{thm}[Finster-Licata] $\pi_1(K(G,1)) \cong G$.
+\end{thm}
+
+Note because $K(G,1)$ is a 1-type by construction the higher homotopy groups $\pi_nK(G,1)=0$ for all $n \geq 2$.
+
+\begin{rmk}
+While we don't have time to justify this construction, the higher Eilenberg-MacLane spaces can be built from the lower ones by the formula:
+\[ K(A,n) \coloneq \| \Sigma^{n-1}K(A,1)\|_n\]
+for an abelian group $A$. See ``Eilenberg-MacLane spaces in homotopy type theory'' by Finster and Licata.
+\end{rmk}
+
+The existence of Eilenberg-MacLane spaces proves the existence of classifying types of groups on account of the following theorem: 
+
+\begin{thm} Consider a group $G$ and a pointed 1-type $X$. Then the following are equivalent:
+\begin{enumerate}
+\item $X$ is connected and comes equipped with a group isomorphism.
+\item $X$ satisfies the universal property of the Eilenberg-MacLane space $K(G,1)$.
+\end{enumerate}
+Thus for every group $G$ there is a unique pointed connected 1-type $BG$ equipped with a group isomorphism 
+\[ G \cong \Omega BG.\]
+\end{thm}
+
+\begin{ex} The circle $\Sone$ is the classifying type of $\ZZ$, i.e., we have $\Sone = B\ZZ = K(\ZZ,1)$.
+\end{ex}
+
 
 \bibliographystyle{alpha}
 \begin{thebibliography}{UF}
